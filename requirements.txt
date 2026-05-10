@@ -1,4 +1,4 @@
 flask==3.0.3
 flask-cors==4.0.1
-plaid-python==14.6.0
+plaid-python==39.2.0
 gunicorn==22.0.0

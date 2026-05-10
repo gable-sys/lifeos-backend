@@ -15,14 +15,13 @@ from plaid.model.products import Products
 app = Flask(__name__)
 CORS(app)
 
-# Config from environment variables (set these in Render dashboard)
 PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
 PLAID_SECRET = os.environ.get('PLAID_SECRET')
 PLAID_ENV = os.environ.get('PLAID_ENV', 'sandbox')
 
+# Only Sandbox and Production exist in plaid-python 39+
 env_map = {
     'sandbox': plaid.Environment.Sandbox,
-    'development': plaid.Environment.Development,
     'production': plaid.Environment.Production,
 }
 
@@ -37,8 +36,7 @@ configuration = plaid.Configuration(
 api_client = plaid.ApiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
 
-# Simple in-memory token store (persists until Render restarts)
-# In production, save to Supabase instead
+# In-memory token store — persists until Render restarts
 access_tokens = {}
 
 
@@ -131,7 +129,7 @@ def get_transactions():
                 'name': t['name'],
                 'amount': float(t['amount']),
                 'date': str(t['date']),
-                'category': t.get('personal_finance_category', {}).get('primary', ''),
+                'category': t.get('personal_finance_category', {}).get('primary', '') if t.get('personal_finance_category') else '',
                 'merchant': t.get('merchant_name', '') or t['name'],
             })
 

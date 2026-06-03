@@ -19,6 +19,10 @@ PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
 PLAID_SECRET = os.environ.get('PLAID_SECRET')
 PLAID_ENV = os.environ.get('PLAID_ENV', 'sandbox')
 
+# Where Bank of America sends you back after login. Must EXACTLY match the
+# "Allowed redirect URI" you saved in the Plaid dashboard (trailing slash included).
+REDIRECT_URI = 'https://stupendous-concha-2d70be.netlify.app/'
+
 # Only Sandbox and Production exist in plaid-python 39+
 env_map = {
     'sandbox': plaid.Environment.Sandbox,
@@ -54,6 +58,7 @@ def create_link_token():
             products=[Products('transactions')],
             country_codes=[CountryCode('US')],
             language='en',
+            redirect_uri=REDIRECT_URI,   # <-- THE NEW LINE (enables Bank of America)
         )
         response = client.link_token_create(req)
         return jsonify({'link_token': response['link_token']})

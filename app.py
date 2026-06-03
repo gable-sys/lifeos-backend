@@ -6,6 +6,8 @@ import plaid
 from plaid.api import plaid_api
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
 from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
+from plaid.model.link_token_create_hosted_link import LinkTokenCreateHostedLink
+from plaid.model.link_token_get_request import LinkTokenGetRequest
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
 from plaid.model.transactions_sync_request import TransactionsSyncRequest
@@ -19,11 +21,9 @@ PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
 PLAID_SECRET = os.environ.get('PLAID_SECRET')
 PLAID_ENV = os.environ.get('PLAID_ENV', 'sandbox')
 
-# Where Bank of America sends you back after login. Must EXACTLY match the
-# "Allowed redirect URI" you saved in the Plaid dashboard (trailing slash included).
+# Where Plaid sends the user back AFTER they finish the hosted login.
 REDIRECT_URI = 'https://stupendous-concha-2d70be.netlify.app/'
 
-# Only Sandbox and Production exist in plaid-python 39+
 env_map = {
     'sandbox': plaid.Environment.Sandbox,
     'production': plaid.Environment.Production,
@@ -31,16 +31,12 @@ env_map = {
 
 configuration = plaid.Configuration(
     host=env_map.get(PLAID_ENV, plaid.Environment.Sandbox),
-    api_key={
-        'clientId': PLAID_CLIENT_ID,
-        'secret': PLAID_SECRET,
-    }
+    api_key={'clientId': PLAID_CLIENT_ID, 'secret': PLAID_SECRET}
 )
-
 api_client = plaid.ApiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
 
-# In-memory token store — persists until Render restarts
+# In-memory token store -- persists until Render restarts
 access_tokens = {}
 
 
@@ -51,6 +47,9 @@ def health():
 
 @app.route('/create_link_token', methods=['POST'])
 def create_link_token():
+    """Create a HOSTED LINK token. Plaid runs the whole bank login on their
+    own page (no fragile in-browser OAuth handoff), then redirects the user
+    back to REDIRECT_URI. Returns the hosted_link_url to send the user to."""
     try:
         req = LinkTokenCreateRequest(
             user=LinkTokenCreateRequestUser(client_user_id='gable-lifeos'),
@@ -58,26 +57,45 @@ def create_link_token():
             products=[Products('transactions')],
             country_codes=[CountryCode('US')],
             language='en',
-            redirect_uri=REDIRECT_URI,   # <-- THE NEW LINE (enables Bank of America)
+            hosted_link=LinkTokenCreateHostedLink(completion_redirect_uri=REDIRECT_URI),
         )
-        response = client.link_token_create(req)
-        return jsonify({'link_token': response['link_token']})
+        r = client.link_token_create(req).to_dict()
+        return jsonify({
+            'link_token': r['link_token'],
+            'hosted_link_url': r.get('hosted_link_url'),
+        })
     except plaid.ApiException as e:
-        body = json.loads(e.body)
-        return jsonify({'error': body}), 400
+        return jsonify({'error': json.loads(e.body)}), 400
 
 
-@app.route('/exchange_token', methods=['POST'])
-def exchange_token():
+@app.route('/finish_link', methods=['POST'])
+def finish_link():
+    """Called when the user returns from Plaid's hosted page. Looks up the
+    completed Link session, pulls out the public_token, and exchanges it for
+    an access token -- no webhook needed."""
     try:
-        public_token = request.json.get('public_token')
-        req = ItemPublicTokenExchangeRequest(public_token=public_token)
-        response = client.item_public_token_exchange(req)
-        access_tokens['default'] = response['access_token']
+        link_token = (request.json or {}).get('link_token')
+        if not link_token:
+            return jsonify({'success': False, 'error': 'missing link_token'}), 400
+
+        data = client.link_token_get(LinkTokenGetRequest(link_token=link_token)).to_dict()
+        public_token = None
+        for session in (data.get('link_sessions') or []):
+            results = session.get('results') or {}
+            for item in (results.get('item_add_results') or []):
+                if item.get('public_token'):
+                    public_token = item['public_token']
+
+        if not public_token:
+            return jsonify({'success': False, 'pending': True})
+
+        ex = client.item_public_token_exchange(
+            ItemPublicTokenExchangeRequest(public_token=public_token)
+        )
+        access_tokens['default'] = ex['access_token']
         return jsonify({'success': True})
     except plaid.ApiException as e:
-        body = json.loads(e.body)
-        return jsonify({'error': body}), 400
+        return jsonify({'error': json.loads(e.body)}), 400
 
 
 @app.route('/balance', methods=['GET'])
@@ -87,9 +105,7 @@ def get_balance():
         if not access_token:
             return jsonify({'error': 'No bank connected yet', 'connected': False}), 401
 
-        req = AccountsBalanceGetRequest(access_token=access_token)
-        response = client.accounts_balance_get(req)
-
+        response = client.accounts_balance_get(AccountsBalanceGetRequest(access_token=access_token))
         accounts = []
         total = 0
         for account in response['accounts']:
@@ -108,14 +124,9 @@ def get_balance():
             if acct_type == 'depository':
                 total += available
 
-        return jsonify({
-            'accounts': accounts,
-            'total_available': round(total, 2),
-            'connected': True,
-        })
+        return jsonify({'accounts': accounts, 'total_available': round(total, 2), 'connected': True})
     except plaid.ApiException as e:
-        body = json.loads(e.body)
-        return jsonify({'error': body}), 400
+        return jsonify({'error': json.loads(e.body)}), 400
 
 
 @app.route('/transactions', methods=['GET'])
@@ -125,9 +136,7 @@ def get_transactions():
         if not access_token:
             return jsonify({'error': 'No bank connected yet', 'connected': False}), 401
 
-        req = TransactionsSyncRequest(access_token=access_token)
-        response = client.transactions_sync(req)
-
+        response = client.transactions_sync(TransactionsSyncRequest(access_token=access_token))
         txns = []
         for t in response['added'][:50]:
             txns.append({
@@ -137,11 +146,9 @@ def get_transactions():
                 'category': t.get('personal_finance_category', {}).get('primary', '') if t.get('personal_finance_category') else '',
                 'merchant': t.get('merchant_name', '') or t['name'],
             })
-
         return jsonify({'transactions': txns, 'connected': True})
     except plaid.ApiException as e:
-        body = json.loads(e.body)
-        return jsonify({'error': body}), 400
+        return jsonify({'error': json.loads(e.body)}), 400
 
 
 if __name__ == '__main__':

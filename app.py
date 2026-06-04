@@ -156,7 +156,7 @@ def advisor():
         persona = data.get('system', '')
         messages = data.get('messages', [])
         r = anthropic_client.messages.create(
-            model='claude-sonnet-4-5-20251013',
+            model='claude-sonnet-4-6',
             max_tokens=1000,
             system=persona,
             messages=messages,

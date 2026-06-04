@@ -13,6 +13,7 @@ from plaid.model.accounts_balance_get_request import AccountsBalanceGetRequest
 from plaid.model.transactions_sync_request import TransactionsSyncRequest
 from plaid.model.country_code import CountryCode
 from plaid.model.products import Products
+import anthropic
 
 app = Flask(__name__)
 CORS(app)
@@ -34,7 +35,10 @@ configuration = plaid.Configuration(
     api_key={'clientId': PLAID_CLIENT_ID, 'secret': PLAID_SECRET}
 )
 api_client = plaid.ApiClient(configuration)
-client = plaid_api.PlaidApi(api_client)
+plaid_client = plaid_api.PlaidApi(api_client)
+
+# Anthropic client
+anthropic_client = anthropic.Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
 
 # In-memory token store -- persists until Render restarts
 access_tokens = {}
@@ -47,9 +51,6 @@ def health():
 
 @app.route('/create_link_token', methods=['POST'])
 def create_link_token():
-    """Create a HOSTED LINK token. Plaid runs the whole bank login on their
-    own page (no fragile in-browser OAuth handoff), then redirects the user
-    back to REDIRECT_URI. Returns the hosted_link_url to send the user to."""
     try:
         req = LinkTokenCreateRequest(
             user=LinkTokenCreateRequestUser(client_user_id='gable-lifeos'),
@@ -59,7 +60,7 @@ def create_link_token():
             language='en',
             hosted_link=LinkTokenCreateHostedLink(completion_redirect_uri=REDIRECT_URI),
         )
-        r = client.link_token_create(req).to_dict()
+        r = plaid_client.link_token_create(req).to_dict()
         return jsonify({
             'link_token': r['link_token'],
             'hosted_link_url': r.get('hosted_link_url'),
@@ -70,15 +71,12 @@ def create_link_token():
 
 @app.route('/finish_link', methods=['POST'])
 def finish_link():
-    """Called when the user returns from Plaid's hosted page. Looks up the
-    completed Link session, pulls out the public_token, and exchanges it for
-    an access token -- no webhook needed."""
     try:
         link_token = (request.json or {}).get('link_token')
         if not link_token:
             return jsonify({'success': False, 'error': 'missing link_token'}), 400
 
-        data = client.link_token_get(LinkTokenGetRequest(link_token=link_token)).to_dict()
+        data = plaid_client.link_token_get(LinkTokenGetRequest(link_token=link_token)).to_dict()
         public_token = None
         for session in (data.get('link_sessions') or []):
             results = session.get('results') or {}
@@ -89,7 +87,7 @@ def finish_link():
         if not public_token:
             return jsonify({'success': False, 'pending': True})
 
-        ex = client.item_public_token_exchange(
+        ex = plaid_client.item_public_token_exchange(
             ItemPublicTokenExchangeRequest(public_token=public_token)
         )
         access_tokens['default'] = ex['access_token']
@@ -105,7 +103,7 @@ def get_balance():
         if not access_token:
             return jsonify({'error': 'No bank connected yet', 'connected': False}), 401
 
-        response = client.accounts_balance_get(AccountsBalanceGetRequest(access_token=access_token))
+        response = plaid_client.accounts_balance_get(AccountsBalanceGetRequest(access_token=access_token))
         accounts = []
         total = 0
         for account in response['accounts']:
@@ -136,7 +134,7 @@ def get_transactions():
         if not access_token:
             return jsonify({'error': 'No bank connected yet', 'connected': False}), 401
 
-        response = client.transactions_sync(TransactionsSyncRequest(access_token=access_token))
+        response = plaid_client.transactions_sync(TransactionsSyncRequest(access_token=access_token))
         txns = []
         for t in response['added'][:50]:
             txns.append({
@@ -149,6 +147,23 @@ def get_transactions():
         return jsonify({'transactions': txns, 'connected': True})
     except plaid.ApiException as e:
         return jsonify({'error': json.loads(e.body)}), 400
+
+
+@app.route('/advisor', methods=['POST'])
+def advisor():
+    try:
+        data = request.json or {}
+        persona = data.get('system', '')
+        messages = data.get('messages', [])
+        r = anthropic_client.messages.create(
+            model='claude-sonnet-4-5-20251013',
+            max_tokens=1000,
+            system=persona,
+            messages=messages,
+        )
+        return jsonify({'content': [{'type': 'text', 'text': r.content[0].text}]})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':

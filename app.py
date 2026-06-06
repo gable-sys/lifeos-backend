@@ -80,18 +80,16 @@ def health():
 
 @app.route('/gmail-auth')
 def gmail_auth():
-    flow = Flow.from_client_config(
-        {"web": {
-            "client_id": GMAIL_CLIENT_ID,
-            "client_secret": GMAIL_CLIENT_SECRET,
-            "redirect_uris": [GMAIL_REDIRECT_URI],
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token"
-        }},
-        scopes=GMAIL_SCOPES,
-        redirect_uri=GMAIL_REDIRECT_URI
-    )
-    auth_url, _ = flow.authorization_url(access_type='offline', prompt='consent')
+    import urllib.parse
+    params = {
+        'client_id': GMAIL_CLIENT_ID,
+        'redirect_uri': GMAIL_REDIRECT_URI,
+        'response_type': 'code',
+        'scope': ' '.join(GMAIL_SCOPES),
+        'access_type': 'offline',
+        'prompt': 'consent',
+    }
+    auth_url = 'https://accounts.google.com/o/oauth2/v2/auth?' + urllib.parse.urlencode(params)
     return redirect(auth_url)
 
 
@@ -100,22 +98,21 @@ def gmail_callback():
     code = request.args.get('code')
     if not code:
         return jsonify({'error': 'No code returned'}), 400
-    flow = Flow.from_client_config(
-        {"web": {
-            "client_id": GMAIL_CLIENT_ID,
-            "client_secret": GMAIL_CLIENT_SECRET,
-            "redirect_uris": [GMAIL_REDIRECT_URI],
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token"
-        }},
-        scopes=GMAIL_SCOPES,
-        redirect_uri=GMAIL_REDIRECT_URI
-    )
-    flow.fetch_token(code=code)
-    creds = flow.credentials
+    # manual token exchange below
+    import requests as _req
+    resp = _req.post('https://oauth2.googleapis.com/token', data={
+        'code': code,
+        'client_id': GMAIL_CLIENT_ID,
+        'client_secret': GMAIL_CLIENT_SECRET,
+        'redirect_uri': GMAIL_REDIRECT_URI,
+        'grant_type': 'authorization_code',
+    })
+    tokens = resp.json()
+    if 'error' in tokens:
+        return jsonify({'error': tokens}), 400
     token_data = {
-        'token': creds.token,
-        'refresh_token': creds.refresh_token,
+        'token': tokens.get('access_token'),
+        'refresh_token': tokens.get('refresh_token'),
         'scopes': GMAIL_SCOPES
     }
     gmail_token_store['token'] = token_data

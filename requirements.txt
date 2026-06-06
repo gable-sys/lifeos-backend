@@ -3,3 +3,5 @@ flask-cors==4.0.1
 plaid-python==39.2.0
 gunicorn==22.0.0
 anthropic
+google-auth-oauthlib
+google-api-python-client

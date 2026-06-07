@@ -22,7 +22,7 @@ from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=False)
 
 PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
 PLAID_SECRET    = os.environ.get('PLAID_SECRET')
@@ -98,7 +98,6 @@ def gmail_callback():
     code = request.args.get('code')
     if not code:
         return jsonify({'error': 'No code returned'}), 400
-    # manual token exchange below
     import requests as _req
     resp = _req.post('https://oauth2.googleapis.com/token', data={
         'code': code,
@@ -119,18 +118,14 @@ def gmail_callback():
     return (
         '<html><body style="font-family:monospace;padding:30px;background:#f4ecd6">'
         '<h2>Gmail authorized!</h2>'
-        '<p>Add this as a Render environment variable:</p>'
         '<p><strong>Key:</strong> GMAIL_TOKEN</p>'
-        '<p><strong>Value (copy all of this):</strong></p>'
         '<textarea rows="8" cols="80" style="font-size:12px">' + json.dumps(token_data) + '</textarea>'
-        '<p>Once saved in Render, Gmail sync works permanently. You never need to do this again.</p>'
         '</body></html>'
     )
 
 
 def parse_bofa_email(msg_id, subject, text, date_str):
     subject_lower = subject.lower()
-    text_lower    = text.lower()
 
     date_iso = datetime.now().strftime('%Y-%m-%d')
     date_match = re.search(r'(\w+ \d+, \d{4})', date_str)
@@ -178,7 +173,7 @@ def parse_bofa_email(msg_id, subject, text, date_str):
 def gmail_sync():
     service = get_gmail_service()
     if not service:
-        return jsonify({'error': 'Gmail not authorized. Visit /gmail-auth first.', 'authorized': False}), 401
+        return jsonify({'error': 'Gmail not authorized.', 'authorized': False}), 401
     try:
         results = service.users().messages().list(
             userId='me',
@@ -192,7 +187,7 @@ def gmail_sync():
             if msg['id'] in seen:
                 continue
             seen.add(msg['id'])
-            full    = service.users().messages().get(userId='me', id=msg['id'], format='full').execute()
+            full = service.users().messages().get(userId='me', id=msg['id'], format='full').execute()
             headers = {h['name']: h['value'] for h in full.get('payload', {}).get('headers', [])}
             subject = headers.get('Subject', '')
             date_str = headers.get('Date', '')
@@ -213,8 +208,10 @@ def gmail_sync():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/advisor', methods=['POST'])
+@app.route('/advisor', methods=['POST', 'OPTIONS'])
 def advisor():
+    if request.method == 'OPTIONS':
+        return '', 204
     try:
         data = request.json or {}
         r = anthropic_client.messages.create(

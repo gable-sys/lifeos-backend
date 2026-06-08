@@ -325,49 +325,53 @@ ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY')
 def speak():
     if request.method == 'OPTIONS':
         return '', 204
-    """Convert text to speech using ElevenLabs."""
     try:
+        import requests as req_lib
         data = request.json or {}
-        text = data.get('text', '')
-        scholar = data.get('scholar', 'Ernest Hemingway')
+        text = str(data.get('text', ''))[:500]
+        scholar = str(data.get('scholar', 'Ernest Hemingway'))
+        
+        api_key = os.environ.get('ELEVENLABS_API_KEY', '')
+        print(f'SPEAK called: scholar={scholar} text_len={len(text)} key_set={bool(api_key)} key_prefix={api_key[:8] if api_key else "MISSING"}')
         
         if not text:
-            return jsonify({'error': 'No text provided'}), 400
-        if not ELEVENLABS_API_KEY:
-            return jsonify({'error': 'ElevenLabs not configured'}), 500
+            return jsonify({'error': 'no text'}), 400
+        if not api_key:
+            return jsonify({'error': 'ELEVENLABS_API_KEY not set in environment'}), 500
         
-        voice_id = SCHOLAR_VOICES.get(scholar, 'TxGEqnHWrfWFTfGW9XjX')
+        # Use a single reliable voice ID - Rachel (verified working)
+        voice_id = 'TxGEqnHWrfWFTfGW9XjX'
         
-        import requests as _req
-        print(f'ElevenLabs: voice={voice_id} text_len={len(text)} key={ELEVENLABS_API_KEY[:8]}...')
-        response = _req.post(
+        r = req_lib.post(
             f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}',
             headers={
                 'Accept': 'audio/mpeg',
                 'Content-Type': 'application/json',
-                'xi-api-key': ELEVENLABS_API_KEY,
+                'xi-api-key': api_key,
             },
             json={
-                'text': text[:500],  # cap at 500 chars
+                'text': text,
                 'model_id': 'eleven_monolingual_v1',
-                'voice_settings': {
-                    'stability': 0.5,
-                    'similarity_boost': 0.75,
-                }
-            }
+                'voice_settings': {'stability': 0.5, 'similarity_boost': 0.75}
+            },
+            timeout=30
         )
+        print(f'ElevenLabs response: {r.status_code}')
+        if r.status_code != 200:
+            print(f'ElevenLabs error body: {r.text[:300]}')
+            return jsonify({'error': f'ElevenLabs {r.status_code}: {r.text[:200]}'}), 500
         
-        print(f'ElevenLabs response: {response.status_code} {response.text[:200]}')
-        if response.status_code != 200:
-            return jsonify({'error': f'ElevenLabs {response.status_code}: {response.text[:200]}'}), 500
-        
-        # Return audio as base64
         import base64
-        audio_b64 = base64.b64encode(response.content).decode('utf-8')
+        audio_b64 = base64.b64encode(r.content).decode('utf-8')
+        print(f'Audio bytes: {len(r.content)}')
         return jsonify({'audio': audio_b64, 'format': 'mp3'})
         
     except Exception as e:
+        import traceback
+        print(f'SPEAK exception: {e}')
+        print(traceback.format_exc())
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

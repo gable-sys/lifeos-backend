@@ -378,6 +378,25 @@ def speak():
         return jsonify({'error': str(e)}), 500
 
 
+
+@app.route('/voices', methods=['GET'])
+def list_voices():
+    """List available ElevenLabs voices for debugging."""
+    try:
+        import requests as req_lib
+        api_key = os.environ.get('ELEVENLABS_API_KEY', '')
+        if not api_key:
+            return jsonify({'error': 'ELEVENLABS_API_KEY not set'}), 500
+        r = req_lib.get(
+            'https://api.elevenlabs.io/v1/voices',
+            headers={'xi-api-key': api_key}
+        )
+        voices = r.json().get('voices', [])
+        simplified = [{'name': v['name'], 'id': v['voice_id'], 'labels': v.get('labels', {})} for v in voices]
+        return jsonify({'voices': simplified, 'count': len(simplified)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

@@ -308,6 +308,64 @@ def get_transactions():
         return jsonify({'error': json.loads(e.body)}), 400
 
 
+
+
+# ElevenLabs voice IDs for each scholar
+# Using pre-made voices that best match each character
+SCHOLAR_VOICES = {
+    'Ernest Hemingway': 'TxGEqnHWrfWFTfGW9XjX',   # Josh - deep American male
+    'Mark Twain': 'VR6AewLTigWG4xSOukaG',            # Arnold - warm older American
+    'Napoleon Bonaparte': 'pNInz6obpgDQGcFmaJgB',    # Adam - authoritative
+    'Marcus Aurelius': 'onwK4e9ZLuTAKqWW03F9',       # Daniel - calm British
+    'Simone de Beauvoir': 'ThT5KcBeYPX3keUQqHPh',    # Dorothy - warm female
+}
+
+ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY')
+
+@app.route('/speak', methods=['POST'])
+def speak():
+    """Convert text to speech using ElevenLabs."""
+    try:
+        data = request.json or {}
+        text = data.get('text', '')
+        scholar = data.get('scholar', 'Ernest Hemingway')
+        
+        if not text:
+            return jsonify({'error': 'No text provided'}), 400
+        if not ELEVENLABS_API_KEY:
+            return jsonify({'error': 'ElevenLabs not configured'}), 500
+        
+        voice_id = SCHOLAR_VOICES.get(scholar, 'TxGEqnHWrfWFTfGW9XjX')
+        
+        import requests as _req
+        response = _req.post(
+            f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}',
+            headers={
+                'Accept': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'xi-api-key': ELEVENLABS_API_KEY,
+            },
+            json={
+                'text': text[:500],  # cap at 500 chars
+                'model_id': 'eleven_monolingual_v1',
+                'voice_settings': {
+                    'stability': 0.5,
+                    'similarity_boost': 0.75,
+                }
+            }
+        )
+        
+        if response.status_code != 200:
+            return jsonify({'error': f'ElevenLabs error: {response.text}'}), 500
+        
+        # Return audio as base64
+        import base64
+        audio_b64 = base64.b64encode(response.content).decode('utf-8')
+        return jsonify({'audio': audio_b64, 'format': 'mp3'})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

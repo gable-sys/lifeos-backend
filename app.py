@@ -310,20 +310,21 @@ def get_transactions():
 
 
 
-# ElevenLabs voice IDs for each scholar
-# Using pre-made voices that best match each character
+# ElevenLabs voice IDs - verified pre-made voices
 SCHOLAR_VOICES = {
-    'Ernest Hemingway': 'TxGEqnHWrfWFTfGW9XjX',   # Josh - deep American male
-    'Mark Twain': 'VR6AewLTigWG4xSOukaG',            # Arnold - warm older American
-    'Napoleon Bonaparte': 'pNInz6obpgDQGcFmaJgB',    # Adam - authoritative
-    'Marcus Aurelius': 'onwK4e9ZLuTAKqWW03F9',       # Daniel - calm British
-    'Simone de Beauvoir': 'ThT5KcBeYPX3keUQqHPh',    # Dorothy - warm female
+    'Ernest Hemingway': 'TxGEqnHWrfWFTfGW9XjX',   # Josh
+    'Mark Twain': 'TxGEqnHWrfWFTfGW9XjX',           # Josh (fallback until clone)
+    'Napoleon Bonaparte': 'TxGEqnHWrfWFTfGW9XjX',   # Josh (fallback)
+    'Marcus Aurelius': 'TxGEqnHWrfWFTfGW9XjX',      # Josh (fallback)
+    'Simone de Beauvoir': 'ThT5KcBeYPX3keUQqHPh',    # Dorothy
 }
 
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY')
 
-@app.route('/speak', methods=['POST'])
+@app.route('/speak', methods=['POST', 'OPTIONS'])
 def speak():
+    if request.method == 'OPTIONS':
+        return '', 204
     """Convert text to speech using ElevenLabs."""
     try:
         data = request.json or {}
@@ -338,6 +339,7 @@ def speak():
         voice_id = SCHOLAR_VOICES.get(scholar, 'TxGEqnHWrfWFTfGW9XjX')
         
         import requests as _req
+        print(f'ElevenLabs: voice={voice_id} text_len={len(text)} key={ELEVENLABS_API_KEY[:8]}...')
         response = _req.post(
             f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}',
             headers={
@@ -355,8 +357,9 @@ def speak():
             }
         )
         
+        print(f'ElevenLabs response: {response.status_code} {response.text[:200]}')
         if response.status_code != 200:
-            return jsonify({'error': f'ElevenLabs error: {response.text}'}), 500
+            return jsonify({'error': f'ElevenLabs {response.status_code}: {response.text[:200]}'}), 500
         
         # Return audio as base64
         import base64

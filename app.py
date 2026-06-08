@@ -310,17 +310,26 @@ def get_transactions():
 
 
 
-# ElevenLabs voice IDs — verified from /voices endpoint June 2026
+# ElevenLabs voice IDs — best available pre-made matches
+# Using eleven_multilingual_v2 for better accent handling
 SCHOLAR_VOICES = {
-    'Ernest Hemingway':   'nPczCjzI2devNBz1zQrb',  # Brian - deep resonant American
-    'Mark Twain':         'pqHFZKP75CvOlQylNhV4',  # Bill - wise mature old American
-    'Napoleon Bonaparte': 'pNInz6obpgDQGcFmaJgB',  # Adam - dominant firm
-    'Marcus Aurelius':    'onwK4e9ZLuTAKqWW03F9',  # Daniel - steady British authority
-    'Simone de Beauvoir': 'pFZP53QG7iQjIQuC4Bku',  # Lily - velvety British actress
-    'Henry Miller':       'JBFqnCBsd6RMkjVDRZzb',  # George - warm captivating storyteller
-    'Edmond Dantes':      'JBFqnCBsd6RMkjVDRZzb',  # George - dramatic warm
-    'Fyodor Dostoevsky':  'pqHFZKP75CvOlQylNhV4',  # Bill - wise weighty mature
-    'default':            'nPczCjzI2devNBz1zQrb',  # Brian fallback
+    'Ernest Hemingway':     'nPczCjzI2devNBz1zQrb',  # Brian - deep resonant American
+    'Mark Twain':           'pqHFZKP75CvOlQylNhV4',  # Bill - wise old American
+    'Napoleon Bonaparte':   'onwK4e9ZLuTAKqWW03F9',  # Daniel - British formal (French clone coming)
+    'Marcus Aurelius':      'pqHFZKP75CvOlQylNhV4',  # Bill - gravitas, measured
+    'Simone de Beauvoir':   'pFZP53QG7iQjIQuC4Bku',  # Lily - velvety actress
+    'Henry Miller':         'nPczCjzI2devNBz1zQrb',  # Brian - raw American
+    'Edmond Dantes':        'JBFqnCBsd6RMkjVDRZzb',  # George - dramatic storyteller
+    'Fyodor Dostoevsky':    'onwK4e9ZLuTAKqWW03F9',  # Daniel - deep measured
+    'Hunter S. Thompson':   'CwhRBWXzGAHq8TQ4Fs17',  # Roger - laid back casual raspy
+    'Socrates':             'pqHFZKP75CvOlQylNhV4',  # Bill - old wise
+    'Nikola Tesla':         'JBFqnCBsd6RMkjVDRZzb',  # George - captivating intense
+    'default':              'nPczCjzI2devNBz1zQrb',  # Brian fallback
+}
+
+# Use multilingual model for French/Russian speakers
+SCHOLAR_MULTILINGUAL = {
+    'Napoleon Bonaparte', 'Simone de Beauvoir', 'Fyodor Dostoevsky', 'Edmond Dantes'
 }
 
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY')
@@ -354,8 +363,8 @@ def speak():
             },
             json={
                 'text': text,
-                'model_id': 'eleven_monolingual_v1',
-                'voice_settings': {'stability': 0.5, 'similarity_boost': 0.75}
+                'model_id': 'eleven_multilingual_v2' if scholar in SCHOLAR_MULTILINGUAL else 'eleven_monolingual_v1',
+                'voice_settings': {'stability': 0.6, 'similarity_boost': 0.8}
             },
             timeout=30
         )

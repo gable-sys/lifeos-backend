@@ -310,13 +310,18 @@ def get_transactions():
 
 
 
-# ElevenLabs voice IDs - verified pre-made voices
+# ElevenLabs pre-made voice IDs (stable, verified)
+# See: https://elevenlabs.io/docs/voices/pre-made-voices
 SCHOLAR_VOICES = {
-    'Ernest Hemingway': 'TxGEqnHWrfWFTfGW9XjX',   # Josh
-    'Mark Twain': 'TxGEqnHWrfWFTfGW9XjX',           # Josh (fallback until clone)
-    'Napoleon Bonaparte': 'TxGEqnHWrfWFTfGW9XjX',   # Josh (fallback)
-    'Marcus Aurelius': 'TxGEqnHWrfWFTfGW9XjX',      # Josh (fallback)
-    'Simone de Beauvoir': 'ThT5KcBeYPX3keUQqHPh',    # Dorothy
+    'Ernest Hemingway':    'TxGEqnHWrfWFTfGW9XjX',  # Josh - deep American male
+    'Mark Twain':          'VR6AewLTigWG4xSOukaG',   # Arnold - warm older male
+    'Napoleon Bonaparte':  'pNInz6obpgDQGcFmaJgB',   # Adam - authoritative male
+    'Marcus Aurelius':     'onwK4e9ZLuTAKqWW03F9',   # Daniel - calm British male
+    'Simone de Beauvoir':  'XB0fDUnXU5powFXDhCwa',   # Charlotte - British female (closest to French accent)
+    'Henry Miller':        'TxGEqnHWrfWFTfGW9XjX',   # Josh - gruff American
+    'Edmond Dantes':       'ErXwobaYiN019PkySvjV',   # Antoni - warm dramatic male
+    'Fyodor Dostoevsky':   'onwK4e9ZLuTAKqWW03F9',   # Daniel - intense measured
+    'default':             'TxGEqnHWrfWFTfGW9XjX',   # Josh fallback
 }
 
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY')

@@ -310,18 +310,17 @@ def get_transactions():
 
 
 
-# ElevenLabs pre-made voice IDs (stable, verified)
-# See: https://elevenlabs.io/docs/voices/pre-made-voices
+# ElevenLabs voice IDs — verified from /voices endpoint June 2026
 SCHOLAR_VOICES = {
-    'Ernest Hemingway':    'TxGEqnHWrfWFTfGW9XjX',  # Josh - deep American male
-    'Mark Twain':          'VR6AewLTigWG4xSOukaG',   # Arnold - warm older male
-    'Napoleon Bonaparte':  'pNInz6obpgDQGcFmaJgB',   # Adam - authoritative male
-    'Marcus Aurelius':     'onwK4e9ZLuTAKqWW03F9',   # Daniel - calm British male
-    'Simone de Beauvoir':  'XB0fDUnXU5powFXDhCwa',   # Charlotte - British female (closest to French accent)
-    'Henry Miller':        'TxGEqnHWrfWFTfGW9XjX',   # Josh - gruff American
-    'Edmond Dantes':       'ErXwobaYiN019PkySvjV',   # Antoni - warm dramatic male
-    'Fyodor Dostoevsky':   'onwK4e9ZLuTAKqWW03F9',   # Daniel - intense measured
-    'default':             'TxGEqnHWrfWFTfGW9XjX',   # Josh fallback
+    'Ernest Hemingway':   'nPczCjzI2devNBz1zQrb',  # Brian - deep resonant American
+    'Mark Twain':         'pqHFZKP75CvOlQylNhV4',  # Bill - wise mature old American
+    'Napoleon Bonaparte': 'pNInz6obpgDQGcFmaJgB',  # Adam - dominant firm
+    'Marcus Aurelius':    'onwK4e9ZLuTAKqWW03F9',  # Daniel - steady British authority
+    'Simone de Beauvoir': 'pFZP53QG7iQjIQuC4Bku',  # Lily - velvety British actress
+    'Henry Miller':       'JBFqnCBsd6RMkjVDRZzb',  # George - warm captivating storyteller
+    'Edmond Dantes':      'JBFqnCBsd6RMkjVDRZzb',  # George - dramatic warm
+    'Fyodor Dostoevsky':  'pqHFZKP75CvOlQylNhV4',  # Bill - wise weighty mature
+    'default':            'nPczCjzI2devNBz1zQrb',  # Brian fallback
 }
 
 ELEVENLABS_API_KEY = os.environ.get('ELEVENLABS_API_KEY')
@@ -344,8 +343,7 @@ def speak():
         if not api_key:
             return jsonify({'error': 'ELEVENLABS_API_KEY not set in environment'}), 500
         
-        # Use a single reliable voice ID - Rachel (verified working)
-        voice_id = 'TxGEqnHWrfWFTfGW9XjX'
+        voice_id = SCHOLAR_VOICES.get(scholar, SCHOLAR_VOICES['default'])
         
         r = req_lib.post(
             f'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}',

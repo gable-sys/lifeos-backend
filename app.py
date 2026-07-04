@@ -406,7 +406,7 @@ def list_voices():
 
 
 # ============================================================
-# TELEGRAM CAPTURE + SUPABASE TASKS/PROJECTS (Step 1)
+# TELEGRAM ADVISOR + CAPTURE + SUPABASE  (Steps 1 + 2)
 # ============================================================
 import requests as _rq
 
@@ -416,65 +416,170 @@ SUPABASE_URL       = os.environ.get('SUPABASE_URL', '')
 SUPABASE_KEY       = os.environ.get('SUPABASE_SERVICE_KEY', '')
 
 
+def _sb_headers():
+    return {
+        'apikey': SUPABASE_KEY,
+        'Authorization': f'Bearer {SUPABASE_KEY}',
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation',
+    }
+
+
 def sb_insert(table, row):
-    """Insert one row into a Supabase table. Returns the created row."""
-    r = _rq.post(
-        f"{SUPABASE_URL}/rest/v1/{table}",
-        headers={
-            'apikey': SUPABASE_KEY,
-            'Authorization': f'Bearer {SUPABASE_KEY}',
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation',
-        },
-        json=row, timeout=15,
-    )
+    r = _rq.post(f"{SUPABASE_URL}/rest/v1/{table}", headers=_sb_headers(), json=row, timeout=15)
     r.raise_for_status()
     return r.json()[0]
 
 
-def tg_send(chat_id, text):
-    """Send a plain Telegram message."""
-    _rq.post(
-        f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-        json={'chat_id': chat_id, 'text': text},
-        timeout=15,
+def sb_select(table, query):
+    r = _rq.get(f"{SUPABASE_URL}/rest/v1/{table}?{query}", headers=_sb_headers(), timeout=15)
+    r.raise_for_status()
+    return r.json()
+
+
+def tg_api(method, payload):
+    _rq.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}", json=payload, timeout=15)
+
+
+def tg_send(chat_id, text, buttons=None):
+    payload = {'chat_id': chat_id, 'text': text}
+    if buttons:
+        payload['reply_markup'] = {'inline_keyboard': buttons}
+    tg_api('sendMessage', payload)
+
+
+def life_context():
+    """Pull current tasks + projects so the advisor knows the state of play."""
+    try:
+        tasks = sb_select('tasks', 'status=eq.open&order=created_at.desc&limit=15&select=title')
+        projects = sb_select('projects', 'stage=neq.Complete&order=created_at.desc&limit=15&select=title,stage')
+        t = '; '.join(x['title'] for x in tasks) or 'none'
+        p = '; '.join(f"{x['title']} ({x['stage']})" for x in projects) or 'none'
+        return f"Open tasks: {t}\nActive projects: {p}"
+    except Exception:
+        return ''
+
+
+ADVISOR_SYSTEM = (
+    "You are the Life OS chief-of-staff for Gable - warm, plain-spoken, zero fluff. "
+    "He texts you half-thoughts from anywhere; digest each into something actionable. "
+    "His creative verticals: Recording/music, Zen Gun (stories/film), Adventures of Ron Diamond, "
+    "poems, short-story feelies, traveling-bard set ideas. Also: finance (Mort's Ledger), workout, reading. "
+    "Respond ONLY with minified JSON, no markdown fences, exactly this shape: "
+    '{"title":"3-6 word title","say":"reply under 80 words",'
+    '"steps":["2-5 concrete steps ONLY if breaking something down, else empty list"],'
+    '"followups":["up to 2 short clarifying questions, else empty list"]}'
+)
+
+
+def run_advisor(text):
+    ctx = life_context()
+    system = ADVISOR_SYSTEM + (("\n\nCurrent state:\n" + ctx) if ctx else '')
+    r = anthropic_client.messages.create(
+        model='claude-sonnet-4-6', max_tokens=800,
+        system=system,
+        messages=[{'role': 'user', 'content': text}],
     )
+    raw = r.content[0].text.strip()
+    raw = re.sub(r'^```(json)?\s*|\s*```$', '', raw)
+    return json.loads(raw)
+
+
+def send_advisor_reply(chat_id, original_text, out):
+    """Send the advisor's digest with save/followup buttons."""
+    pend = sb_insert('pending', {'payload': {
+        'text': original_text,
+        'title': out.get('title', original_text[:60]),
+        'say': out.get('say', ''),
+        'steps': out.get('steps', []) or [],
+        'followups': out.get('followups', []) or [],
+    }})
+    pid = pend['id']
+
+    reply = out.get('say', '')
+    steps = out.get('steps') or []
+    if steps:
+        reply += '\n\n' + '\n'.join(f"{i+1}. {s}" for i, s in enumerate(steps))
+
+    buttons = [[
+        {'text': '\U0001F4BE Save as task', 'callback_data': f'sv:t:{pid}'},
+        {'text': '\U0001F4E6 Save as project', 'callback_data': f'sv:p:{pid}'},
+    ]]
+    for i, q in enumerate((out.get('followups') or [])[:2]):
+        buttons.append([{'text': ('? ' + q)[:60], 'callback_data': f'fu:{i}:{pid}'}])
+
+    tg_send(chat_id, reply, buttons)
+
+
+def handle_callback(cb):
+    chat_id = str(((cb.get('message') or {}).get('chat') or {}).get('id', ''))
+    tg_api('answerCallbackQuery', {'callback_query_id': cb.get('id')})
+    if chat_id != TELEGRAM_CHAT_ID:
+        return
+    try:
+        parts = (cb.get('data') or '').split(':')
+        if parts[0] == 'sv':
+            kind, pid = parts[1], parts[2]
+            p = sb_select('pending', f'id=eq.{pid}&select=payload')[0]['payload']
+            if kind == 't':
+                row = sb_insert('tasks', {'title': p['title'], 'steps': p.get('steps', []), 'notes': p.get('text')})
+                tg_send(chat_id, f"\u2713 Task saved: {row['title']}")
+            else:
+                row = sb_insert('projects', {'title': p['title'], 'steps': p.get('steps', []), 'notes': p.get('text'), 'stage': 'Gestating'})
+                tg_send(chat_id, f"\U0001F4E6 Project saved (Gestating): {row['title']}")
+        elif parts[0] == 'fu':
+            i, pid = int(parts[1]), parts[2]
+            p = sb_select('pending', f'id=eq.{pid}&select=payload')[0]['payload']
+            q = (p.get('followups') or [])[i]
+            out = run_advisor(f"Earlier thought: {p['text']}\nNow dig into this question: {q}")
+            send_advisor_reply(chat_id, p['text'], out)
+    except Exception as e:
+        tg_send(chat_id, f"Button failed: {e}")
 
 
 @app.route('/capture', methods=['POST'])
 def capture():
     update = request.json or {}
+
+    # Button press
+    if update.get('callback_query'):
+        handle_callback(update['callback_query'])
+        return jsonify({'ok': True})
+
     msg = update.get('message') or {}
     chat_id = str((msg.get('chat') or {}).get('id', ''))
     text = (msg.get('text') or '').strip()
-
     if not chat_id or not text:
         return jsonify({'ok': True})
 
-    # Bootstrap: if TELEGRAM_CHAT_ID isn't set yet, tell the sender their id.
     if not TELEGRAM_CHAT_ID:
-        tg_send(chat_id, f"Your chat id is {chat_id}. Add it to Render as TELEGRAM_CHAT_ID, redeploy, then messages will be captured.")
+        tg_send(chat_id, f"Your chat id is {chat_id}. Add it to Render as TELEGRAM_CHAT_ID and redeploy.")
         return jsonify({'ok': True})
 
-    # Lock the door: only Gable.
     if chat_id != TELEGRAM_CHAT_ID:
         return jsonify({'ok': True})
 
     try:
-        # "p: title | notes" or "project: title | notes" -> project
-        # anything else -> task. Optional "| note" after the title.
         lower = text.lower()
-        is_project = lower.startswith('p:') or lower.startswith('project:')
-        body = text.split(':', 1)[1].strip() if is_project else text
-        title, _, notes = body.partition('|')
-        title, notes = title.strip(), notes.strip()
-
-        if is_project:
-            row = sb_insert('projects', {'title': title, 'notes': notes or None, 'stage': 'Gestating'})
+        if text == '/start':
+            tg_send(chat_id, "Life OS live. Text me a thought and I'll digest it. Quick capture: 't: get eggs' or 'p: new project | note'.")
+        elif lower.startswith('t:'):
+            body = text.split(':', 1)[1].strip()
+            title, _, notes = body.partition('|')
+            row = sb_insert('tasks', {'title': title.strip(), 'notes': notes.strip() or None})
+            tg_send(chat_id, f"\u2713 Task captured: {row['title']}")
+        elif lower.startswith('p:') or lower.startswith('project:'):
+            body = text.split(':', 1)[1].strip()
+            title, _, notes = body.partition('|')
+            row = sb_insert('projects', {'title': title.strip(), 'notes': notes.strip() or None, 'stage': 'Gestating'})
             tg_send(chat_id, f"\U0001F4E6 Project captured (Gestating): {row['title']}")
         else:
-            row = sb_insert('tasks', {'title': title, 'notes': notes or None, 'status': 'open'})
-            tg_send(chat_id, f"\u2713 Task captured: {row['title']}")
+            try:
+                out = run_advisor(text)
+                send_advisor_reply(chat_id, text, out)
+            except Exception as e:
+                row = sb_insert('tasks', {'title': text[:80], 'notes': 'advisor was down; raw capture'})
+                tg_send(chat_id, f"(Advisor hiccup, saved as plain task instead: {row['title']})")
     except Exception as e:
         tg_send(chat_id, f"Capture failed: {e}")
 

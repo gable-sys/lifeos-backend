@@ -404,6 +404,83 @@ def list_voices():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
+# ============================================================
+# TELEGRAM CAPTURE + SUPABASE TASKS/PROJECTS (Step 1)
+# ============================================================
+import requests as _rq
+
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+TELEGRAM_CHAT_ID   = os.environ.get('TELEGRAM_CHAT_ID', '')
+SUPABASE_URL       = os.environ.get('SUPABASE_URL', '')
+SUPABASE_KEY       = os.environ.get('SUPABASE_SERVICE_KEY', '')
+
+
+def sb_insert(table, row):
+    """Insert one row into a Supabase table. Returns the created row."""
+    r = _rq.post(
+        f"{SUPABASE_URL}/rest/v1/{table}",
+        headers={
+            'apikey': SUPABASE_KEY,
+            'Authorization': f'Bearer {SUPABASE_KEY}',
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation',
+        },
+        json=row, timeout=15,
+    )
+    r.raise_for_status()
+    return r.json()[0]
+
+
+def tg_send(chat_id, text):
+    """Send a plain Telegram message."""
+    _rq.post(
+        f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+        json={'chat_id': chat_id, 'text': text},
+        timeout=15,
+    )
+
+
+@app.route('/capture', methods=['POST'])
+def capture():
+    update = request.json or {}
+    msg = update.get('message') or {}
+    chat_id = str((msg.get('chat') or {}).get('id', ''))
+    text = (msg.get('text') or '').strip()
+
+    if not chat_id or not text:
+        return jsonify({'ok': True})
+
+    # Bootstrap: if TELEGRAM_CHAT_ID isn't set yet, tell the sender their id.
+    if not TELEGRAM_CHAT_ID:
+        tg_send(chat_id, f"Your chat id is {chat_id}. Add it to Render as TELEGRAM_CHAT_ID, redeploy, then messages will be captured.")
+        return jsonify({'ok': True})
+
+    # Lock the door: only Gable.
+    if chat_id != TELEGRAM_CHAT_ID:
+        return jsonify({'ok': True})
+
+    try:
+        # "p: title | notes" or "project: title | notes" -> project
+        # anything else -> task. Optional "| note" after the title.
+        lower = text.lower()
+        is_project = lower.startswith('p:') or lower.startswith('project:')
+        body = text.split(':', 1)[1].strip() if is_project else text
+        title, _, notes = body.partition('|')
+        title, notes = title.strip(), notes.strip()
+
+        if is_project:
+            row = sb_insert('projects', {'title': title, 'notes': notes or None, 'stage': 'Gestating'})
+            tg_send(chat_id, f"\U0001F4E6 Project captured (Gestating): {row['title']}")
+        else:
+            row = sb_insert('tasks', {'title': title, 'notes': notes or None, 'status': 'open'})
+            tg_send(chat_id, f"\u2713 Task captured: {row['title']}")
+    except Exception as e:
+        tg_send(chat_id, f"Capture failed: {e}")
+
+    return jsonify({'ok': True})
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

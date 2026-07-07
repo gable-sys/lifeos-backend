@@ -923,6 +923,90 @@ def handle_callback(cb):
         tg_send(chat_id, f'Button failed: {e}')
 
 
+
+# ---------- THE DAILY AGENT (Henry calls YOU) ----------
+from datetime import datetime as _dt, timedelta as _td
+try:
+    from zoneinfo import ZoneInfo as _ZI
+    def _now_et():
+        return _dt.now(_ZI('America/New_York'))
+except Exception:
+    def _now_et():
+        return _dt.utcnow() - _td(hours=4)
+
+CRON_KEY = os.environ.get('CRON_KEY', '')
+
+MISSION = (
+    "Gable's mission context: Full-time job = building Mr. Greg, an AI wellness advisor portal "
+    "(currently $6k/month, target $80k/year). Second engine = creative output (songs, short stories, "
+    "films, Zen Gun posts, social, website) targeting another $80k this year. Lives in Brooklyn. "
+    "Mr. Greg has its own advisor inside that project - Henry does NOT manage the work itself. "
+    "But know the deeper truth: Henry IS the laboratory. Gable dogfoods his own life here, and what "
+    "proves out in Henry ships to Mr. Greg as product. Life as R&D. And the creative work is not a "
+    "hobby - the art is meant to become the third business: fame and income from the work itself. "
+    "Henry owns everything AROUND the 9-5: health protocol (skincare, vitamins, sunlight/vitamin D, "
+    "workout, diet), daily budget, the protected evening creative block, learning, dating, the future."
+)
+
+BRIEF_PROMPTS = {
+    'morning': (
+        "It is {weekday} morning in Brooklyn. Give me the day, structured on your 1932 program but "
+        "shaped around my real life: BEFORE WORK (AM health stack from my protocol, workout per my split, "
+        "breakfast, budget line for today - about $20 of the $140 NYC weekly cap), THE WORK (9-5 is Mr. Greg, "
+        "my job - it has its own advisor, so just hold the wall: one line to enter it sharp), AFTER (the "
+        "creative block - pick the ONE project that moves tonight, from my actual projects, plus evening "
+        "life). Under 150 words. No preamble."
+    ),
+    'midday': (
+        "Midday check, Brooklyn. One cheap clean lunch idea, one reminder (sun/posture/water), "
+        "and one line to send me back into the work sharp. Under 50 words."
+    ),
+    'eod': (
+        "End of day report. Walk my creative verticals - Recording/music, Zen Gun, Adventures of Ron "
+        "Diamond, poems, short-story feelies, traveling-bard sets - for each: where it stands (from my "
+        "actual projects and notes) and the single next step. Then the PM protocol reminder (the tret/minox "
+        "sequence on its nights, castor oil). End with ONE question for me about tomorrow. Under 180 words."
+    ),
+}
+
+
+def _due(t, now, window_min=15):
+    try:
+        h, m = map(int, t.split(':'))
+        target = now.replace(hour=h, minute=m, second=0, microsecond=0)
+        delta = (now - target).total_seconds()
+        return 0 <= delta < window_min * 60
+    except Exception:
+        return False
+
+
+@app.route('/tick')
+def tick():
+    if not CRON_KEY or request.args.get('key') != CRON_KEY:
+        return jsonify({'ok': False}), 403
+    now = _now_et()
+    sent = []
+    # timed reminders
+    try:
+        for r in sb_select('reminders', 'active=eq.true&select=id,label,time'):
+            if _due(r['time'], now):
+                tg_send(TELEGRAM_CHAT_ID, '\u23F0 ' + r['label'])
+                sent.append(r['label'])
+    except Exception:
+        pass
+    # scheduled briefs
+    slot = 'morning' if _due('07:00', now) else 'midday' if _due('12:30', now) else 'eod' if _due('21:00', now) else None
+    if slot:
+        try:
+            prompt = BRIEF_PROMPTS[slot].replace('{weekday}', now.strftime('%A'))
+            out = henry_say(MISSION + '\n\n' + prompt, max_tokens=700)
+            tg_send(TELEGRAM_CHAT_ID, out)
+            sent.append('brief:' + slot)
+        except Exception as e:
+            sent.append('brief-failed: ' + str(e)[:80])
+    return jsonify({'ok': True, 'et': now.strftime('%H:%M'), 'sent': sent})
+
+
 @app.route('/capture', methods=['POST'])
 def capture():
     update = request.json or {}
@@ -982,6 +1066,17 @@ def capture():
             title, _, notes = body.partition('|')
             row = sb_insert('projects', {'title': title.strip(), 'notes': notes.strip() or None, 'stage': 'Gestating', 'type': 'build'})
             tg_send(chat_id, f"\u2692 Build queue: {row['title']}")
+        elif lower.startswith('r:') or lower.startswith('remind:'):
+            body = text.split(':', 1)[1].strip()
+            label, _, when = body.partition('@')
+            when = when.strip()
+            if not re.match(r'^\d{1,2}:\d{2}$', when):
+                tg_send(chat_id, "Give me a time: r: take creatine @ 18:00")
+            else:
+                if len(when) == 4:
+                    when = '0' + when
+                sb_insert('reminders', {'label': label.strip(), 'time': when})
+                tg_send(chat_id, f"\u23F0 Set: {label.strip()} at {when} daily")
         elif lower.startswith('n:') or lower.startswith('note:'):
             body = text.split(':', 1)[1].strip()
             content, _, tag = body.partition('|')

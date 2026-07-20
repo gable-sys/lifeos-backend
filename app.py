@@ -452,14 +452,25 @@ def sb_delete(table, row_id):
 
 
 def tg_api(method, payload):
-    _rq.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}", json=payload, timeout=15)
+    try:
+        return _rq.post(f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{method}", json=payload, timeout=15)
+    except Exception:
+        return None
 
 
 def tg_send(chat_id, text, buttons=None):
-    payload = {'chat_id': chat_id, 'text': text}
+    payload = {'chat_id': chat_id, 'text': text, 'parse_mode': 'HTML', 'disable_web_page_preview': True}
     if buttons:
         payload['reply_markup'] = {'inline_keyboard': buttons}
-    tg_api('sendMessage', payload)
+    r = tg_api('sendMessage', payload)
+    ok = False
+    try:
+        ok = bool(r is not None and r.json().get('ok'))
+    except Exception:
+        ok = False
+    if not ok:
+        payload.pop('parse_mode', None)
+        tg_api('sendMessage', payload)
 
 
 
@@ -582,7 +593,9 @@ HENRY_PLAIN = (
     "You are Henry Miller - the writer, whole arc: Brooklyn, the hungry Paris of Tropic of Cancer, "
     "the 1932 Commandments and Daily Program, Money and How It Gets That Way, Greece, Big Sur, the watercolors. "
     "Earthy, exuberant, generous, unpretentious. You despise fuss and dead language. "
-    "Reply as plain text, no JSON, no markdown headers. Keep it tight - this is a phone screen."
+    "Format for Telegram HTML: <b>bold</b> for section headers, plain hyphen bullets on their own "
+    "lines, <i>italics</i> sparingly, real links as <a href='url'>name</a> only when you know the "
+    "real URL. NEVER use markdown (no asterisks, no #, no backticks). No JSON. Tight - a phone screen."
 )
 
 
@@ -688,7 +701,7 @@ def send_advisor_reply(chat_id, original_text, out):
         {'text': '\u25B8 Elsewhere', 'callback_data': f'mv:0:{pid}'},
     ]]
     for i, q in enumerate((out.get('followups') or [])[:2]):
-        buttons.append([{'text': ('? ' + q)[:60], 'callback_data': f'fu:{i}:{pid}'}])
+        buttons.append([{'text': ('\u21B3 ' + q)[:48], 'callback_data': f'fu:{i}:{pid}'}])
 
     tg_send(chat_id, reply, buttons)
 
@@ -805,12 +818,54 @@ def show_notes(chat_id):
     tg_send(chat_id, 'From the vault, most recent first:\n\n' + '\n\n'.join(lines))
 
 
+DEPT_VIEWS = {
+    'workout': "Open the Workout drawer. Today's exact session from my split - exercises, sets x reps, "
+               "the one cue that matters per block, and where (home dumbbells + pull-up bar, or outside). "
+               "<b>bold</b> block names, bullets. Under 130 words.",
+    'music': "Open the Music drawer. Today's deep-listening from the weekday curriculum, and today's "
+             "instrument practice - which of banjo/guitar/piano and the 30-45 min plan. Under 110 words.",
+    'reading': "Open the Reading drawer. What I read today from my current stack, how long, and one line "
+               "on where I left off or what to notice. Under 90 words.",
+    'body': "Open the Body drawer. Today's full protocol as a checklist - AM stack, sun windows, "
+            "PM stack in exact order with waits. <b>AM</b>/<b>PM</b> headers. Under 110 words.",
+    'lab': "Open the Lab drawer. Where the learning stands (Odin/CS50/Eloquent JS) and the one hour "
+           "to do today. Under 80 words.",
+    'fridge': "Open the Fridge. From my diet knowledge: today's meals and what needs buying. If the "
+              "diet spec is thin, say so in one line and give a sane default. Under 90 words.",
+}
+
+
+def dept_view(chat_id, dept):
+    if dept == 'finance':
+        cmd_ledger(chat_id)
+        return
+    if dept == 'creative':
+        show_projects(chat_id, 'creative')
+        return
+    prompt = DEPT_VIEWS.get(dept)
+    if not prompt:
+        tg_send(chat_id, 'That drawer is empty for now.')
+        return
+    try:
+        out = henry_say(prompt, max_tokens=450)
+        tg_send(chat_id, out)
+    except Exception as e:
+        tg_send(chat_id, f'Drawer stuck: {e}')
+
+
 def cmd_desk(chat_id):
-    tg_send(chat_id, 'The desk. Which drawer?', [
+    tg_send(chat_id, '<b>THE DESK</b> \u00b7 which drawer?', [
         [{'text': '\u270E Tasks', 'callback_data': 'dk:t:0'},
-         {'text': '\u2767 Easel', 'callback_data': 'dk:e:0'}],
-        [{'text': '\u2692 Build queue', 'callback_data': 'dk:b:0'},
          {'text': '\u2726 Vault', 'callback_data': 'dk:n:0'}],
+        [{'text': '\U0001F4B0 Finance', 'callback_data': 'dp:finance:0'},
+         {'text': '\U0001F3CB Workout', 'callback_data': 'dp:workout:0'}],
+        [{'text': '\U0001F3B5 Music', 'callback_data': 'dp:music:0'},
+         {'text': '\U0001F4D6 Reading', 'callback_data': 'dp:reading:0'}],
+        [{'text': '\u270D Creative', 'callback_data': 'dp:creative:0'},
+         {'text': '\U0001F9F4 Body', 'callback_data': 'dp:body:0'}],
+        [{'text': '\U0001F9EA Lab', 'callback_data': 'dp:lab:0'},
+         {'text': '\U0001F95A Fridge', 'callback_data': 'dp:fridge:0'}],
+        [{'text': '\u2692 Build queue', 'callback_data': 'dk:b:0'}],
     ])
 
 
@@ -860,6 +915,9 @@ def handle_callback(cb):
 
         elif kind == 'rd':
             cmd_read(chat_id)
+
+        elif kind == 'dp':
+            dept_view(chat_id, parts[1])
 
         elif kind == 'dk':
             which = parts[1]
@@ -950,22 +1008,28 @@ MISSION = (
 
 BRIEF_PROMPTS = {
     'morning': (
-        "It is {weekday} morning in Brooklyn. Give me the day, structured on your 1932 program but "
-        "shaped around my real life: BEFORE WORK (AM health stack from my protocol, workout per my split, "
-        "breakfast, budget line for today - about $20 of the $140 NYC weekly cap), THE WORK (9-5 is Mr. Greg, "
-        "my job - it has its own advisor, so just hold the wall: one line to enter it sharp), AFTER (the "
-        "creative block - pick the ONE project that moves tonight, from my actual projects, plus evening "
-        "life). Under 150 words. No preamble."
+        "It is {weekday} morning in Brooklyn, 8:30. Build my morning brief with <b>bold</b> section "
+        "headers, in this exact order: "
+        "<b>OPEN LOOPS</b> - my top 3 open tasks, one line each; "
+        "<b>WORKOUT</b> - today's session from my split and where (home dumbbells + pull-up bar unless "
+        "the plan says run/sprint outside); "
+        "<b>TABLE</b> - what I eat today from my diet knowledge and anything I need to buy; "
+        "<b>DESK</b> - today's reading, one line; "
+        "<b>EAR</b> - today's deep listening from the weekday curriculum + which instrument gets the "
+        "30-45 min (rotate banjo/guitar/piano); "
+        "<b>THE WALL</b> - one line to enter the 9-5 sharp. "
+        "Under 200 words total. Bullets, no preamble, no sign-off."
     ),
     'midday': (
-        "Midday check, Brooklyn. One cheap clean lunch idea, one reminder (sun/posture/water), "
-        "and one line to send me back into the work sharp. Under 50 words."
+        "Midday, Brooklyn. Three lines: one cheap clean lunch, one body reminder (sun/posture/water), "
+        "one line to re-enter the work sharp. Use <b>bold</b> labels. Under 50 words."
     ),
     'eod': (
-        "End of day report. Walk my creative verticals - Recording/music, Zen Gun, Adventures of Ron "
-        "Diamond, poems, short-story feelies, traveling-bard sets - for each: where it stands (from my "
-        "actual projects and notes) and the single next step. Then the PM protocol reminder (the tret/minox "
-        "sequence on its nights, castor oil). End with ONE question for me about tomorrow. Under 180 words."
+        "End of day. <b>THE MIRROR</b>: my creative verticals - Recording/music, Zen Gun, Ron Diamond, "
+        "poems, feelies, bard sets - one line each: where it stands + next step, from my real projects "
+        "and notes. <b>OPEN LOOPS</b>: tasks still open that should not survive tomorrow. "
+        "<b>PM STACK</b>: tonight's protocol (tret nights M/W/F -> wait 20-30 -> minox; castor oil). "
+        "End with ONE question about tomorrow. Under 180 words, bullets."
     ),
 }
 
@@ -995,7 +1059,7 @@ def tick():
     except Exception:
         pass
     # scheduled briefs
-    slot = 'morning' if _due('07:00', now) else 'midday' if _due('12:30', now) else 'eod' if _due('21:00', now) else None
+    slot = 'morning' if _due('08:30', now) else 'midday' if _due('12:30', now) else 'eod' if _due('21:00', now) else None
     if slot:
         try:
             prompt = BRIEF_PROMPTS[slot].replace('{weekday}', now.strftime('%A'))

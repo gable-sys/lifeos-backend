@@ -516,6 +516,7 @@ def register_commands():
     try:
         tg_api('setMyCommands', {'commands': [
             {'command': 'day',    'description': "Marching orders - Henry's program for today"},
+            {'command': 'todo',   'description': 'Open tasks by category'},
             {'command': 'desk',   'description': 'The desk - tasks, easel, build queue, vault'},
             {'command': 'read',   'description': 'Passage of the day'},
             {'command': 'ledger', 'description': 'The money question'},
@@ -620,18 +621,28 @@ HENRY_SYSTEM = (
     "Convictions: begin before you feel ready. Appetite is holy. Walk. One thing at a time. "
     "Despise fuss, hedging, dead language, and the mob of distraction machines - Gable's whole project "
     "is rebellion against the attention economy, and you were its first deserter. "
-    "This is texting, not Tropic of Cancer: keep 'say' under 70 words. "
+    "This is texting, not Tropic of Cancer: keep 'say' under 40 words, one or two sentences, no ceremony. "
     "Gable's verticals: Recording/music, Zen Gun (stories/film), Adventures of Ron Diamond, poems, "
     "short-story feelies, traveling-bard sets; plus finance (Mort's Ledger), workout, reading, the body. "
-    "ALSO: you are his filing clerk. For every message, infer where it belongs: "
-    "'task' = an errand or to-do; 'creative' = a NEW artistic project; 'build' = a NEW Life OS feature idea; "
+    "ALSO: you are his filing clerk. Everything gets filed automatically the instant you answer - there is "
+    "no approval step, so classify carefully. For every message, infer where it belongs: "
+    "'task' = an errand or to-do - ALSO pick the single best-fit category from EXACTLY this list: "
+    "Calendar, Finance, Workout, Music, Reading, Creative, Body, Lab, Library, Fridge, Closet, Wander "
+    "(null only if truly nothing fits); "
+    "'reminder' = Gable wants a Telegram alert at a specific time - work out the exact date (YYYY-MM-DD, "
+    "ET) and time (HH:MM, 24-hour, ET) from the message and the current moment given below; leave date "
+    "null ONLY for an explicitly daily/recurring reminder ('every day at 8am'), otherwise it's one-time "
+    "and date is required; "
+    "'creative' = a NEW artistic project; 'build' = a NEW Life OS feature idea; "
     "'note' = a thought, line, or material - if it belongs to an EXISTING project, set project to that "
     "project's exact title from the current-state list. Most messages are notes or tasks; new projects are rare. "
     "Respond ONLY with minified JSON, no markdown fences, exactly: "
     '{"title":"3-6 word title","say":"the reply, in your voice",'
     '"steps":["2-5 concrete steps ONLY when breaking something down, else empty list"],'
     '"followups":["up to 2 short questions, else empty list"],'
-    '"file":{"kind":"task|creative|build|note","project":"exact existing project title or null","tag":"one-word tag or null"}}'
+    '"file":{"kind":"task|creative|build|note|reminder","project":"exact existing project title or null",'
+    '"tag":"one-word tag or null","category":"one of the 12 department names above, ONLY for kind=task, else null",'
+    '"date":"YYYY-MM-DD or null, ONLY for kind=reminder","time":"HH:MM 24-hour or null, ONLY for kind=reminder"}}'
 )
 
 HENRY_PLAIN = (
@@ -661,7 +672,7 @@ def henry_say(prompt, max_tokens=500):
 
 
 def run_advisor(text):
-    system = HENRY_SYSTEM
+    system = HENRY_SYSTEM + f"\n\nRight now: {_now_et().strftime('%A, %Y-%m-%d %H:%M')} ET."
     kb = load_kb()
     if kb:
         system += '\n\nKNOWLEDGE BASE (departments, protocols, goals Gable built):\n' + kb
@@ -691,26 +702,41 @@ FILE_LABELS = {
     'creative': '\u2767 the easel',
     'build': '\u2692 the build queue',
     'note': '\u2726 the vault',
+    'reminder': '\u23F0 the reminders',
 }
 
 
-def do_file(chat_id, p, kind, project_title=None):
+def do_file(chat_id, p, kind, project_title=None, silent=False):
     title = p.get('title') or (p.get('text') or '')[:60]
     text = p.get('text') or ''
     steps = p.get('steps') or []
+    file_info = p.get('file') or {}
     if kind == 'task':
-        sb_insert('tasks', {'title': title, 'steps': steps, 'notes': text})
-        tg_send(chat_id, f"\u270E Task: {title}")
+        category = file_info.get('category')
+        sb_insert('tasks', {'title': title, 'steps': steps, 'notes': text, 'category': category})
+        tag = f"\u270E {category + ': ' if category else ''}{title}"
     elif kind == 'creative':
         sb_insert('projects', {'title': title, 'steps': steps, 'notes': text, 'stage': 'Gestating', 'type': 'creative'})
-        tg_send(chat_id, f"\u2767 On the easel (Gestating): {title}")
+        tag = f"\u2767 On the easel: {title}"
     elif kind == 'build':
         sb_insert('projects', {'title': title, 'steps': steps, 'notes': text, 'stage': 'Gestating', 'type': 'build'})
-        tg_send(chat_id, f"\u2692 Build queue: {title}")
+        tag = f"\u2692 Build queue: {title}"
+    elif kind == 'reminder':
+        time_ = file_info.get('time')
+        date_ = file_info.get('date')
+        if not time_:
+            tag = "Couldn't pin a time \u2014 try: r: label @ HH:MM"
+        else:
+            sb_insert('reminders', {'label': title, 'time': time_, 'date': date_, 'active': True})
+            when = f"{date_} {time_}" if date_ else f"{time_} daily"
+            tag = f"\u23F0 {title} \u2014 {when}"
     else:
-        tag = project_title or (p.get('file') or {}).get('project') or (p.get('file') or {}).get('tag')
-        sb_insert('notes', {'content': text, 'tag': tag})
-        tg_send(chat_id, f"\u2726 Vaulted{(' \u2192 ' + tag) if tag else ''}.")
+        dest = project_title or file_info.get('project') or file_info.get('tag')
+        sb_insert('notes', {'content': text, 'tag': dest})
+        tag = f"\u2726 Vaulted{(' \u2192 ' + dest) if dest else ''}."
+    if not silent:
+        tg_send(chat_id, tag)
+    return tag
 
 
 def send_advisor_reply(chat_id, original_text, out):
@@ -718,6 +744,15 @@ def send_advisor_reply(chat_id, original_text, out):
     kind = file_info.get('kind') or 'note'
     if kind not in FILE_LABELS:
         kind = 'note'
+
+    p = {
+        'text': original_text,
+        'title': out.get('title', original_text[:60]),
+        'steps': out.get('steps', []) or [],
+        'file': file_info,
+    }
+    tag = do_file(chat_id, p, kind, file_info.get('project'), silent=True)
+
     try:
         projs = sb_select('projects', 'stage=neq.Complete&order=created_at.desc&limit=6&select=id,title')
     except Exception:
@@ -728,23 +763,19 @@ def send_advisor_reply(chat_id, original_text, out):
         'say': out.get('say', ''),
         'steps': out.get('steps', []) or [],
         'followups': out.get('followups', []) or [],
-        'file': {'kind': kind, 'project': file_info.get('project'), 'tag': file_info.get('tag')},
+        'file': file_info,
         'projects': [{'id': x['id'], 'title': x['title']} for x in projs],
     }})
     pid = pend['id']
 
-    reply = out.get('say', '')
+    say = (out.get('say') or '').strip()
     steps = out.get('steps') or []
+    reply = say
     if steps:
-        reply += '\n\n' + '\n'.join(f"{i+1}. {s}" for i, s in enumerate(steps))
+        reply += ('\n\n' if reply else '') + '\n'.join(f"{i+1}. {s}" for i, s in enumerate(steps))
+    reply += ('\n\n' if reply else '') + tag
 
-    dest = FILE_LABELS[kind]
-    if kind == 'note' and file_info.get('project'):
-        dest = f"\u2726 {file_info['project']}"
-    buttons = [[
-        {'text': f"\u261E File under {dest}"[:60], 'callback_data': f'sv:a:{pid}'},
-        {'text': '\u25B8 Elsewhere', 'callback_data': f'mv:0:{pid}'},
-    ]]
+    buttons = [[{'text': '\u21BB Move', 'callback_data': f'mv:0:{pid}'}]]
     for i, q in enumerate((out.get('followups') or [])[:2]):
         buttons.append([{'text': ('\u21B3 ' + q)[:48], 'callback_data': f'fu:{i}:{pid}'}])
 
@@ -757,6 +788,7 @@ def elsewhere_menu(chat_id, pid, p):
          {'text': '\u2767 Easel', 'callback_data': f'fl:c:{pid}'}],
         [{'text': '\u2692 Build queue', 'callback_data': f'fl:b:{pid}'},
          {'text': '\u2726 Vault', 'callback_data': f'fl:n:{pid}'}],
+        [{'text': '\u23F0 Reminder', 'callback_data': f'fl:r:{pid}'}],
     ]
     for i, pr in enumerate((p.get('projects') or [])[:6]):
         buttons.append([{'text': f"\u261E note \u2192 {pr['title'][:44]}", 'callback_data': f'fp:{i}:{pid}'}])
@@ -834,6 +866,16 @@ def show_tasks(chat_id):
         return
     buttons = [[{'text': r['title'][:56], 'callback_data': f"tk:m:{r['id']}"}] for r in rows]
     tg_send(chat_id, f'\u270E Tasks ({len(rows)}) - tap one:', buttons)
+
+
+def cmd_todo(chat_id):
+    rows = sb_select('tasks', 'status=eq.open&order=created_at.asc&limit=30&select=id,title,category')
+    if not rows:
+        tg_send(chat_id, 'No open tasks. Suspiciously clean desk.')
+        return
+    rows.sort(key=lambda r: (r.get('category') or 'Uncategorized', r['title']))
+    buttons = [[{'text': f"[{r.get('category') or 'Uncategorized'}] {r['title']}"[:60], 'callback_data': f"td:d:{r['id']}"}] for r in rows]
+    tg_send(chat_id, f'\u2713 Open tasks ({len(rows)}) \u2014 tap to check off:', buttons)
 
 
 def show_projects(chat_id, ptype='creative'):
@@ -942,8 +984,13 @@ def handle_callback(cb):
         elif kind == 'fl':
             which, pid = parts[1], parts[2]
             p = sb_select('pending', f'id=eq.{pid}&select=payload')[0]['payload']
-            kinds = {'t': 'task', 'c': 'creative', 'b': 'build', 'n': 'note'}
+            kinds = {'t': 'task', 'c': 'creative', 'b': 'build', 'n': 'note', 'r': 'reminder'}
             do_file(chat_id, p, kinds.get(which, 'note'))
+
+        elif kind == 'td':
+            tid = parts[2]
+            sb_update('tasks', tid, {'status': 'done'})
+            tg_send(chat_id, '✓ Done.')
 
         elif kind == 'fp':
             i, pid = int(parts[1]), parts[2]
@@ -1089,6 +1136,13 @@ def _due(t, now, window_min=15):
         return False
 
 
+def _reminder_due(r, now, window_min=15):
+    """Like _due(), but a reminder with a date set only fires on that day (one-time); no date = daily."""
+    if r.get('date') and now.strftime('%Y-%m-%d') != r['date']:
+        return False
+    return _due(r['time'], now, window_min)
+
+
 @app.route('/tick')
 def tick():
     if not CRON_KEY or request.args.get('key') != CRON_KEY:
@@ -1097,10 +1151,12 @@ def tick():
     sent = []
     # timed reminders
     try:
-        for r in sb_select('reminders', 'active=eq.true&select=id,label,time'):
-            if _due(r['time'], now):
+        for r in sb_select('reminders', 'active=eq.true&select=id,label,time,date'):
+            if _reminder_due(r, now):
                 tg_send(TELEGRAM_CHAT_ID, '\u23F0 ' + r['label'])
                 sent.append(r['label'])
+                if r.get('date'):  # one-time reminder - don't fire again tomorrow
+                    sb_update('reminders', r['id'], {'active': False})
     except Exception:
         pass
     # scheduled briefs
@@ -1142,8 +1198,9 @@ def capture():
         if text in ('/start', '/help'):
             tg_send(chat_id,
                     "Henry here. Just talk - half-thoughts welcome, that's how books start. "
-                    "I'll figure out where each one lives; you press one button to file it.\n\n"
+                    "I file it the moment I answer; tap Move if I put it in the wrong drawer.\n\n"
                     "/day - marching orders, on my old Paris program\n"
+                    "/todo - open tasks by category\n"
                     "/desk - tasks, easel, build queue, vault\n"
                     "/read - passage of the day\n"
                     "/ledger - the money question\n\n"
@@ -1158,6 +1215,8 @@ def capture():
             cmd_ledger(chat_id)
         elif text == '/tasks':
             show_tasks(chat_id)
+        elif text == '/todo':
+            cmd_todo(chat_id)
         elif text == '/projects':
             show_projects(chat_id, 'creative')
         elif lower.startswith('t:'):

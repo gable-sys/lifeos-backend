@@ -507,7 +507,7 @@ def get_plaid_token():
 def load_kb():
     try:
         rows = sb_select('kb', 'select=dept,content&order=dept')
-        return '\n\n'.join(f"[{r['dept'].upper()}]\n{r['content']}" for r in rows)[:9000]
+        return '\n\n'.join(f"[{r['dept'].upper()}]\n{r['content']}" for r in rows)[:26000]
     except Exception:
         return ''
 
@@ -639,7 +639,6 @@ HENRY_SYSTEM = (
     "Respond ONLY with minified JSON, no markdown fences, exactly: "
     '{"title":"3-6 word title","say":"the reply, in your voice",'
     '"steps":["2-5 concrete steps ONLY when breaking something down, else empty list"],'
-    '"followups":["up to 2 short questions, else empty list"],'
     '"file":{"kind":"task|creative|build|note|reminder","project":"exact existing project title or null",'
     '"tag":"one-word tag or null","category":"one of the 12 department names above, ONLY for kind=task, else null",'
     '"date":"YYYY-MM-DD or null, ONLY for kind=reminder","time":"HH:MM 24-hour or null, ONLY for kind=reminder"}}'
@@ -762,7 +761,6 @@ def send_advisor_reply(chat_id, original_text, out):
         'title': out.get('title', original_text[:60]),
         'say': out.get('say', ''),
         'steps': out.get('steps', []) or [],
-        'followups': out.get('followups', []) or [],
         'file': file_info,
         'projects': [{'id': x['id'], 'title': x['title']} for x in projs],
     }})
@@ -775,24 +773,20 @@ def send_advisor_reply(chat_id, original_text, out):
         reply += ('\n\n' if reply else '') + '\n'.join(f"{i+1}. {s}" for i, s in enumerate(steps))
     reply += ('\n\n' if reply else '') + tag
 
-    buttons = [[{'text': '\u21BB Move', 'callback_data': f'mv:0:{pid}'}]]
-    for i, q in enumerate((out.get('followups') or [])[:2]):
-        buttons.append([{'text': ('\u21B3 ' + q)[:48], 'callback_data': f'fu:{i}:{pid}'}])
-
-    tg_send(chat_id, reply, buttons)
+    tg_send(chat_id, reply, [[{'text': 'move', 'callback_data': f'mv:0:{pid}'}]])
 
 
 def elsewhere_menu(chat_id, pid, p):
     buttons = [
-        [{'text': '\u270E Task', 'callback_data': f'fl:t:{pid}'},
-         {'text': '\u2767 Easel', 'callback_data': f'fl:c:{pid}'}],
-        [{'text': '\u2692 Build queue', 'callback_data': f'fl:b:{pid}'},
-         {'text': '\u2726 Vault', 'callback_data': f'fl:n:{pid}'}],
-        [{'text': '\u23F0 Reminder', 'callback_data': f'fl:r:{pid}'}],
+        [{'text': 'task', 'callback_data': f'fl:t:{pid}'},
+         {'text': 'easel', 'callback_data': f'fl:c:{pid}'}],
+        [{'text': 'build queue', 'callback_data': f'fl:b:{pid}'},
+         {'text': 'vault', 'callback_data': f'fl:n:{pid}'}],
+        [{'text': 'reminder', 'callback_data': f'fl:r:{pid}'}],
     ]
     for i, pr in enumerate((p.get('projects') or [])[:6]):
-        buttons.append([{'text': f"\u261E note \u2192 {pr['title'][:44]}", 'callback_data': f'fp:{i}:{pid}'}])
-    tg_send(chat_id, 'Where does it live?', buttons)
+        buttons.append([{'text': f"note \u2192 {pr['title'][:44]}", 'callback_data': f'fp:{i}:{pid}'}])
+    tg_send(chat_id, 'where does it live?', buttons)
 
 
 # ---------- Commands ----------
@@ -817,7 +811,7 @@ def cmd_read(chat_id):
         "to a working artist today. Name the text and rough location (chapter/verse) so he can find it."
     )
     out = henry_say(prompt)
-    tg_send(chat_id, out, [[{'text': '\u261E Open the Wisdom Room', 'url': SITE_URL}]])
+    tg_send(chat_id, out + f"\n\n<a href='{SITE_URL}'>the wisdom room</a>")
 
 
 def cmd_day(chat_id):
@@ -828,10 +822,7 @@ def cmd_day(chat_id):
         "Use my actual open tasks and projects. Keep the whole thing under 120 words."
     )
     out = henry_say(prompt, max_tokens=600)
-    tg_send(chat_id, out, [[
-        {'text': '\u270E The desk', 'callback_data': 'dk:m:0'},
-        {'text': '\u2726 Passage', 'callback_data': 'rd:0:0'},
-    ]])
+    tg_send(chat_id, out)
 
 
 def cmd_ledger(chat_id):
@@ -840,8 +831,7 @@ def cmd_ledger(chat_id):
         if not access_token:
             tg_send(chat_id,
                     'The bank line is down - it forgets itself when the server sleeps. '
-                    'Reconnect from the Finance room and ask me again.',
-                    [[{'text': '\u261E Open Finance', 'url': SITE_URL}]])
+                    f"Reconnect at <a href='{SITE_URL}'>the finance room</a> and ask me again.")
             return
         response = plaid_client.accounts_balance_get(AccountsBalanceGetRequest(access_token=access_token))
         lines = []
@@ -869,13 +859,17 @@ def show_tasks(chat_id):
 
 
 def cmd_todo(chat_id):
-    rows = sb_select('tasks', 'status=eq.open&order=created_at.asc&limit=30&select=id,title,category')
+    rows = sb_select('tasks', 'status=eq.open&order=created_at.asc&limit=50&select=id,title,category')
     if not rows:
         tg_send(chat_id, 'No open tasks. Suspiciously clean desk.')
         return
-    rows.sort(key=lambda r: (r.get('category') or 'Uncategorized', r['title']))
-    buttons = [[{'text': f"[{r.get('category') or 'Uncategorized'}] {r['title']}"[:60], 'callback_data': f"td:d:{r['id']}"}] for r in rows]
-    tg_send(chat_id, f'\u2713 Open tasks ({len(rows)}) \u2014 tap to check off:', buttons)
+    by_cat = {}
+    for r in rows:
+        by_cat.setdefault(r.get('category') or 'Uncategorized', []).append(r)
+    cats = [c for c in DEPT_ORDER_TITLES if c in by_cat] + [c for c in by_cat if c not in DEPT_ORDER_TITLES]
+    for cat in cats:
+        buttons = [[{'text': r['title'][:60].lower(), 'callback_data': f"td:d:{r['id']}"}] for r in by_cat[cat]]
+        tg_send(chat_id, f"<b>{cat}</b>", buttons)
 
 
 def show_projects(chat_id, ptype='creative'):
@@ -905,55 +899,68 @@ def show_notes(chat_id):
     tg_send(chat_id, 'From the vault, most recent first:\n\n' + '\n\n'.join(lines))
 
 
-DEPT_VIEWS = {
-    'workout': "Open the Workout drawer. Today's exact session from my split - exercises, sets x reps, "
-               "the one cue that matters per block, and where (home dumbbells + pull-up bar, or outside). "
-               "<b>bold</b> block names, bullets. Under 130 words.",
-    'music': "Open the Music drawer. Today's deep-listening from the weekday curriculum, and today's "
-             "instrument practice - which of banjo/guitar/piano and the 30-45 min plan. Under 110 words.",
-    'reading': "Open the Reading drawer. What I read today from my current stack, how long, and one line "
-               "on where I left off or what to notice. Under 90 words.",
-    'body': "Open the Body drawer. Today's full protocol as a checklist - AM stack, sun windows, "
-            "PM stack in exact order with waits. <b>AM</b>/<b>PM</b> headers. Under 110 words.",
-    'lab': "Open the Lab drawer. Where the learning stands (Odin/CS50/Eloquent JS) and the one hour "
-           "to do today. Under 80 words.",
-    'fridge': "Open the Fridge. From my diet knowledge: today's meals and what needs buying. If the "
-              "diet spec is thin, say so in one line and give a sane default. Under 90 words.",
-}
+# Site's exact department order (matches PORTALS in index.html + the task category list).
+DEPT_ORDER = ['calendar', 'finance', 'workout', 'music', 'reading', 'creative',
+              'body', 'lab', 'library', 'fridge', 'closet', 'wander']
+DEPT_TITLES = {d: d.capitalize() for d in DEPT_ORDER}
+DEPT_ORDER_TITLES = [DEPT_TITLES[d] for d in DEPT_ORDER]
 
 
 def dept_view(chat_id, dept):
-    if dept == 'finance':
-        cmd_ledger(chat_id)
+    title = DEPT_TITLES.get(dept)
+    if not title:
+        tg_send(chat_id, 'Unknown department.')
         return
-    if dept == 'creative':
-        show_projects(chat_id, 'creative')
-        return
-    prompt = DEPT_VIEWS.get(dept)
-    if not prompt:
-        tg_send(chat_id, 'That drawer is empty for now.')
-        return
+    lines = [f"<b>{title}</b>"]
+
+    if dept == 'workout':
+        try:
+            today_code = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][_now_et().weekday()]
+            wk = sb_select('workout_week', f'day=eq.{today_code}&select=title,rest&limit=1')
+            if wk:
+                lines.append(('Rest day. ' if wk[0].get('rest') else '') + wk[0]['title'])
+        except Exception:
+            pass
+    elif dept == 'finance':
+        try:
+            today_iso = _now_et().strftime('%Y-%m-%d')
+            fin = sb_select('events', f'date=gte.{today_iso}&kind=eq.ledger&order=date&limit=2&select=title,date,amount')
+            lines.extend(f"{f['date']} {f['title']} {_fmt_amt(f['amount'])}" for f in fin)
+        except Exception:
+            pass
+    elif dept == 'calendar':
+        try:
+            now = _now_et()
+            today_iso = now.strftime('%Y-%m-%d')
+            horizon_iso = (now + _td(days=14)).strftime('%Y-%m-%d')
+            ev = sb_select('events', f'date=gte.{today_iso}&date=lte.{horizon_iso}&kind=neq.ledger&order=date&limit=5&select=title,date')
+            lines.extend(f"{e['date']} {e['title']}" for e in ev)
+        except Exception:
+            pass
+
     try:
-        out = henry_say(prompt, max_tokens=450)
-        tg_send(chat_id, out)
-    except Exception as e:
-        tg_send(chat_id, f'Drawer stuck: {e}')
+        tasks = sb_select('tasks', f'status=eq.open&category=eq.{title}&order=created_at.asc&limit=20&select=title')
+    except Exception:
+        tasks = []
+    if tasks:
+        lines.append('')
+        lines.extend(f"\u2022 {t['title']}" for t in tasks)
+    elif len(lines) == 1:
+        lines.append('Nothing open here.')
+
+    tg_send(chat_id, '\n'.join(lines))
 
 
 def cmd_desk(chat_id):
-    tg_send(chat_id, '<b>THE DESK</b> \u00b7 which drawer?', [
-        [{'text': '\u270E Tasks', 'callback_data': 'dk:t:0'},
-         {'text': '\u2726 Vault', 'callback_data': 'dk:n:0'}],
-        [{'text': '\U0001F4B0 Finance', 'callback_data': 'dp:finance:0'},
-         {'text': '\U0001F3CB Workout', 'callback_data': 'dp:workout:0'}],
-        [{'text': '\U0001F3B5 Music', 'callback_data': 'dp:music:0'},
-         {'text': '\U0001F4D6 Reading', 'callback_data': 'dp:reading:0'}],
-        [{'text': '\u270D Creative', 'callback_data': 'dp:creative:0'},
-         {'text': '\U0001F9F4 Body', 'callback_data': 'dp:body:0'}],
-        [{'text': '\U0001F9EA Lab', 'callback_data': 'dp:lab:0'},
-         {'text': '\U0001F95A Fridge', 'callback_data': 'dp:fridge:0'}],
-        [{'text': '\u2692 Build queue', 'callback_data': 'dk:b:0'}],
-    ])
+    buttons, row = [], []
+    for d in DEPT_ORDER:
+        row.append({'text': DEPT_TITLES[d].lower(), 'callback_data': f'dp:{d}:0'})
+        if len(row) == 2:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
+    tg_send(chat_id, 'the desk \u2014 pick a department:', buttons)
 
 
 def handle_callback(cb):
@@ -988,22 +995,18 @@ def handle_callback(cb):
             do_file(chat_id, p, kinds.get(which, 'note'))
 
         elif kind == 'td':
-            tid = parts[2]
-            sb_update('tasks', tid, {'status': 'done'})
-            tg_send(chat_id, '✓ Done.')
+            which, tid = parts[1], parts[2]
+            if which == 'r':
+                sb_update('reminders', tid, {'active': False})
+            else:
+                sb_update('tasks', tid, {'status': 'done'})
+            tg_send(chat_id, '✓ done')
 
         elif kind == 'fp':
             i, pid = int(parts[1]), parts[2]
             p = sb_select('pending', f'id=eq.{pid}&select=payload')[0]['payload']
             pr = (p.get('projects') or [])[i]
             do_file(chat_id, p, 'note', pr['title'])
-
-        elif kind == 'fu':
-            i, pid = int(parts[1]), parts[2]
-            p = sb_select('pending', f'id=eq.{pid}&select=payload')[0]['payload']
-            q = (p.get('followups') or [])[i]
-            out = run_advisor(f"Earlier thought: {p['text']}\nNow dig into this question: {q}")
-            send_advisor_reply(chat_id, p['text'], out)
 
         elif kind == 'rd':
             cmd_read(chat_id)
@@ -1153,7 +1156,7 @@ def tick():
     try:
         for r in sb_select('reminders', 'active=eq.true&select=id,label,time,date'):
             if _reminder_due(r, now):
-                tg_send(TELEGRAM_CHAT_ID, '\u23F0 ' + r['label'])
+                tg_send(TELEGRAM_CHAT_ID, '\u23F0 ' + r['label'], [[{'text': 'done', 'callback_data': f"td:r:{r['id']}"}]])
                 sent.append(r['label'])
                 if r.get('date'):  # one-time reminder - don't fire again tomorrow
                     sb_update('reminders', r['id'], {'active': False})
@@ -1165,6 +1168,8 @@ def tick():
         try:
             prompt = BRIEF_PROMPTS[slot].replace('{weekday}', now.strftime('%A'))
             out = henry_say(MISSION + '\n\n' + prompt, max_tokens=700)
+            if slot == 'morning':
+                out += '\n\n→ /desk'
             tg_send(TELEGRAM_CHAT_ID, out)
             sent.append('brief:' + slot)
         except Exception as e:

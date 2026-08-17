@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guitar Master Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #141414;
+  --surface2: #1a1a1a;
+  --border: #2a2a2a;
+  --text: #e8e0d0;
+  --muted: #6a6258;
+  --amber: #d4872a;
+  --amber-bright: #f0a030;
+  --blue: #3a6b8a;
+  --blue-bright: #5a9bba;
+  --red: #8a3a2a;
+  --red-bright: #c05535;
+  --green: #2a5a3a;
+  --green-bright: #4a8a5a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Pro', serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* HEADER */
+.hero {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 60px 40px 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse at 80% 50%, rgba(212,135,42,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 80%, rgba(58,107,138,0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 10vw, 100px);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.hero h1 span {
+  color: var(--amber);
+  display: block;
+}
+
+.hero-desc {
+  font-family: 'Crimson Pro', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--muted);
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+/* STICKY NAV */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(13,13,13,0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.sticky-nav a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 14px 20px;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.sticky-nav a:hover { color: var(--amber); border-bottom-color: var(--amber); }
+
+/* MAIN LAYOUT */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+}
+
+/* SECTION */
+.section {
+  padding: 60px 0 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child { border-bottom: none; }
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 5vw, 56px);
+  letter-spacing: 0.03em;
+  line-height: 1;
+  margin-bottom: 32px;
+  color: var(--text);
+}
+
+/* PHILOSOPHY */
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.philosophy-item {
+  background: var(--surface);
+  padding: 24px;
+}
+
+.philosophy-item h3 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 10px;
+}
+
+.philosophy-item p {
+  font-size: 15px;
+  color: rgba(232,224,208,0.75);
+  line-height: 1.6;
+}
+
+/* WEEK TABS */
+.week-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 2px;
+  flex-wrap: wrap;
+}
+
+.week-tab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  border-bottom: none;
+}
+
+.week-tab.active {
+  background: var(--surface2);
+  color: var(--amber);
+  border-color: var(--amber);
+  border-bottom: 1px solid var(--surface2);
+}
+
+/* DAY BLOCK */
+.day-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin-bottom: 3px;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.day-block:hover { border-color: rgba(212,135,42,0.4); }
+
+.day-header {
+  background: var(--surface2);
+  padding: 20px 18px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.day-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.day-focus-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.day-body { padding: 0; }
+
+/* SESSION ROWS */
+.session {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  border-bottom: 1px solid var(--border);
+}
+
+.session:last-child { border-bottom: none; }
+
+.session-time {
+  background: rgba(0,0,0,0.3);
+  padding: 16px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.session-time strong {
+  font-size: 18px;
+  color: var(--text);
+  display: block;
+  font-weight: 500;
+}
+
+.session-content {
+  padding: 16px 20px;
+}
+
+.session-content h4 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.session-content p {
+  font-size: 14px;
+  color: rgba(232,224,208,0.65);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.resources-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.res-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 2px;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.res-chip.video { background: rgba(58,107,138,0.2); border: 1px solid var(--blue); color: var(--blue-bright); }
+.res-chip.book { background: rgba(138,58,42,0.2); border: 1px solid var(--red); color: var(--red-bright); }
+.res-chip.app { background: rgba(42,90,58,0.2); border: 1px solid var(--green); color: var(--green-bright); }
+.res-chip.sheet { background: rgba(212,135,42,0.15); border: 1px solid rgba(212,135,42,0.4); color: var(--amber-bright); }
+
+/* COLOR ACCENTS BY FOCUS */
+.focus-blues .day-focus-label { color: #6a9fc0; }
+.focus-blues .day-name { color: #6a9fc0; }
+.focus-jazz .day-focus-label { color: var(--amber); }
+.focus-jazz .day-name { color: var(--amber); }
+.focus-bluegrass .day-focus-label { color: #7ab87a; }
+.focus-bluegrass .day-name { color: #7ab87a; }
+.focus-theory .day-focus-label { color: #c07ab8; }
+.focus-theory .day-name { color: #c07ab8; }
+.focus-gypsy .day-focus-label { color: #c08a5a; }
+.focus-gypsy .day-name { color: #c08a5a; }
+.focus-rest .day-focus-label { color: var(--muted); }
+.focus-rest .day-name { color: var(--muted); }
+
+/* RESOURCES MASTER LIST */
+.res-category {
+  margin-bottom: 40px;
+}
+
+.res-category-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.res-category-icon {
+  font-size: 24px;
+}
+
+.res-category-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  color: var(--text);
+}
+
+.res-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.res-table tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.res-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.res-table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.res-table td:first-child {
+  width: 220px;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.res-table td:nth-child(2) {
+  color: rgba(232,224,208,0.6);
+  font-size: 13px;
+}
+
+.res-table td:last-child {
+  width: 140px;
+  text-align: right;
+}
+
+.res-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 2px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.res-link.free { background: rgba(42,90,58,0.3); border: 1px solid var(--green); color: var(--green-bright); }
+.res-link.paid { background: rgba(138,58,42,0.2); border: 1px solid var(--red); color: var(--red-bright); }
+.res-link.app-tag { background: rgba(58,107,138,0.2); border: 1px solid var(--blue); color: var(--blue-bright); }
+
+/* THEORY ROADMAP */
+.theory-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 700px) {
+  .theory-track { grid-template-columns: 1fr; }
+  .philosophy-grid { grid-template-columns: 1fr; }
+  .day-block { grid-template-columns: 1fr; }
+  .day-header { border-right: none; border-bottom: 1px solid var(--border); }
+  .main { padding: 0 20px 60px; }
+  .hero { padding: 40px 20px 36px; }
+  .sticky-nav { padding: 0 20px; }
+}
+
+.theory-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 20px;
+  position: relative;
+}
+
+.theory-card::before {
+  content: attr(data-num);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 80px;
+  position: absolute;
+  top: 8px; right: 12px;
+  color: var(--border);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.theory-card h4 {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.theory-card h3 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.theory-card p {
+  font-size: 13px;
+  color: rgba(232,224,208,0.6);
+  line-height: 1.5;
+}
+
+/* MILESTONES */
+.milestone-timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.milestone-timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.milestone {
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.milestone::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: var(--amber);
+  border-radius: 50%;
+  position: absolute;
+  left: -28px;
+  top: 6px;
+}
+
+.milestone-period {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.milestone h3 {
+  font-family: 'Crimson Pro', serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.milestone p {
+  font-size: 14px;
+  color: rgba(232,224,208,0.6);
+  line-height: 1.6;
+}
+
+/* LISTENING */
+.listen-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 700px) { .listen-grid { grid-template-columns: 1fr 1fr; } }
+
+.listen-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+
+.listen-genre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 10px;
+}
+
+.listen-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.listen-card p {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* WEEK PANELS */
+.week-panel { display: none; }
+.week-panel.active { display: block; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">10 Years Playing · Zero Theory · Starting Now</div>
+  <h1>Guitar<span>Master Plan</span></h1>
+  <p class="hero-desc">Blues roots → Jazz harmony → Bluegrass flatpicking → Gypsy style. 30–45 min/day. Exact resources for every session.</p>
+</div>
+
+<nav class="sticky-nav">
+  <a href="#philosophy">Philosophy</a>
+  <a href="#schedule">Daily Schedule</a>
+  <a href="#theory">Theory Track</a>
+  <a href="#resources">All Resources</a>
+  <a href="#listening">Listening List</a>
+  <a href="#milestones">Milestones</a>
+</nav>
+
+<div class="main">
+
+<!-- PHILOSOPHY -->
+<section class="section" id="philosophy">
+  <div class="section-label">How This Works</div>
+  <div class="section-title">The Approach</div>
+
+  <div class="philosophy-grid">
+    <div class="philosophy-item">
+      <h3>Blues First, Always</h3>
+      <p>Blues is the DNA of jazz and much of bluegrass. The pentatonic and blues scale, bends, call-and-response — mastering these unlocks everything else. We return to blues constantly as a home base.</p>
+    </div>
+    <div class="philosophy-item">
+      <h3>Theory = What You Already Play</h3>
+      <p>After 10 years your ear knows things your brain can't name yet. Theory sessions are about labeling what you feel. We skip abstract and go straight to the fretboard every time.</p>
+    </div>
+    <div class="philosophy-item">
+      <h3>One Week = One Full Rotation</h3>
+      <p>Each week cycles Blues → Jazz → Bluegrass → Theory → Gypsy → Repertoire → Rest/Listen. After 4 weeks the styles start bleeding into each other — that's exactly what we want.</p>
+    </div>
+    <div class="philosophy-item">
+      <h3>Exact Resources, Every Day</h3>
+      <p>No hunting. Each session below lists the exact YouTube video, book chapter, or app to use. Spend your 35 minutes playing, not searching.</p>
+    </div>
+  </div>
+
+  <div class="philosophy-item" style="border:1px solid var(--border); padding:20px; background:var(--surface);">
+    <h3 style="margin-bottom:8px; font-family:'Crimson Pro',serif; font-size:17px;">Essential Apps — Get These Before Day 1</h3>
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+      <span class="res-chip app">📱 iReal Pro ($15) — backing tracks for every style</span>
+      <span class="res-chip app">📱 GuitarTuna — chromatic tuner, free</span>
+      <span class="res-chip app">📱 Tempo by Frozen Ape — best metronome app, free</span>
+      <span class="res-chip app">📱 Amazing Slow Downer ($5) — slow down any song without pitch shift</span>
+      <span class="res-chip video">💻 YouTube — all video resources below are free</span>
+    </div>
+  </div>
+</section>
+
+<!-- DAILY SCHEDULE -->
+<section class="section" id="schedule">
+  <div class="section-label">Weeks 1–12 Day by Day</div>
+  <div class="section-title">Daily Schedule</div>
+
+  <!-- PHASE 1 WEEKS 1-4 -->
+  <div style="margin-bottom:6px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.2em; color:var(--amber); text-transform:uppercase; padding:12px 0 6px;">── Phase 1: Weeks 1–4 — Blues Foundation + Theory Ignition ──</div>
+  </div>
+
+  <!-- MONDAY -->
+  <div class="day-block focus-blues">
+    <div class="day-header">
+      <div class="day-name">MON</div>
+      <div class="day-focus-label">Blues Scale<br>& Bends</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="session-time"><strong>5</strong>min<br>warm</div>
+        <div class="session-content">
+          <h4>Chromatic Warmup + Finger Stretch</h4>
+          <p>Spider exercises, all 6 strings, metronome at 60 bpm. Non-negotiable.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Guitar Finger Exercises for Beginners" — Paul Davids</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>15</strong>min<br>primary</div>
+        <div class="session-content">
+          <h4>Minor Pentatonic + Blues Scale in A</h4>
+          <p>Learn the 5 positions of the minor pentatonic. Weeks 1–2: positions 1 & 2 only. Add the ♭5 "blue note" in week 2. Focus on bends — the bend to the 5th on the B string is the core blues sound.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Blues Scale – 5 Positions" — Marty Music</span>
+            <span class="res-chip video">▶ YT: "String Bending Masterclass" — TrueFire (free on YT)</span>
+            <span class="res-chip book">📖 "Guitar Fretboard Workbook" — Barrett Tagliarino, Ch.1</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>10</strong>min<br>theory</div>
+        <div class="session-content">
+          <h4>Theory: The Major Scale & Number System</h4>
+          <p>Weeks 1–2: learn what a whole step and half step is. Build the major scale formula (W-W-H-W-W-W-H). This is everything. Don't rush it.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Music Theory in 16 Minutes" — Adam Neely</span>
+            <span class="res-chip book">📖 "Music Theory for Guitarists" — Tom Kolb (Hal Leonard), Ch.1–2</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>10</strong>min<br>play</div>
+        <div class="session-content">
+          <h4>Jam Over 12-Bar Blues in A</h4>
+          <p>Open iReal Pro → Jazz → "Blues for Alice" or use any basic 12-bar backing. Just improvise using what you practiced. Make mistakes. Have fun.</p>
+          <div class="resources-inline">
+            <span class="res-chip app">📱 iReal Pro — "Basic Blues" playlist</span>
+            <span class="res-chip video">▶ YT search: "12 bar blues backing track A slow"</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TUESDAY -->
+  <div class="day-block focus-jazz">
+    <div class="day-header">
+      <div class="day-name">TUE</div>
+      <div class="day-focus-label">Jazz Chords<br>Shell Voicings</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="session-time"><strong>5</strong>min<br>warm</div>
+        <div class="session-content">
+          <h4>Chromatic + Yesterday's Blues Lick</h4>
+          <p>Run through the lick you liked best from Monday's jam session. Lock it in.</p>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>20</strong>min<br>primary</div>
+        <div class="session-content">
+          <h4>Shell Chords: The Jazz Guitarist's Secret Weapon</h4>
+          <p>Shell chords use only the root, 3rd, and 7th — no 5th. They're how jazz guitarists comp without clashing with the bass. Learn: Cmaj7, Cm7, C7 shell shapes on strings 4-3-2. Then learn them on strings 5-4-3. Weeks 1–2 just get the shapes. Weeks 3–4 move them through a II-V-I (Dm7 → G7 → Cmaj7).</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Jazz Shell Chords for Guitar" — Adam Rafferty</span>
+            <span class="res-chip video">▶ YT: "ii V I Chord Progression Guitar" — Mike George Guitar</span>
+            <span class="res-chip book">📖 "Chord Chemistry" — Ted Greene, Section 1 (get this book)</span>
+            <span class="res-chip sheet">🎼 Jazzguitar.be — Shell chord diagrams (free)</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>10</strong>min<br>play</div>
+        <div class="session-content">
+          <h4>Comp Over "Autumn Leaves" Slowly</h4>
+          <p>Use shell chords only. Don't solo yet — just voice-lead through the changes as smoothly as possible. Tempo: very slow (♩=60).</p>
+          <div class="resources-inline">
+            <span class="res-chip app">📱 iReal Pro — "Autumn Leaves" set to slow</span>
+            <span class="res-chip video">▶ YT: "Autumn Leaves Backing Track slow" — many options</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEDNESDAY -->
+  <div class="day-block focus-bluegrass">
+    <div class="day-header">
+      <div class="day-name">WED</div>
+      <div class="day-focus-label">Flatpicking<br>Mechanics</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="session-time"><strong>5</strong>min<br>warm</div>
+        <div class="session-content">
+          <h4>Alternate Picking Drill</h4>
+          <p>Down-up-down-up strictly on a single string. No cheating with double-downs. This is the entire foundation of flatpicking.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Alternate Picking Guitar Lesson" — Marty Music</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>20</strong>min<br>primary</div>
+        <div class="session-content">
+          <h4>G Major Scale in 2 Octaves + Crosspicking Intro</h4>
+          <p>The G major scale is the backbone of bluegrass flatpicking. Learn it in the open position first (Tony Rice style). Weeks 1–2: scale only at 80 bpm. Weeks 3–4: introduce crosspicking (arpeggiated pattern across 3 strings in constant alternate picking). This is the defining technique of bluegrass lead guitar.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Bluegrass Flatpicking G Scale" — Bryan Sutton lesson clips</span>
+            <span class="res-chip video">▶ YT: "Crosspicking Guitar Lesson" — Scott Nygaard (Peghead Nation preview)</span>
+            <span class="res-chip video">▶ YT: "Tony Rice Flatpicking Breakdown" — various transcription channels</span>
+            <span class="res-chip book">📖 "Flatpicking Guitar Essentials" — Steve Kaufman (Mel Bay)</span>
+            <span class="res-chip sheet">🎼 flatpickingguitar.com — free tab archive</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>10</strong>min<br>play</div>
+        <div class="session-content">
+          <h4>Play "Angeline the Baker" or "Salt Creek" Slowly</h4>
+          <p>Classic fiddle tunes adapted for guitar. Start at 60% speed. Use Amazing Slow Downer to learn from recordings.</p>
+          <div class="resources-inline">
+            <span class="res-chip sheet">🎼 musicnotes.com — "Angeline the Baker" tab (free preview)</span>
+            <span class="res-chip video">▶ YT: "Angeline the Baker guitar tab slow" — many options</span>
+            <span class="res-chip app">📱 Amazing Slow Downer — pull any YT audio into this</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THURSDAY -->
+  <div class="day-block focus-theory">
+    <div class="day-header">
+      <div class="day-name">THU</div>
+      <div class="day-focus-label">Theory<br>On the Neck</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="session-time"><strong>5</strong>min<br>warm</div>
+        <div class="session-content">
+          <h4>Name Every Note on Strings 6 & 5</h4>
+          <p>Go fret by fret, say the note name out loud. Two weeks on strings 6&5, then add strings 4&3. This is the fretboard map that unlocks everything.</p>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>20</strong>min<br>primary</div>
+        <div class="session-content">
+          <h4>Intervals → Chord Construction → Scale Degrees</h4>
+          <p>Week 1: What is a major 3rd? A minor 7th? Learn intervals by sound AND shape on guitar. Week 2: Build a major chord (1-3-5), minor chord (1-♭3-5), dominant 7 (1-3-5-♭7). Week 3: The CAGED system — how one chord shape connects to the next. Week 4: How the blues scale relates to the major scale (it's the minor pentatonic ♭5 of the relative minor — huge connection).</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Guitar Intervals Explained" — Adam Neely</span>
+            <span class="res-chip video">▶ YT: "CAGED System Complete" — Paul Davids (45-min masterclass, free)</span>
+            <span class="res-chip video">▶ YT: "Chord Construction Guitar" — Rick Beato (free)</span>
+            <span class="res-chip book">📖 "Music Theory for Guitarists" — Tom Kolb, Ch.3–5</span>
+            <span class="res-chip book">📖 "Fretboard Logic" — Bill Edwards Vol.1 (cheapest, fastest CAGED resource)</span>
+            <span class="res-chip sheet">🎼 teoria.com — free interval ear training exercises</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>10</strong>min<br>apply</div>
+        <div class="session-content">
+          <h4>Find Today's Theory on the Fretboard</h4>
+          <p>Whatever you just learned — find it in 3 different positions on the neck. Theory only sticks when it lives in your hands.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRIDAY -->
+  <div class="day-block focus-gypsy">
+    <div class="day-header">
+      <div class="day-name">FRI</div>
+      <div class="day-focus-label">Gypsy Jazz<br>Style</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="session-time"><strong>5</strong>min<br>warm</div>
+        <div class="session-content">
+          <h4>Rest-Stroke Picking Drill</h4>
+          <p>Gypsy jazz uses a distinctive rest-stroke (apoyando) pick technique — the pick comes to rest on the next string after each stroke. Practice this slowly on a single string, heavily.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Gypsy Jazz Picking Technique" — Gonzalo Bergara</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>20</strong>min<br>primary</div>
+        <div class="session-content">
+          <h4>La Pompe Rhythm + Minor Swing Chords</h4>
+          <p>La pompe is THE gypsy jazz rhythm — a choppy, muted bass-strum pattern. Week 1: learn the basic la pompe (bass note → muted chord strum). Week 2: add the "stab" voicings. Week 3: learn the chord melody to "Minor Swing" rhythm part. Week 4: play full rhythm through "Minor Swing" with backing track.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "La Pompe Lesson" — Gonzalo Bergara (essential, free)</span>
+            <span class="res-chip video">▶ YT: "Minor Swing Guitar Chords" — DjangoBooks</span>
+            <span class="res-chip video">▶ YT: "Gypsy Jazz Chord Shapes" — Robin Nolan</span>
+            <span class="res-chip sheet">🎼 djangobooks.com — free chord charts and tab</span>
+            <span class="res-chip sheet">🎼 gypsyjazzguitarist.com — free backing tracks</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>10</strong>min<br>listen</div>
+        <div class="session-content">
+          <h4>Active Listen: Django Track of the Week</h4>
+          <p>Pick one Django Reinhardt track. Listen once for pleasure. Listen again and try to hum the melody. Listen a third time and notice just the rhythm guitar (la pompe). This trains your ear more than any exercise.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "Django Reinhardt Minor Swing original recording"</span>
+            <span class="res-chip video">▶ YT: "Django Reinhardt Nuages"</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SATURDAY -->
+  <div class="day-block focus-blues">
+    <div class="day-header">
+      <div class="day-name">SAT</div>
+      <div class="day-focus-label">Blues Deep<br>Dive + Licks</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="session-time"><strong>5</strong>min<br>warm</div>
+        <div class="session-content">
+          <h4>Run This Week's Scales + Chord Shapes</h4>
+          <p>Quick review of everything you touched this week. 30 seconds each. Lock in the muscle memory.</p>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>25</strong>min<br>primary</div>
+        <div class="session-content">
+          <h4>Learn One Complete Blues Lick or Solo Section</h4>
+          <p>Go deep on one thing. Weeks 1–2: BB King-style vibrato and call-response licks. Weeks 3–4: SRV double-stops and turnarounds. Saturday is your "go slow, get it right" day. Use Amazing Slow Downer to dissect recordings bar by bar.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ YT: "BB King Licks Lesson" — TrueFire free episodes</span>
+            <span class="res-chip video">▶ YT: "SRV Guitar Lesson Pride and Joy" — Licklibrary clips</span>
+            <span class="res-chip video">▶ YT: "Blues Turnaround Licks Guitar" — Marty Music</span>
+            <span class="res-chip book">📖 "The Blues Guitar Bible" — Hal Leonard (tab anthology, essential)</span>
+            <span class="res-chip app">📱 Amazing Slow Downer — dissect any song</span>
+          </div>
+        </div>
+      </div>
+      <div class="session">
+        <div class="session-time"><strong>10</strong>min<br>play</div>
+        <div class="session-content">
+          <h4>Full 12-Bar Slow Blues Jam</h4>
+          <p>No stopping. Rhythm for 2 choruses, then solo for 2 choruses. Treat it like a performance.</p>
+          <div class="resources-inline">
+            <span class="res-chip app">📱 iReal Pro — "Slow Blues" in A or E</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUNDAY -->
+  <div class="day-block focus-rest">
+    <div class="day-header">
+      <div class="day-name">SUN</div>
+      <div class="day-focus-label">Ears Only<br>No Guitar</div>
+    </div>
+    <div class="day-body">
+      <div class="session">
+        <div class="session-time"><strong>—</strong><br>rest</div>
+        <div class="session-content">
+          <h4>Active Listening Session — 20–30 Minutes</h4>
+          <p>Put the guitar down. Pick 2 records from the listening list below. Listen on headphones, full attention. Notice: where does the bass move? When does the guitar play behind the beat? What makes a phrase feel "resolved"? This is training your internal musical imagination — the most underrated practice you can do.</p>
+          <div class="resources-inline">
+            <span class="res-chip video">▶ Spotify / Apple Music / YouTube Music</span>
+            <span class="res-chip video">▶ YT: "How to Listen to Jazz" — Adam Neely (watch this first Sunday)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div style="margin: 32px 0 6px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.2em; color:#7ab87a; text-transform:uppercase; padding:12px 0 6px;">── Phase 2: Weeks 5–8 — Jazz Harmony Expansion + Style Integration ──</div>
+    <div style="background:var(--surface); border:1px solid var(--border); padding:20px; font-size:14px; color:rgba(232,224,208,0.7); line-height:1.7;">
+      Same weekly rotation (Mon blues, Tue jazz chords, Wed flatpicking, Thu theory, Fri gypsy, Sat blues, Sun listen) but content upgrades:<br><br>
+      <strong style="color:var(--text);">Monday blues</strong> → add dominant 7 licks, connecting pentatonic positions, mixing major & minor pentatonic<br>
+      <strong style="color:var(--text);">Tuesday jazz</strong> → Drop-2 voicings on all string sets, voice leading between chords, learn "Autumn Leaves" fully<br>
+      <strong style="color:var(--text);">Wednesday flatpick</strong> → crosspicking patterns at 100 bpm, "Blackberry Blossom", Tony Rice style runs<br>
+      <strong style="color:var(--text);">Thursday theory</strong> → modes (Dorian, Mixolydian first — most useful for blues/jazz), chord-scale relationships<br>
+      <strong style="color:var(--text);">Friday gypsy</strong> → Django licks over Minor Swing, arpeggios (Gm, Dm, A7), "All of Me" in gypsy style<br>
+      <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
+        <span class="res-chip video">▶ YT: "Drop 2 Voicings Complete" — Mike George Guitar</span>
+        <span class="res-chip video">▶ YT: "Dorian Mode Guitar" — Adam Neely</span>
+        <span class="res-chip video">▶ YT: "Blackberry Blossom Tab" — flatpicking channels</span>
+        <span class="res-chip book">📖 "The Advancing Guitarist" — Mick Goodrick (start reading this week)</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin: 32px 0 6px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.2em; color:var(--amber); text-transform:uppercase; padding:12px 0 6px;">── Phase 3: Weeks 9–12 — Soloing Over Changes + Full Repertoire ──</div>
+    <div style="background:var(--surface); border:1px solid var(--border); padding:20px; font-size:14px; color:rgba(232,224,208,0.7); line-height:1.7;">
+      <strong style="color:var(--text);">Monday/Saturday blues</strong> → bebop blues, adding chord tones to your pentatonic solos, 3-note-per-string blues scale positions<br>
+      <strong style="color:var(--text);">Tuesday jazz</strong> → guide tone soloing (play only 3rds and 7ths), bebop dominant scale, "There Will Never Be Another You"<br>
+      <strong style="color:var(--text);">Wednesday flatpick</strong> → "Whiskey Before Breakfast", backup rhythm behind a melody, speeds above 120 bpm<br>
+      <strong style="color:var(--text);">Thursday theory</strong> → chord substitutions, tritone subs, secondary dominants — this is where jazz theory gets wild<br>
+      <strong style="color:var(--text);">Friday gypsy</strong> → "Djangology", "Swing 42", arpeggio-based soloing in Manouche style<br>
+      <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;">
+        <span class="res-chip video">▶ YT: "Guide Tone Soloing" — StudyWithAlex</span>
+        <span class="res-chip video">▶ YT: "Tritone Substitution Guitar" — Rick Beato</span>
+        <span class="res-chip book">📖 "Jazz Theory Book" — Mark Levine (start Ch.1 now)</span>
+        <span class="res-chip sheet">🎼 djangobooks.com — "Djangology" tab</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THEORY TRACK -->
+<section class="section" id="theory">
+  <div class="section-label">Your Theory Roadmap</div>
+  <div class="section-title">Theory in Order</div>
+  <p style="color:rgba(232,224,208,0.6); margin-bottom:28px; font-size:15px; max-width:680px;">These topics build on each other. Do them in this order. Each one lives on the fretboard — never just on paper.</p>
+
+  <div class="theory-track">
+    <div class="theory-card" data-num="1">
+      <h4>Week 1–2</h4>
+      <h3>Major Scale & Number System</h3>
+      <p>W-W-H-W-W-W-H formula. The Nashville number system. Everything else is built from this.</p>
+    </div>
+    <div class="theory-card" data-num="2">
+      <h4>Week 2–3</h4>
+      <h3>Intervals</h3>
+      <p>Distance between notes. Major 3rd, minor 7th, tritone. Learn to hear AND find them on the neck.</p>
+    </div>
+    <div class="theory-card" data-num="3">
+      <h4>Week 3–4</h4>
+      <h3>Chord Construction</h3>
+      <p>Major (1-3-5), minor (1-♭3-5), dom7 (1-3-5-♭7), maj7, min7. Why they sound the way they do.</p>
+    </div>
+    <div class="theory-card" data-num="4">
+      <h4>Week 4–5</h4>
+      <h3>CAGED System</h3>
+      <p>The 5 chord shapes covering the whole fretboard. Connects all your scale positions into one map.</p>
+    </div>
+    <div class="theory-card" data-num="5">
+      <h4>Week 5–6</h4>
+      <h3>The ii–V–I</h3>
+      <p>The most important chord progression in jazz. Learn to hear it, play it in multiple keys, and solo over it.</p>
+    </div>
+    <div class="theory-card" data-num="6">
+      <h4>Week 6–7</h4>
+      <h3>Modes (Dorian & Mixolydian)</h3>
+      <p>Dorian = minor jazz & blues. Mixolydian = dominant 7th chords. These two cover 80% of your playing.</p>
+    </div>
+    <div class="theory-card" data-num="7">
+      <h4>Week 7–8</h4>
+      <h3>Arpeggios</h3>
+      <p>Playing chord tones as a melody. The secret to making solos sound "inside" the changes. Essential for gypsy jazz.</p>
+    </div>
+    <div class="theory-card" data-num="8">
+      <h4>Week 9–10</h4>
+      <h3>Bebop Scales</h3>
+      <p>Major scale + chromatic passing tone. Allows you to start and end lines on chord tones naturally on strong beats.</p>
+    </div>
+    <div class="theory-card" data-num="9">
+      <h4>Week 11–12</h4>
+      <h3>Chord Substitutions</h3>
+      <p>Tritone subs, secondary dominants, backdoor progressions. This is where jazz harmony gets deep and interesting.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MASTER RESOURCES -->
+<section class="section" id="resources">
+  <div class="section-label">Complete Resource Library</div>
+  <div class="section-title">Every Resource You Need</div>
+
+  <div class="res-category">
+    <div class="res-category-header">
+      <div class="res-category-icon">📺</div>
+      <div class="res-category-title">YouTube Channels (Free)</div>
+    </div>
+    <table class="res-table">
+      <tr><td>Adam Neely</td><td>Best jazz theory educator online. Berklee-level depth, incredibly clear. Watch every theory video he posts.</td><td><span class="res-link free">FREE · youtube.com/@AdamNeely</span></td></tr>
+      <tr><td>Paul Davids</td><td>Deep-dive lessons on chords, scales, improvisation. CAGED masterclass is essential. Very high production quality.</td><td><span class="res-link free">FREE · youtube.com/@PaulDavids</span></td></tr>
+      <tr><td>Rick Beato</td><td>"What Makes This Song Great" series trains your ear. Excellent chord theory and music analysis for guitarists.</td><td><span class="res-link free">FREE · youtube.com/@RickBeato</span></td></tr>
+      <tr><td>Marty Music</td><td>Best for learning specific songs and licks quickly. Blues and rock focus. Very beginner-to-intermediate friendly.</td><td><span class="res-link free">FREE · youtube.com/@MartyMusic</span></td></tr>
+      <tr><td>Gonzalo Bergara</td><td>THE resource for gypsy jazz on YouTube. La pompe masterclass, lick breakdowns, authentic Manouche technique.</td><td><span class="res-link free">FREE · YouTube search</span></td></tr>
+      <tr><td>StudyWithAlex</td><td>Jazz guitar soloing, bebop vocabulary, guide tone concepts. Very practical, guitar-specific jazz education.</td><td><span class="res-link free">FREE · YouTube search</span></td></tr>
+      <tr><td>TrueFire (free previews)</td><td>Professional guitar education platform. Many full lessons free on YouTube. Blues, jazz, bluegrass all covered.</td><td><span class="res-link free">FREE previews · truefire.com</span></td></tr>
+      <tr><td>Flatpicking Guitar Mag</td><td>Bryan Sutton lessons, fiddle tune arrangements, technique breakdowns. The flatpicking authority.</td><td><span class="res-link free">FREE · YouTube search</span></td></tr>
+    </table>
+  </div>
+
+  <div class="res-category">
+    <div class="res-category-header">
+      <div class="res-category-icon">🌐</div>
+      <div class="res-category-title">Websites (Free)</div>
+    </div>
+    <table class="res-table">
+      <tr><td>jazzguitar.be</td><td>Best free jazz guitar website. Shell chord charts, drop-2 voicings, II-V-I lessons, backing tracks. Bookmark immediately.</td><td><span class="res-link free">FREE · jazzguitar.be</span></td></tr>
+      <tr><td>djangobooks.com</td><td>Gold standard gypsy jazz resource. Chord charts, tab, style lessons, gear info. Essential for Friday sessions.</td><td><span class="res-link free">FREE + paid · djangobooks.com</span></td></tr>
+      <tr><td>flatpickingguitar.com</td><td>Decades of flatpicking tab, lessons, fiddle tune arrangements. Use for Wednesday sessions.</td><td><span class="res-link free">FREE · flatpickingguitar.com</span></td></tr>
+      <tr><td>teoria.com</td><td>Ear training exercises. Interval recognition, chord identification. 10 min here on Thursday theory days.</td><td><span class="res-link free">FREE · teoria.com</span></td></tr>
+      <tr><td>musictheory.net</td><td>Interactive theory lessons. Clear, clean, guitarists can use the lesson section directly.</td><td><span class="res-link free">FREE · musictheory.net</span></td></tr>
+      <tr><td>Peghead Nation</td><td>Scott Nygaard bluegrass guitar course. Best structured flatpicking instruction online. Some free, most paid.</td><td><span class="res-link paid">PAID · pegheadnation.com</span></td></tr>
+      <tr><td>gypsyjazzguitarist.com</td><td>Free backing tracks in Manouche style, chord resources, song transcriptions.</td><td><span class="res-link free">FREE · gypsyjazzguitarist.com</span></td></tr>
+      <tr><td>ArtistWorks — Bryan Sutton</td><td>The definitive online flatpicking course. Worth the subscription if you get serious about bluegrass.</td><td><span class="res-link paid">PAID · artistworks.com</span></td></tr>
+    </table>
+  </div>
+
+  <div class="res-category">
+    <div class="res-category-header">
+      <div class="res-category-icon">📚</div>
+      <div class="res-category-title">Books — Build This Stack</div>
+    </div>
+    <table class="res-table">
+      <tr><td>Music Theory for Guitarists<br><em style="font-size:12px; color:var(--muted);">Tom Kolb · Hal Leonard</em></td><td>Start here. Berklee curriculum adapted entirely for guitar. No piano diagrams. Covers intervals, chords, scales in fretboard terms. ~$15.</td><td><span class="res-link paid">BUY FIRST · ~$15</span></td></tr>
+      <tr><td>Fretboard Logic Vol. 1 & 2<br><em style="font-size:12px; color:var(--muted);">Bill Edwards</em></td><td>Fastest way to understand the CAGED system and fretboard navigation. Cheap, dense, essential. ~$12 each.</td><td><span class="res-link paid">BUY SECOND · ~$12</span></td></tr>
+      <tr><td>Chord Chemistry<br><em style="font-size:12px; color:var(--muted);">Ted Greene</em></td><td>The jazz guitarist's chord bible. Every voicing you'll ever need. Use as reference — don't read cover to cover. ~$25.</td><td><span class="res-link paid">Jazz Reference · ~$25</span></td></tr>
+      <tr><td>The Blues Guitar Bible<br><em style="font-size:12px; color:var(--muted);">Hal Leonard</em></td><td>Tab anthology of essential blues songs — BB King, SRV, Clapton, Muddy Waters, Hendrix. Use for Saturday sessions. ~$25.</td><td><span class="res-link paid">Blues TAB · ~$25</span></td></tr>
+      <tr><td>Flatpicking Guitar Essentials<br><em style="font-size:12px; color:var(--muted);">Steve Kaufman · Mel Bay</em></td><td>Fiddle tune arrangements, technique progressions, bluegrass rhythm. Use for Wednesday sessions.</td><td><span class="res-link paid">Flatpicking · ~$20</span></td></tr>
+      <tr><td>The Advancing Guitarist<br><em style="font-size:12px; color:var(--muted);">Mick Goodrick · Hal Leonard</em></td><td>Berklee's "secret weapon" book. Not a method — a philosophy of practicing. Start Week 5. Changes how you think about guitar. ~$20.</td><td><span class="res-link paid">Week 5+ · ~$20</span></td></tr>
+      <tr><td>Jazz Theory Book<br><em style="font-size:12px; color:var(--muted);">Mark Levine · Sher Music</em></td><td>The definitive jazz theory reference. Dense — treat as a reference book, not a cover-to-cover read. Start dipping in Week 9. ~$40.</td><td><span class="res-link paid">Week 9+ · ~$40</span></td></tr>
+    </table>
+  </div>
+
+  <div class="res-category">
+    <div class="res-category-header">
+      <div class="res-category-icon">📱</div>
+      <div class="res-category-title">Apps</div>
+    </div>
+    <table class="res-table">
+      <tr><td>iReal Pro</td><td>Generate backing tracks for any standard. Has jazz, blues, and bluegrass styles. Set tempo, key, and go. Essential from day 1.</td><td><span class="res-link app-tag">$15 one-time</span></td></tr>
+      <tr><td>Amazing Slow Downer</td><td>Slow down any song or recording without changing pitch. Indispensable for learning from recordings.</td><td><span class="res-link app-tag">$5</span></td></tr>
+      <tr><td>Tempo by Frozen Ape</td><td>Best metronome app. Use every session, every day. Non-negotiable.</td><td><span class="res-link free">Free</span></td></tr>
+      <tr><td>GuitarTuna</td><td>Fast, accurate chromatic tuner. Free.</td><td><span class="res-link free">Free</span></td></tr>
+      <tr><td>Yousician</td><td>Gamified ear training and sight-reading. Good supplement for theory Thursdays.</td><td><span class="res-link free">Free tier</span></td></tr>
+    </table>
+  </div>
+
+  <div class="res-category">
+    <div class="res-category-header">
+      <div class="res-category-icon">🎼</div>
+      <div class="res-category-title">Sheet Music & Tab Sites</div>
+    </div>
+    <table class="res-table">
+      <tr><td>djangobooks.com/tab</td><td>Free gypsy jazz tab. Minor Swing, Nuages, All of Me, Djangology and dozens more. Primary gypsy tab source.</td><td><span class="res-link free">FREE</span></td></tr>
+      <tr><td>jazzguitar.be/pdf</td><td>Free PDF chord charts, ii-V-I sheets, shell chord diagrams. Print these and keep them on your music stand.</td><td><span class="res-link free">FREE</span></td></tr>
+      <tr><td>flatpickingguitar.com/tab</td><td>Free bluegrass and fiddle tune tab. Angeline the Baker, Whiskey Before Breakfast, Salt Creek, etc.</td><td><span class="res-link free">FREE</span></td></tr>
+      <tr><td>Ultimate Guitar</td><td>Largest tab site. Huge blues library. Quality varies — look for "official" or "pro" tabs.</td><td><span class="res-link free">Free + $6/mo pro</span></td></tr>
+      <tr><td>Musicnotes.com</td><td>Licensed sheet music. Use for accurate lead sheets of jazz standards (Autumn Leaves, All of Me, etc.)</td><td><span class="res-link paid">~$5/song</span></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- LISTENING LIST -->
+<section class="section" id="listening">
+  <div class="section-label">Sunday Listening Curriculum</div>
+  <div class="section-title">Records to Study</div>
+  <p style="color:rgba(232,224,208,0.6); margin-bottom:28px; font-size:15px;">One record per Sunday. Listen with full attention. No guitar.</p>
+
+  <div class="listen-grid">
+    <div class="listen-card">
+      <div class="listen-genre">Blues</div>
+      <h4>BB King — Live at the Regal</h4>
+      <p>The bible of electric blues guitar. Every bend is a lesson.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Blues</div>
+      <h4>SRV — Texas Flood</h4>
+      <p>Hendrix meets blues. Listen for how he uses dynamics and space.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Jazz</div>
+      <h4>Wes Montgomery — Smokin' at the Half Note</h4>
+      <p>The gold standard jazz guitar album. Octaves, chords, single lines.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Jazz</div>
+      <h4>Joe Pass — Virtuoso</h4>
+      <p>Solo jazz guitar perfection. Melody + chords + bass at once.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Gypsy Jazz</div>
+      <h4>Django Reinhardt — Djangology</h4>
+      <p>The source. Listen for the la pompe rhythm underneath everything.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Gypsy Jazz</div>
+      <h4>Bireli Lagrène — Live in Marciac</h4>
+      <p>Modern gypsy jazz at its peak. Breathtaking technique and feel.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Bluegrass</div>
+      <h4>Tony Rice — Manzanita</h4>
+      <p>THE flatpicking record. Every guitar phrase is worth transcribing.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Bluegrass</div>
+      <h4>Doc Watson — On Stage</h4>
+      <p>The father of flatpicking. Simplicity, groove, and perfection.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Jazz-Blues</div>
+      <h4>Jim Hall — Undercurrent</h4>
+      <p>How jazz chords and blues feeling merge into something timeless.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Jazz</div>
+      <h4>Grant Green — Idle Moments</h4>
+      <p>Blue Note blues-jazz guitar. Soulful, spacious, deeply swinging.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Gypsy/Fusion</div>
+      <h4>David Grisman Quintet — DGQ</h4>
+      <p>Where gypsy jazz meets bluegrass. The bridge between your styles.</p>
+    </div>
+    <div class="listen-card">
+      <div class="listen-genre">Bluegrass</div>
+      <h4>Clarence White — Kentucky Colonels</h4>
+      <p>The originator of modern bluegrass lead guitar. Study everything.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MILESTONES -->
+<section class="section" id="milestones">
+  <div class="section-label">Progress Checkpoints</div>
+  <div class="section-title">Where You'll Be</div>
+
+  <div class="milestone-timeline">
+    <div class="milestone">
+      <div class="milestone-period">End of Week 2</div>
+      <h3>The Map Starts to Make Sense</h3>
+      <p>You can name notes on strings 6 & 5. You know the blues scale in 2 positions. Shell chord shapes feel familiar. La pompe rhythm is clunky but happening. You understand what a major scale interval is.</p>
+    </div>
+    <div class="milestone">
+      <div class="milestone-period">End of Week 4</div>
+      <h3>Theory Clicks with Your Playing</h3>
+      <p>You can play a ii-V-I with shell chords and it sounds musical. Your blues improvisations have more vocabulary. Crosspicking starting to feel physical. You understand chord construction. La pompe is groovy.</p>
+    </div>
+    <div class="milestone">
+      <div class="milestone-period">End of Week 8</div>
+      <h3>All Four Styles Accessible</h3>
+      <p>You can comp jazz with drop-2 voicings. Blues solos use chord tones, not just pentatonic. Flatpicking at 100 bpm clean. Minor Swing all the way through rhythm. Modes feel connected to your playing, not academic.</p>
+    </div>
+    <div class="milestone">
+      <div class="milestone-period">End of Week 12</div>
+      <h3>You Sound Like a Different Player</h3>
+      <p>5+ standards you can play rhythm and solo over. A gypsy tune you can perform. Flatpicking 2+ fiddle tunes above 120 bpm. Your blues playing has jazz vocabulary woven in. Theory is something you use, not study.</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div style="background:var(--surface); border-top:1px solid var(--border); text-align:center; padding:28px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--muted);">
+  YOUR GUITAR MASTER PLAN · 12-WEEK CURRICULUM · BLUES · JAZZ · BLUEGRASS · GYPSY JAZZ<br>
+  <span style="color:var(--amber); margin-top:6px; display:block;">30–45 MINUTES/DAY · TRUST THE PROCESS · GO SLOW TO GO FAST</span>
+</div>
+
+</body>
+</html>

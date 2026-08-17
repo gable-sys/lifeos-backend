@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabe's Piano Master Plan</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a2e;min-height:100vh;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:240px;flex-shrink:0;background:#1a1a2e;padding:1.5rem 0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-logo{padding:0 1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sidebar-logo h1{font-size:15px;font-weight:600;color:#fff;line-height:1.4;}
+.sidebar-logo p{font-size:12px;color:rgba(255,255,255,0.5);margin-top:3px;}
+.sidebar-section{padding:1rem 1.25rem 0.25rem;font-size:10px;font-weight:600;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.6);border-left:2px solid transparent;transition:all 0.15s;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.nav-item.active{color:#fff;border-left:2px solid #4a9eff;background:rgba(74,158,255,0.12);}
+.nav-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.content{flex:1;padding:2.5rem 3rem;max-width:900px;}
+.page{display:none;}
+.page.active{display:block;}
+.page-header{margin-bottom:2rem;}
+.page-header h2{font-size:28px;font-weight:700;color:#1a1a2e;margin-bottom:0.25rem;}
+.page-header p{font-size:15px;color:#666;line-height:1.6;}
+.card{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.card-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:0.6rem;}
+.section-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.08em;margin:1.5rem 0 0.75rem;}
+.divider{border:none;border-top:1px solid #e8e6e0;margin:1.75rem 0;}
+.tag{display:inline-block;font-size:11px;font-weight:500;padding:2px 9px;border-radius:99px;margin-right:4px;}
+.tag-green{background:#e8f5e9;color:#2e7d32;}
+.tag-blue{background:#e3f2fd;color:#1565c0;}
+.tag-amber{background:#fff8e1;color:#e65100;}
+.tag-coral{background:#fbe9e7;color:#bf360c;}
+.tag-gray{background:#f5f5f5;color:#555;}
+.tag-dark{background:#1a1a2e;color:#fff;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:#fff;border:1px solid #e8e6e0;border-radius:10px;padding:1rem 1.25rem;}
+.stat-label{font-size:12px;color:#888;margin-bottom:4px;}
+.stat-val{font-size:26px;font-weight:700;color:#1a1a2e;}
+.goal-banner{background:linear-gradient(135deg,#1a1a2e 0%,#2c3e6b 100%);border-radius:14px;padding:1.5rem 2rem;text-align:center;margin-bottom:1.75rem;color:#fff;}
+.goal-banner .piece{font-size:20px;font-weight:700;}
+.goal-banner .timeline{font-size:13px;color:rgba(255,255,255,0.65);margin-top:6px;}
+.check-list{list-style:none;padding:0;}
+.check-list li{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:14px;color:#333;line-height:1.6;border-bottom:1px solid #f0ede8;}
+.check-list li:last-child{border-bottom:none;}
+.check-list li::before{content:"";width:16px;height:16px;border-radius:4px;border:1.5px solid #ccc;flex-shrink:0;margin-top:3px;}
+.block-row{display:flex;border:1px solid #e8e6e0;border-radius:10px;overflow:hidden;margin-bottom:0.85rem;}
+.block-label{width:120px;flex-shrink:0;padding:1rem;display:flex;flex-direction:column;justify-content:center;}
+.block-label .name{font-size:13px;font-weight:600;color:#fff;}
+.block-label .time{font-size:12px;color:rgba(255,255,255,0.7);margin-top:2px;}
+.block-body{flex:1;padding:0.9rem 1.1rem;background:#fff;}
+.block-body strong{font-size:13px;font-weight:600;color:#1a1a2e;display:block;margin-bottom:4px;}
+.block-body ul{padding-left:1.1rem;}
+.block-body li{font-size:13px;color:#444;line-height:1.75;}
+.day-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.day-tab{padding:6px 16px;border-radius:99px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid #ddd;background:#fff;color:#555;transition:all 0.15s;}
+.day-tab:hover{border-color:#999;color:#1a1a2e;}
+.day-tab.active{background:#1a1a2e;color:#fff;border-color:#1a1a2e;}
+.day-content{display:none;}
+.day-content.active{display:block;}
+.rep-table{width:100%;border-collapse:collapse;font-size:13px;}
+.rep-table th{text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.06em;border-bottom:2px solid #e8e6e0;}
+.rep-table td{padding:10px 12px;border-bottom:1px solid #f0ede8;vertical-align:top;color:#333;line-height:1.5;}
+.rep-table tr:last-child td{border-bottom:none;}
+.rep-table tr:hover td{background:#fafaf8;}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:600;background:#e8f0fe;color:#1a56c4;flex-shrink:0;}
+.phase-block{border-left:3px solid;padding:1rem 1rem 0.5rem 1.25rem;margin-bottom:1.25rem;background:#fff;border-radius:0 10px 10px 0;border-top:1px solid #e8e6e0;border-right:1px solid #e8e6e0;border-bottom:1px solid #e8e6e0;}
+.phase-title{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:0.5rem;}
+.book-card{background:#fff;border:1px solid #e8e6e0;border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:0.6rem;}
+.book-name{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:3px;}
+.book-meta{font-size:12px;color:#777;}
+.progress-outer{background:#eee;border-radius:99px;height:5px;margin:0.5rem 0;}
+.progress-inner{height:5px;border-radius:99px;}
+@media(max-width:700px){
+  .app{flex-direction:column;}
+  .sidebar{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;gap:4px;padding:1rem;}
+  .sidebar-logo{display:none;}
+  .sidebar-section{display:none;}
+  .nav-item{border-left:none;border-bottom:2px solid transparent;padding:6px 10px;border-radius:6px;font-size:12px;}
+  .nav-item.active{border-left:none;border-bottom:2px solid #4a9eff;}
+  .content{padding:1.25rem;}
+  .two-col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Gabe's Piano Plan</h1>
+    <p>Blues · Gospel · Classical · Jazz</p>
+  </div>
+  <div class="sidebar-section">Navigation</div>
+  <div class="nav-item active" onclick="showPage('overview')" data-page="overview"><div class="nav-dot" style="background:#4a9eff"></div>Overview</div>
+  <div class="nav-item" onclick="showPage('schedule')" data-page="schedule"><div class="nav-dot" style="background:#56c8a0"></div>Daily schedule</div>
+  <div class="nav-item" onclick="showPage('week1')" data-page="week1"><div class="nav-dot" style="background:#f5a623"></div>Week 1</div>
+  <div class="nav-item" onclick="showPage('repertoire')" data-page="repertoire"><div class="nav-dot" style="background:#b57bee"></div>Repertoire</div>
+  <div class="nav-item" onclick="showPage('blues')" data-page="blues"><div class="nav-dot" style="background:#f87171"></div>Blues & gospel</div>
+  <div class="nav-item" onclick="showPage('theory')" data-page="theory"><div class="nav-dot" style="background:#fb923c"></div>Jazz & theory</div>
+  <div class="nav-item" onclick="showPage('books')" data-page="books"><div class="nav-dot" style="background:#94a3b8"></div>Book library</div>
+  <div class="nav-item" onclick="showPage('videos')" data-page="videos"><div class="nav-dot" style="background:#38bdf8"></div>Video curriculum</div>
+</div>
+
+<div class="content">
+
+<!-- OVERVIEW -->
+<div class="page active" id="page-overview">
+  <div class="page-header">
+    <h2>Your piano master plan</h2>
+    <p>Blues & gospel feel-first player building classical foundation and jazz vocabulary</p>
+  </div>
+  <div class="two-col">
+    <div class="stat-card"><div class="stat-label">Daily practice</div><div class="stat-val">90 min</div></div>
+    <div class="stat-card"><div class="stat-label">Practice blocks</div><div class="stat-val">5 blocks</div></div>
+  </div>
+  <div class="goal-banner">
+    <div class="piece">Schubert — Piano Sonata D. 960 in B♭ major</div>
+    <div class="timeline">Long-term goal &nbsp;·&nbsp; 18–24 months out</div>
+  </div>
+  <div class="section-label">Your strengths</div>
+  <ul class="check-list">
+    <li>Good ear — natural blues and gospel feel</li>
+    <li>Songwriter instincts and some improv ability</li>
+    <li>Basic 7th chord knowledge</li>
+    <li>Can play Gymnopédie hands together</li>
+    <li>Some jazz and pop exposure</li>
+  </ul>
+  <div class="section-label">Gaps to close</div>
+  <ul class="check-list">
+    <li>Bass clef reading needs to become automatic</li>
+    <li>Left hand independence — the main bottleneck right now</li>
+    <li>Chord theory needs to be more fluent</li>
+    <li>Sight reading slow but functional — will improve fast with daily work</li>
+  </ul>
+  <hr class="divider">
+  <div class="card">
+    <div class="card-title">The one rule that changes everything</div>
+    <p style="font-size:14px;color:#444;line-height:1.7;">For the next 8 weeks, learn every piece <strong>from the score</strong> — not by ear. Your ear is a massive asset but right now it's also a crutch stopping your reading from developing. Classical training is your gym, not your destination. You're building toward being a more dangerous version of what you already are.</p>
+  </div>
+</div>
+
+<!-- DAILY SCHEDULE -->
+<div class="page" id="page-schedule">
+  <div class="page-header">
+    <h2>Daily schedule</h2>
+    <p>90 min full session &nbsp;·&nbsp; 60 min: drop Block 5, shorten Block 2 to 8 min</p>
+  </div>
+  <div class="block-row">
+    <div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">12 min</div></div>
+    <div class="block-body"><strong>Hanon + scales</strong><ul><li>Hanon exercises building finger independence and evenness</li><li>Major scales + blues scales in C, G, F — your three blues keys</li><li>Slow and even. Clean beats fast and sloppy every time.</li></ul></div>
+  </div>
+  <div class="block-row">
+    <div class="block-label" style="background:#2c5f8a;"><div class="name">Block 2</div><div class="time">13 min</div></div>
+    <div class="block-body"><strong>Sight reading</strong><ul><li>Always new material — never go back to fix mistakes</li><li>Keep the pulse going even when you miss notes</li><li>Rotate: Mikrokosmos, Alfred Baroque, Clementi, Grieg, Romantic Anthology</li></ul></div>
+  </div>
+  <div class="block-row">
+    <div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">25 min</div></div>
+    <div class="block-body"><strong>Classical repertoire</strong><ul><li>One piece at a time, hands separate then together in small sections</li><li>2–4 weeks per piece minimum — don't rush the list</li><li>From the score only. No YouTube learning for repertoire.</li></ul></div>
+  </div>
+  <div class="block-row">
+    <div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">20 min</div></div>
+    <div class="block-body"><strong>Blues & gospel</strong><ul><li>Junior Mance book, Ethel Caffie-Austin videos, improv</li><li>12-bar blues in C, F, G — every single day, no exceptions</li><li>This is your home turf — getting more organized about what you already do</li></ul></div>
+  </div>
+  <div class="block-row">
+    <div class="block-label" style="background:#5a2d82;"><div class="name">Block 5</div><div class="time">20 min</div></div>
+    <div class="block-body"><strong>Jazz theory</strong><ul><li>Berkeley Jazz Piano + Berkeley Harmony running parallel</li><li>Theory through music you love — not abstract textbook work</li><li>Month 4+: Mark Levine opens up. Month 6+: Dick Hyman.</li></ul></div>
+  </div>
+  <hr class="divider">
+  <div class="section-label">Sight reading rotation — Block 2</div>
+  <ul class="check-list">
+    <li>Mikrokosmos Vol. 2–3 — primary book, best for drilling bass clef</li>
+    <li>Alfred: The Baroque Era</li>
+    <li>Clementi: Introduction to the Art of Playing</li>
+    <li>Grieg: Complete Lyric Pieces</li>
+    <li>Anthology of Romantic Piano Music / World's Greatest Classical Music</li>
+  </ul>
+  <div class="section-label">Block 1 — Hanon scale sequence</div>
+  <ul class="check-list">
+    <li>Week 1–2: Hanon No. 1, hands separate then together at ♩=60</li>
+    <li>Week 3–4: Add Hanon No. 2 hands together</li>
+    <li>Month 2: Exercises 1–5 rotating daily</li>
+    <li>C blues: C – E♭ – F – F# – G – B♭ – C</li>
+    <li>G blues: G – B♭ – C – C# – D – F – G</li>
+    <li>F blues: F – A♭ – B♭ – B – C – E♭ – F</li>
+  </ul>
+</div>
+
+<!-- WEEK 1 -->
+<div class="page" id="page-week1">
+  <div class="page-header">
+    <h2>Week 1 — day by day</h2>
+    <p>Click a day to see the full 90-minute session plan</p>
+  </div>
+  <div class="day-tabs">
+    <div class="day-tab active" onclick="showDay(this,'mon')">Monday</div>
+    <div class="day-tab" onclick="showDay(this,'tue')">Tuesday</div>
+    <div class="day-tab" onclick="showDay(this,'wed')">Wednesday</div>
+    <div class="day-tab" onclick="showDay(this,'thu')">Thursday</div>
+    <div class="day-tab" onclick="showDay(this,'fri')">Friday</div>
+    <div class="day-tab" onclick="showDay(this,'sat')">Saturday</div>
+    <div class="day-tab" onclick="showDay(this,'sun')">Sunday</div>
+  </div>
+
+  <div class="day-content active" id="day-mon">
+    <div class="block-row"><div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">12 min</div></div><div class="block-body"><ul><li>Hanon No. 1 — right hand alone ×2, then left hand alone ×2. Listen for evenness in every finger.</li><li>Hands together ×2 at ♩=60. Every note the same volume.</li><li>C major scale two octaves hands together. Then C blues scale — get the sound in your ear.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#2c5f8a;"><div class="name">Block 2</div><div class="time">13 min</div></div><div class="block-body"><ul><li>Mikrokosmos Vol. 2, piece #1. Hands separate first, then together. Keep moving.</li><li>Goal: 3–4 short pieces. Never stop to fix mistakes. This is bass clef drilling in disguise.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">25 min</div></div><div class="block-body"><ul><li>Schubert Moment Musical No. 3 in F minor — open the score. Spend 5 min just reading it.</li><li>Identify key, time signature, any repeating patterns.</li><li>Left hand only, bars 1–8, very slowly from the score. Pure bass clef work.</li><li>Last 5 min: play Gymnopédie once through for pleasure. You earned it.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Junior Mance Ch. 1 — read the intro. Understand his approach to blues structure.</li><li>Work the first written example, hands together, slowly.</li><li>12-bar blues in C: C7 – F7 – G7. One chord per bar, twice through. Tap your foot. This is your daily ritual.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#5a2d82;"><div class="name">Block 5</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Berkeley Jazz Piano p.1 — read the introduction. Understand how jazz piano thinking differs from classical.</li><li>Work whatever chord exercises appear on pages 1–3.</li><li>Berkeley Jazz Harmony p.1 — just read it tonight. Get the framework.</li></ul></div></div>
+  </div>
+
+  <div class="day-content" id="day-tue">
+    <div class="block-row"><div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">12 min</div></div><div class="block-body"><ul><li>Hanon No. 1 hands together from the start ×2. Focus on fingers 4 and 5 — weakest, most important.</li><li>C major scale two octaves. C blues scale.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#2c5f8a;"><div class="name">Block 2</div><div class="time">13 min</div></div><div class="block-body"><ul><li>Mikrokosmos Vol. 2 — continue where you left off. Same rule: keep moving forward.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">25 min</div></div><div class="block-body"><ul><li>Schubert — left hand bars 1–16 from the score. Slow and deliberate.</li><li>Right hand bars 1–8. Notice the darker, more urgent character compared to Satie.</li><li>Last 5 min: listen to Arthur Rubinstein play Chopin Nocturne Op. 9 No. 2. That's coming.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Junior Mance — continue Ch. 1. Work the next example.</li><li>12-bar in C — try adding a simple right hand melody note while left holds chords.</li><li>Ethel Caffie-Austin: watch one video, pick one thing and apply it immediately at the piano.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#5a2d82;"><div class="name">Block 5</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Berkeley Jazz Piano — continue from where you left off. Work chord exercises.</li><li>Berkeley Jazz Harmony — pages 1–5. Work through the exercises.</li></ul></div></div>
+  </div>
+
+  <div class="day-content" id="day-wed">
+    <div class="block-row"><div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">12 min</div></div><div class="block-body"><ul><li>Hanon No. 1 ×3 hands together. Introduce No. 2 — hands separate only today.</li><li>C major scale, then G major. G blues scale: G – B♭ – C – C# – D – F – G.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#2c5f8a;"><div class="name">Block 2</div><div class="time">13 min</div></div><div class="block-body"><ul><li>Switch to Alfred Baroque Era today. Find the first accessible piece and start reading.</li><li>New harmonic world compared to Mikrokosmos — enjoy the contrast. Same rules: keep moving.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">25 min</div></div><div class="block-body"><ul><li>Schubert — left hand through full first section (~32 bars).</li><li>Hands together bars 1–8 only, very slowly. Right hand floats on top like it's floating.</li><li>Your tempo — don't try to match the recording.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Major triads: C, F, G, D, A, E, B♭ — root position, both hands. Say the note names out loud.</li><li>12-bar blues in C — feel the groove more today. Let it breathe.</li><li>Junior Mance — keep progressing through Ch. 1.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#5a2d82;"><div class="name">Block 5</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Berkeley books — keep progressing. Connect what you played in Block 4 to what's on the theory page.</li></ul></div></div>
+  </div>
+
+  <div class="day-content" id="day-thu">
+    <div class="block-row"><div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">12 min</div></div><div class="block-body"><ul><li>Hanon No. 1 ×2, No. 2 hands together for the first time — slowly.</li><li>C and G major scales hands together.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#2c5f8a;"><div class="name">Block 2</div><div class="time">13 min</div></div><div class="block-body"><ul><li>Back to Mikrokosmos Vol. 2 — keep progressing forward.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">25 min</div></div><div class="block-body"><ul><li>Schubert — hands together through full first section. If it breaks, go back to hands separate. Don't glue hands together until each hand knows its part.</li><li>Last 5 min: open Bach Notebook, find Minuet in G. Just look at it. Listen to a recording.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Minor triads: C, F, G, D, A, E, B♭ minor — root position. Really hear the difference from major.</li><li>12-bar blues in G: G7 – C7 – D7. New key, same form.</li><li>Junior Mance — keep working through examples.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#5a2d82;"><div class="name">Block 5</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Berkeley Jazz Piano — Ch. 1 exercises.</li><li>Berkeley Jazz Harmony — connect the minor triads you just played to what's on the page.</li></ul></div></div>
+  </div>
+
+  <div class="day-content" id="day-fri">
+    <div class="block-row"><div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">12 min</div></div><div class="block-body"><ul><li>Hanon No. 1 and 2, hands together ×2 each.</li><li>Add F major scale today. F blues: F – A♭ – B♭ – B – C – E♭ – F. Now you have all three blues keys: C, G, F.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#2c5f8a;"><div class="name">Block 2</div><div class="time">13 min</div></div><div class="block-body"><ul><li>Clementi — first sonatina or exercise. More melodic than Mikrokosmos. Enjoy the change of character.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">25 min</div></div><div class="block-body"><ul><li>Schubert — full first section hands together. Then 10 min on middle section, left hand first.</li><li>The harmony shifts in the middle section — understand it before adding right hand.</li><li>Bach Notebook Minuet in G: right hand only, bars 1–8 from the score.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Dominant 7th chords: C7, F7, G7 — root position, both hands.</li><li>12-bar blues in F: F7 – B♭7 – C7.</li><li>Junior Mance — blues in different meters. Note how the feeling translates across forms.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#5a2d82;"><div class="name">Block 5</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Berkeley books — keep progressing.</li><li>Last 5 min: just listen. Bill Evans, Oscar Peterson, or Monk. Active listening is curriculum.</li></ul></div></div>
+  </div>
+
+  <div class="day-content" id="day-sat">
+    <div class="block-row"><div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">12 min</div></div><div class="block-body"><ul><li>Hanon No. 1, 2, start looking at No. 3.</li><li>All three scales: C, G, F major. Then all three blues scales in a row. This is your permanent warm-up now.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#2c5f8a;"><div class="name">Block 2</div><div class="time">13 min</div></div><div class="block-body"><ul><li>Free choice day — open World's Greatest Classical Music or the Romantic Anthology. Find something interesting and just read. Explore.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">25 min</div></div><div class="block-body"><ul><li>Schubert — play the whole piece beginning to end, hands together. Use your ear to fill gaps. Keep going.</li><li>First full run-through. It won't be clean — that's the point. You're mapping the territory.</li><li>Bach Minuet in G: both hands, bars 1–8.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">20 min</div></div><div class="block-body"><ul><li>12-bar blues in C, G, and F — once through each. Three minutes total.</li><li>Junior Mance — review everything from this week. Play through all examples you've worked.</li><li>Watch one Otis Spann YouTube video. Sit at the piano. Try to find the root notes of what he's playing.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#5a2d82;"><div class="name">Block 5</div><div class="time">20 min</div></div><div class="block-body"><ul><li>Berkeley books — review this week's material.</li><li>Write down any theory question that came up this week. Try to answer it using the books.</li></ul></div></div>
+  </div>
+
+  <div class="day-content" id="day-sun">
+    <div class="card" style="margin-bottom:1.25rem;border-left:3px solid #f5a623;">
+      <p style="font-size:14px;color:#555;line-height:1.6;">Rest day — 30 to 40 min only. No Block 2 or Block 5. Rest is part of learning. Your brain consolidates during sleep.</p>
+    </div>
+    <div class="block-row"><div class="block-label" style="background:#1a1a2e;"><div class="name">Block 1</div><div class="time">8 min</div></div><div class="block-body"><ul><li>Hanon No. 1 and 2, once each. Maintenance only — don't push it.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1a5276;"><div class="name">Block 3</div><div class="time">15 min</div></div><div class="block-body"><ul><li>Schubert Moment Musical — one clean run through. Notice what's gotten easier since Monday.</li><li>Bach Minuet in G — right hand bars 1–8 from memory if possible.</li></ul></div></div>
+    <div class="block-row"><div class="block-label" style="background:#1e7a45;"><div class="name">Block 4</div><div class="time">12 min</div></div><div class="block-body"><ul><li>12-bar blues in C, G, and F — once through each. Tap your foot.</li><li>Close the books.</li></ul></div></div>
+  </div>
+</div>
+
+<!-- REPERTOIRE -->
+<div class="page" id="page-repertoire">
+  <div class="page-header">
+    <h2>Classical repertoire sequence</h2>
+    <p>Work one piece at a time. 2–4 weeks minimum per piece. Don't rush the list.</p>
+  </div>
+  <table class="rep-table">
+    <thead><tr><th>#</th><th>Piece</th><th>Why it matters</th><th>When</th></tr></thead>
+    <tbody>
+      <tr><td><span class="num">1</span></td><td><strong>Satie — Gymnopédie No. 1</strong></td><td>You know this — use for tone control and smooth left hand</td><td><span class="tag tag-green">Now</span></td></tr>
+      <tr><td><span class="num">2</span></td><td><strong>Schubert — Moment Musical No. 3</strong></td><td>Dark and rhythmic, builds left hand drive. Start here for new work.</td><td><span class="tag tag-green">Now</span></td></tr>
+      <tr><td><span class="num">3</span></td><td>Grieg — Arietta Op. 12 No. 1</td><td>Simple, lyrical, great for score reading</td><td><span class="tag tag-green">Now</span></td></tr>
+      <tr><td><span class="num">4</span></td><td>Grieg — Waltz Op. 12 No. 2</td><td>Rhythmic, builds on Arietta</td><td><span class="tag tag-green">Now</span></td></tr>
+      <tr><td><span class="num">5</span></td><td>Bach — Little Prelude in C BWV 924</td><td>Finger independence, intro to Bach style</td><td><span class="tag tag-blue">Month 2</span></td></tr>
+      <tr><td><span class="num">6</span></td><td>Bach — Notebook: Minuet in G & Musette in D</td><td>Bach voice leading, reading both clefs</td><td><span class="tag tag-blue">Month 2</span></td></tr>
+      <tr><td><span class="num">7</span></td><td>Clementi — Selected Sonatinas</td><td>Classical structure, two-hand coordination</td><td><span class="tag tag-blue">Month 3</span></td></tr>
+      <tr><td><span class="num">8</span></td><td>Chopin — Nocturne Op. 9 No. 2</td><td>Lyrical right hand over flowing left — your natural strength</td><td><span class="tag tag-blue">Month 3</span></td></tr>
+      <tr><td><span class="num">9</span></td><td>Mendelssohn — Songs Without Words Op. 19 No. 1</td><td>Romantic style, expressive playing</td><td><span class="tag tag-blue">Month 4</span></td></tr>
+      <tr><td><span class="num">10</span></td><td>Mozart — Sonata K. 545, 1st movement</td><td>Classical form, evenness, clarity</td><td><span class="tag tag-amber">Month 5</span></td></tr>
+      <tr><td><span class="num">11</span></td><td>Bach — French Suite No. 2, Allemande</td><td>Bach at scale, full voice independence</td><td><span class="tag tag-amber">Month 6</span></td></tr>
+      <tr><td><span class="num">12</span></td><td>Beethoven — Sonata No. 1, 1st movement</td><td>Dramatic, builds technique significantly</td><td><span class="tag tag-amber">Month 8</span></td></tr>
+      <tr><td><span class="num">13</span></td><td>Chopin — Preludes Op. 28 (No. 4, 6, 7, 20)</td><td>Short but deep — expressive range</td><td><span class="tag tag-amber">Month 9</span></td></tr>
+      <tr><td><span class="num">14</span></td><td>Beethoven — Sonata No. 2</td><td>Full sonata commitment</td><td><span class="tag tag-coral">Month 12</span></td></tr>
+      <tr><td><span class="num">15</span></td><td>Bach — Well-Tempered Clavier, Prelude in C</td><td>Summit of early-intermediate Bach</td><td><span class="tag tag-coral">Month 14</span></td></tr>
+      <tr style="background:#fffdf5;"><td><span class="num" style="background:#1a1a2e;color:#fff;">★</span></td><td><strong>Schubert — Piano Sonata D. 960 in B♭ major</strong></td><td>The long-term goal. You'll arrive as a blues player who also loves Schubert — which is a more interesting path anyway.</td><td><span class="tag tag-dark">18–24 mo</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- BLUES & GOSPEL -->
+<div class="page" id="page-blues">
+  <div class="page-header">
+    <h2>Blues & gospel — Block 4</h2>
+    <p>Your home turf. Getting more organized and sophisticated about what you already do naturally.</p>
+  </div>
+  <div class="phase-block" style="border-color:#1e7a45;">
+    <div class="phase-title">Month 1–2 — Blues foundation</div>
+    <ul class="check-list">
+      <li>Junior Mance Ch. 1 — Basic Blues Structures. One example per day.</li>
+      <li>12-bar blues in C, F, G with proper left hand shuffle patterns — not just block chords</li>
+      <li>Ethel Caffie-Austin videos: focus specifically on her left hand comping technique</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#2c5f8a;">
+    <div class="phase-title">Month 2–3 — Gospel & soul</div>
+    <ul class="check-list">
+      <li>One gospel progression per week from Ethel Caffie-Austin</li>
+      <li>Learn one Ray Charles song by ear from the record — "What'd I Say" or "Hit the Road Jack"</li>
+      <li>Add turnarounds at bars 11–12 of the 12-bar</li>
+      <li>Start adding passing chords between your main chords</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#5a2d82;">
+    <div class="phase-title">Month 4+ — Jazz blues crossover</div>
+    <ul class="check-list">
+      <li>Jazz blues chord substitutions connecting blues to jazz vocabulary</li>
+      <li>Mark Levine shell voicings applied to your blues progressions</li>
+      <li>Dick Hyman as a historical survey of how stride and swing evolved from blues</li>
+    </ul>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <div class="card-title">Why the Junior Mance book matters for your songwriting</div>
+    <p style="font-size:14px;color:#444;line-height:1.7;">The Mance book covers blues in waltz time (3/4), 6/8, long meter, and ballad style — not just the standard shuffle. As a songwriter that's gold, because it shows you that the blues feeling is a harmonic and expressive language, not just a rhythm pattern. That directly feeds your composing instincts.</p>
+  </div>
+  <div class="card" style="margin-top:1rem;">
+    <div class="card-title">Daily 12-bar ritual — never skip this</div>
+    <p style="font-size:14px;color:#444;line-height:1.7;">Every single practice session ends with at least one 12-bar blues run-through. Even on rest days. Even when you're tired. This is your foundation and it compounds over time.</p>
+  </div>
+</div>
+
+<!-- JAZZ & THEORY -->
+<div class="page" id="page-theory">
+  <div class="page-header">
+    <h2>Jazz & theory — Block 5</h2>
+    <p>Theory learned through music you love — not abstract textbook grinding.</p>
+  </div>
+  <div class="phase-block" style="border-color:#f5a623;">
+    <div class="phase-title">Month 1–3 — Berkeley Jazz Piano (Santisi)</div>
+    <ul class="check-list">
+      <li>Start page 1, work front to back</li>
+      <li>Chord voicings and jazz piano fundamentals</li>
+      <li>Run parallel with Berkeley Jazz Harmony for the theory backbone</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#38bdf8;">
+    <div class="phase-title">Month 1–6 — Berkeley Book of Jazz Harmony</div>
+    <ul class="check-list">
+      <li>Use as a reference when questions come up — not a front-to-back grind</li>
+      <li>Pick songs you already love, figure out the chords, name them properly, ask why</li>
+      <li>Theory in context is the only way it sticks for feel-first players</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#b57bee;">
+    <div class="phase-title">Month 4+ — Mark Levine: The Jazz Piano Book</div>
+    <ul class="check-list">
+      <li>Chapters 1–4: two-hand voicings, shell voicings — accessible now</li>
+      <li>Apply shell voicings directly to your blues progressions in Block 4</li>
+      <li>The rest of the book unfolds over the next 12 months</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#94a3b8;">
+    <div class="phase-title">Month 3+ — Jazz Standards Note for Note</div>
+    <ul class="check-list">
+      <li>One standard every 4–6 weeks</li>
+      <li>Start with the simplest one — learn just the left hand voicings first</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#1a1a2e;">
+    <div class="phase-title">Month 6+ — Dick Hyman: Century of Jazz Piano</div>
+    <ul class="check-list">
+      <li>Historical survey — stride, swing, bebop chronologically</li>
+      <li>Advanced material — let your technique catch up first</li>
+      <li>Kurt Weill Centennial Anthology opens around the same time — unusual harmony great for songwriting</li>
+    </ul>
+  </div>
+</div>
+
+<!-- BOOK LIBRARY -->
+<div class="page" id="page-books">
+  <div class="page-header">
+    <h2>Book library</h2>
+    <p>Everything you own, organized by role in the plan</p>
+  </div>
+  <div class="section-label">Technique</div>
+  <div class="book-card"><div class="book-name">Hanon: The Virtuoso Pianist</div><div class="book-meta">Block 1 every day — exercises 1–5 to start, building to 1–10</div></div>
+  <div class="book-card"><div class="book-name">Bartók: Mikrokosmos Vol. 2–3</div><div class="book-meta">Primary sight reading book — best for drilling bass clef systematically</div></div>
+  <div class="book-card"><div class="book-name">Clementi: Introduction to the Art of Playing</div><div class="book-meta">Sight reading + early classical repertoire — more melodic than Mikrokosmos</div></div>
+  <div class="section-label">Classical repertoire</div>
+  <div class="book-card"><div class="book-name">Satie: Gymnopédies & Other Works (Dover)</div><div class="book-meta">Repertoire #1 — tone control and left hand smoothness</div></div>
+  <div class="book-card"><div class="book-name">Schubert: Impromptu Moments for Clavier (Peters)</div><div class="book-meta">Repertoire #2 — start here for all new work this week</div></div>
+  <div class="book-card"><div class="book-name">Grieg: Complete Lyric Pieces (Dover)</div><div class="book-meta">Repertoire #3–4 and sight reading rotation</div></div>
+  <div class="book-card"><div class="book-name">Bach: Notebook Selections + Little Preludes & Fugues</div><div class="book-meta">Repertoire #5–6 — on-ramp to Bach's bigger works</div></div>
+  <div class="book-card"><div class="book-name">Bach: Well-Tempered Clavier (Hal Leonard)</div><div class="book-meta">Repertoire #15 — long term goal, ~14 months out</div></div>
+  <div class="book-card"><div class="book-name">Bach: French & English Suites Complete (Schirmer)</div><div class="book-meta">Repertoire #11 — month 6</div></div>
+  <div class="book-card"><div class="book-name">Chopin: Complete Preludes, Nocturnes & Waltzes (Schirmer)</div><div class="book-meta">Repertoire #8 and #13</div></div>
+  <div class="book-card"><div class="book-name">Mendelssohn: Songs Without Words (Schirmer)</div><div class="book-meta">Repertoire #9 — month 4</div></div>
+  <div class="book-card"><div class="book-name">Mozart: Complete Sonatas & Fantasies (Dover)</div><div class="book-meta">Repertoire #10 — month 5</div></div>
+  <div class="book-card"><div class="book-name">Beethoven: Sonata No. 1 & Sonata No. 2</div><div class="book-meta">Repertoire #12 and #14 — months 8 and 12</div></div>
+  <div class="book-card"><div class="book-name">Alfred: The Baroque Era</div><div class="book-meta">Sight reading rotation — Block 2</div></div>
+  <div class="book-card"><div class="book-name">Anthology of Romantic Piano Music (Alfred)</div><div class="book-meta">Sight reading rotation — Block 2</div></div>
+  <div class="book-card"><div class="book-name">World's Greatest Classical Music (Hal Leonard)</div><div class="book-meta">Sight reading rotation — free choice Saturdays</div></div>
+  <div class="section-label">Blues & gospel</div>
+  <div class="book-card"><div class="book-name">Junior Mance: How to Play Blues Piano</div><div class="book-meta">Block 4 primary text, months 1–2. 12-bar, 8-bar, minor blues, waltz blues, ballad style.</div></div>
+  <div class="section-label">Jazz & theory</div>
+  <div class="book-card"><div class="book-name">Berkeley Jazz Piano — Ray Santisi</div><div class="book-meta">Block 5, months 1–3. Start page 1, work through it.</div></div>
+  <div class="book-card"><div class="book-name">Berkeley Book of Jazz Harmony — Mahaland & Hodgennacki</div><div class="book-meta">Block 5, months 1–6. Theory backbone running parallel to Santisi.</div></div>
+  <div class="book-card"><div class="book-name">Mark Levine: The Jazz Piano Book</div><div class="book-meta">Block 5, month 4 onward. Chapters 1–4 accessible now.</div></div>
+  <div class="book-card"><div class="book-name">Dick Hyman: Century of Jazz Piano (Hal Leonard)</div><div class="book-meta">Block 5, month 6+. Historical survey of jazz piano styles.</div></div>
+  <div class="book-card"><div class="book-name">Jazz Standards Note for Note (Hal Leonard)</div><div class="book-meta">One standard every 4–6 weeks from month 3 onward.</div></div>
+  <div class="book-card"><div class="book-name">Kurt Weill: Centennial Anthology (Alfred)</div><div class="book-meta">Month 4–6. Unusual harmony that bridges classical and jazz — great for songwriting.</div></div>
+  <div class="book-card"><div class="book-name">Bronso's Greatest Piano Solos</div><div class="book-meta">Supplemental repertoire — dip in as needed.</div></div>
+</div>
+
+<!-- VIDEO CURRICULUM -->
+<div class="page" id="page-videos">
+  <div class="page-header">
+    <h2>Video curriculum</h2>
+    <p>Rotate through weekly in Block 4. Sit at the piano while you watch.</p>
+  </div>
+  <div class="phase-block" style="border-color:#1e7a45;">
+    <div class="phase-title">Weeks 1–4 — Blues foundation</div>
+    <ul class="check-list">
+      <li><strong>Nahre Sol</strong> — search "Nahre Sol blues piano." Classically trained like you're building toward. Explains the theory behind what she plays in plain language.</li>
+      <li><strong>Piano With Jonny</strong> — search "Piano With Jonny 12 bar blues." Clear instruction on left hand shuffle patterns and the blues scale.</li>
+      <li><strong>Ethel Caffie-Austin</strong> — you're already watching her. Focus specifically on her left hand comping videos. That's your weakness and she addresses it directly.</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#2c5f8a;">
+    <div class="phase-title">Weeks 5–8 — Gospel</div>
+    <ul class="check-list">
+      <li>Ethel Caffie-Austin — continue. Gospel left hand comping is the focus.</li>
+      <li>YouTube search: "gospel piano left hand comping tutorial" — huge community of self-taught players who explain things in plain musical language, not theory jargon.</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#bf360c;">
+    <div class="phase-title">Month 3+ — Blues masters, active listening</div>
+    <p style="font-size:13px;color:#666;margin-bottom:0.75rem;">Not instructional — sit at the piano and try to find the notes as you watch.</p>
+    <ul class="check-list">
+      <li><strong>Otis Spann</strong> live footage — definitive Chicago blues pianist, Junior Mance's generation. Raw and clear to analyze.</li>
+      <li><strong>Ray Charles</strong> — "What'd I Say" live. Watch his left hand specifically. That's a masterclass in independence.</li>
+      <li><strong>Professor Longhair</strong> — "Tipitina." New Orleans blues. Completely different rhythmic feel. Opens your ears wide.</li>
+    </ul>
+  </div>
+  <div class="phase-block" style="border-color:#5a2d82;">
+    <div class="phase-title">Month 4+ — Jazz crossover</div>
+    <ul class="check-list">
+      <li>Oscar Peterson and Adam Makowicz live videos — how jazz pianists absorb blues into their playing</li>
+      <li>FreeJazzLessons.com — Steve Nixon's free content on blues/gospel/jazz crossover piano</li>
+    </ul>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <div class="card-title">Friday listening ritual</div>
+    <p style="font-size:14px;color:#444;line-height:1.7;">Every Friday in Block 4: pick one record and just listen analytically. No playing — just ears. Ray Charles "Genius + Soul = Jazz," Junior Mance live on YouTube, or Professor Longhair "Tipitina." Active listening is part of the curriculum, not optional.</p>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector('[data-page="'+id+'"]').classList.add('active');
+}
+function showDay(el,id){
+  document.querySelectorAll('.day-content').forEach(d=>d.classList.remove('active'));
+  document.querySelectorAll('.day-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('day-'+id).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

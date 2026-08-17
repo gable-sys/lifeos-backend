@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4 Workout Plan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #0b0c0e;
+  --surface: #111316;
+  --surface2: #181b1f;
+  --border: #1f2228;
+  --accent: #c8f135;
+  --red: #ff4d2e;
+  --cyan: #2efff0;
+  --purple: #b07eff;
+  --orange: #ff9f2e;
+  --green: #4af77a;
+  --yellow: #ffd93d;
+  --text: #eef0f3;
+  --muted: #555b66;
+  --muted2: #3a3f4a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; padding-bottom: 60px; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; opacity: 0.5; }
+.wrap { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 0 16px; }
+
+header { padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.header-inner { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.title-block h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: clamp(3rem, 12vw, 5rem); line-height: 0.9; text-transform: uppercase; }
+.title-block h1 .line1 { color: var(--text); }
+.title-block h1 .line2 { -webkit-text-stroke: 1.5px var(--accent); color: transparent; }
+.title-block .sub { margin-top: 10px; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.goal-pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-end; }
+.pill { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 9px; border-radius: 3px; border: 1px solid; }
+.pill.g1 { border-color: var(--accent); color: var(--accent); }
+.pill.g2 { border-color: var(--red); color: var(--red); }
+.pill.g3 { border-color: var(--cyan); color: var(--cyan); }
+.pill.g4 { border-color: var(--orange); color: var(--orange); }
+.pill.g5 { border-color: var(--green); color: var(--green); }
+.pill.g6 { border-color: var(--yellow); color: var(--yellow); }
+
+.week-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 24px; }
+.strip-day { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 7px 3px; text-align: center; cursor: pointer; transition: all 0.15s ease; }
+.strip-day:hover, .strip-day.active { border-color: var(--accent); background: rgba(200,241,53,0.06); }
+.strip-day.rest-strip { opacity: 0.5; cursor: default; }
+.strip-day .s-label { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.strip-day.active .s-label { color: var(--accent); }
+.strip-day .s-dot { width: 6px; height: 6px; border-radius: 50%; margin: 4px auto 0; }
+
+.days { display: flex; flex-direction: column; gap: 10px; }
+.day-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; animation: fadeUp 0.3s ease both; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.day-card:nth-child(1){animation-delay:.04s}.day-card:nth-child(2){animation-delay:.08s}.day-card:nth-child(3){animation-delay:.12s}.day-card:nth-child(4){animation-delay:.16s}.day-card:nth-child(5){animation-delay:.20s}.day-card:nth-child(6){animation-delay:.24s}.day-card:nth-child(7){animation-delay:.28s}
+
+.day-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; transition: background 0.15s; }
+.day-header:hover { background: var(--surface2); }
+.day-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 2rem; line-height: 1; color: var(--muted2); min-width: 30px; text-align: center; }
+.day-card.open .day-num { color: var(--accent); }
+.day-meta { flex: 1; }
+.day-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.day-theme { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.focus-dots { display: flex; gap: 5px; margin-top: 5px; }
+.fdot { width: 6px; height: 6px; border-radius: 50%; }
+.chevron-icon { color: var(--muted); font-size: 0.9rem; transition: transform 0.2s ease; flex-shrink: 0; }
+.day-card.open .chevron-icon { transform: rotate(180deg); color: var(--accent); }
+
+.day-body { display: none; padding: 0 16px 18px; border-top: 1px solid var(--border); }
+.day-card.open .day-body { display: block; }
+
+.session-note { font-size: 0.76rem; color: var(--muted); margin: 12px 0 14px; line-height: 1.6; padding-left: 10px; border-left: 2px solid var(--border); font-style: italic; }
+
+.neck-block { background: rgba(74,247,122,0.06); border: 1px solid rgba(74,247,122,0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 6px; }
+.neck-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+.neck-steps { display: flex; flex-direction: column; gap: 4px; }
+.neck-step { font-size: 0.76rem; color: var(--text); line-height: 1.4; }
+.neck-step span { color: var(--green); font-weight: 600; margin-right: 6px; }
+
+.daily-block { background: rgba(255,217,61,0.06); border: 1px solid rgba(255,217,61,0.2); border-radius: 8px; padding: 12px 14px; margin-top: 12px; }
+.daily-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--yellow); margin-bottom: 8px; }
+.daily-note { font-size: 0.76rem; color: var(--text); line-height: 1.5; }
+
+.section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; margin-top: 14px; }
+
+.exercise-list { display: flex; flex-direction: column; gap: 6px; }
+.ex-row { display: flex; align-items: center; gap: 10px; background: var(--surface2); border-radius: 8px; padding: 9px 12px; border: 1px solid var(--border); }
+.ex-row.hl { border-color: rgba(200,241,53,0.25); background: rgba(200,241,53,0.04); }
+.ex-row.hl-red { border-color: rgba(255,77,46,0.25); background: rgba(255,77,46,0.04); }
+.ex-row.hl-yellow { border-color: rgba(255,217,61,0.25); background: rgba(255,217,61,0.04); }
+
+.ex-icon { font-size: 0.95rem; flex-shrink: 0; width: 20px; text-align: center; }
+.ex-info { flex: 1; }
+.ex-name { font-weight: 500; font-size: 0.85rem; line-height: 1.2; }
+.ex-tip { font-size: 0.68rem; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+.ex-sets { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.82rem; color: var(--accent); flex-shrink: 0; text-align: right; min-width: 68px; }
+.ex-sets.red { color: var(--red); }
+.ex-sets.cyan { color: var(--cyan); }
+.ex-sets.orange { color: var(--orange); }
+.ex-sets.green { color: var(--green); }
+.ex-sets.yellow { color: var(--yellow); }
+.ex-sets.purple { color: var(--purple); }
+
+.zone2-block { background: rgba(176,126,255,0.08); border: 1px solid rgba(176,126,255,0.2); border-radius: 10px; padding: 14px; margin-top: 12px; }
+.zone2-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--purple); margin-bottom: 4px; }
+.zone2-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 10px; font-style: italic; }
+.zone2-steps { display: flex; flex-direction: column; gap: 5px; }
+.zone2-step { display: flex; gap: 8px; font-size: 0.78rem; line-height: 1.4; }
+.zone2-step .rs-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.76rem; color: var(--muted); min-width: 18px; padding-top: 1px; }
+
+.sprint-block { background: rgba(255,159,46,0.08); border: 1px solid rgba(255,159,46,0.25); border-radius: 10px; padding: 14px; margin-top: 12px; }
+.sprint-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 1rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--orange); margin-bottom: 4px; }
+.sprint-sub { font-size: 0.72rem; color: var(--muted); margin-bottom: 10px; font-style: italic; }
+.sprint-steps { display: flex; flex-direction: column; gap: 5px; }
+.sprint-step { display: flex; gap: 8px; font-size: 0.78rem; line-height: 1.4; }
+.sprint-step .rs-num { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.76rem; color: var(--muted); min-width: 18px; padding-top: 1px; }
+
+.rest-card { background: var(--surface); border: 1px solid #1a1a1a; border-radius: 12px; padding: 20px 16px; text-align: center; }
+.rest-label { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+.rest-sub { font-size: 0.75rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+.new-badge { display: inline-block; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(255,217,61,0.15); color: var(--yellow); border: 1px solid rgba(255,217,61,0.3); border-radius: 3px; padding: 1px 5px; margin-left: 5px; vertical-align: middle; }
+.key-badge { display: inline-block; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(200,241,53,0.15); color: var(--accent); border: 1px solid rgba(200,241,53,0.3); border-radius: 3px; padding: 1px 5px; margin-left: 5px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="header-inner">
+      <div class="title-block">
+        <h1><div class="line1">WEEK FOUR</div><div class="line2">PROGRAM</div></h1>
+        <p class="sub">Dumbbells · Pull-up bar · Chairs · Running shoes · Sun–Sat</p>
+      </div>
+      <div class="goal-pills">
+        <span class="pill g1">Wider Shoulders</span>
+        <span class="pill g2">Chest + Dips</span>
+        <span class="pill g3">Visible Abs</span>
+        <span class="pill g4">Sprint Power</span>
+        <span class="pill g5">Bigger Neck</span>
+        <span class="pill g6">Bigger Arms</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="week-strip">
+    <div class="strip-day active" onclick="scrollToDay(0)"><div class="s-label">Sun</div><div class="s-dot" style="background:var(--purple)"></div></div>
+    <div class="strip-day" onclick="scrollToDay(1)"><div class="s-label">Mon</div><div class="s-dot" style="background:var(--accent)"></div></div>
+    <div class="strip-day" onclick="scrollToDay(2)"><div class="s-label">Tue</div><div class="s-dot" style="background:var(--green)"></div></div>
+    <div class="strip-day" onclick="scrollToDay(3)"><div class="s-label">Wed</div><div class="s-dot" style="background:var(--accent)"></div></div>
+    <div class="strip-day" onclick="scrollToDay(4)"><div class="s-label">Thu</div><div class="s-dot" style="background:var(--orange)"></div></div>
+    <div class="strip-day" onclick="scrollToDay(5)"><div class="s-label">Fri</div><div class="s-dot" style="background:var(--accent)"></div></div>
+    <div class="strip-day rest-strip" onclick="scrollToDay(6)"><div class="s-label">Sat</div><div class="s-dot" style="background:#333"></div></div>
+  </div>
+
+  <div class="days" id="days">
+
+    <!-- SUNDAY ZONE 2 -->
+    <div class="day-card open" id="day-0">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">01</div>
+        <div class="day-meta">
+          <div class="day-name">Sunday (Today) — Zone 2 + Abs + Daily Hit</div>
+          <div class="day-theme">Aerobic base · Core · Quick pull-up/push-up hit</div>
+          <div class="focus-dots">
+            <div class="fdot" style="background:var(--purple)"></div>
+            <div class="fdot" style="background:var(--cyan)"></div>
+            <div class="fdot" style="background:var(--yellow)"></div>
+          </div>
+        </div>
+        <div class="chevron-icon">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="session-note">Light opener. Zone 2 burns fat without touching muscle. Quick pull-up and push-up hits keep the daily stimulus going even on cardio days — do them whenever, on and off throughout the day.</div>
+
+        <div class="section-label">🔥 Warm-up + Neck</div>
+        <div class="neck-block">
+          <div class="neck-title">💪 Isometric Neck Holds — 2 rounds, trap-neutral</div>
+          <div class="neck-steps">
+            <div class="neck-step"><span>Forward</span>Hand on forehead. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Backward</span>Hand on back of head. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Left + Right</span>Hand on each temple. Push and resist. 15 sec each.</div>
+          </div>
+        </div>
+
+        <div class="zone2-block">
+          <div class="zone2-title">🚶 Zone 2 — 25–30 min</div>
+          <div class="zone2-sub">Heart rate 60–70% max. Conversational the whole time. Pick one or rotate.</div>
+          <div class="zone2-steps">
+            <div class="zone2-step"><span class="rs-num">A.</span><span><b>Marching in place</b> — knees high, arms pumping, steady rhythm.</span></div>
+            <div class="zone2-step"><span class="rs-num">B.</span><span><b>Step-ups on a chair</b> — continuous, alternate leading leg every minute.</span></div>
+            <div class="zone2-step"><span class="rs-num">C.</span><span><b>Shadow boxing</b> — light continuous movement, feet moving, hands up.</span></div>
+            <div class="zone2-step"><span class="rs-num">D.</span><span><b>Slow burpees</b> — deliberate pace. If you can't talk, slow down.</span></div>
+            <div class="zone2-step"><span class="rs-num">💡</span><span>Speak a full sentence out loud to check. Can't talk = too hard. Effortless = push slightly more.</span></div>
+          </div>
+        </div>
+
+        <div class="daily-block">
+          <div class="daily-title">⚡ Daily Hit — Anytime Throughout the Day</div>
+          <div class="daily-note">On and off while working, watching TV, whatever. Don't time it — just do them when you feel like it. This is how you stay in a constant anabolic state.</div>
+        </div>
+        <div class="exercise-list" style="margin-top:8px;">
+          <div class="ex-row hl-yellow"><div class="ex-icon">↑</div><div class="ex-info"><div class="ex-name">Pull-ups — any grip</div><div class="ex-tip">Wide, chin, neutral — mix it up. Just keep doing sets throughout the day.</div></div><div class="ex-sets yellow">3–5 × max</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Push-ups — any style</div><div class="ex-tip">Wide, diamond, pike — whatever. Spread them out across the day.</div></div><div class="ex-sets yellow">3–5 × max</div></div>
+        </div>
+
+        <div class="section-label">🔥 Abs Block</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Hanging Knee Raises</div><div class="ex-tip">Tuck pelvis at top. Controlled. Don't swing.</div></div><div class="ex-sets cyan">3 × 20</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Leg Raises (floor)</div><div class="ex-tip">Lower back pressed down. Control the descent.</div></div><div class="ex-sets cyan">3 × 18</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Plank Hold</div><div class="ex-tip">Max effort. Go to failure on last set.</div></div><div class="ex-sets cyan">3 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Bicycle Crunches</div><div class="ex-tip">Slow deliberate rotation. Elbow to opposite knee.</div></div><div class="ex-sets cyan">3 × 25</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Hollow Body Hold</div><div class="ex-tip">Lower back pressed to floor. Arms overhead, legs low.</div></div><div class="ex-sets cyan">3 × 40s</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONDAY -->
+    <div class="day-card" id="day-1">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">02</div>
+        <div class="day-meta">
+          <div class="day-name">Monday — Shoulders Heavy + Chest + Triceps + Abs</div>
+          <div class="day-theme">Push day · Dips · Tricep finisher · All 3 delt heads</div>
+          <div class="focus-dots">
+            <div class="fdot" style="background:var(--accent)"></div>
+            <div class="fdot" style="background:var(--red)"></div>
+            <div class="fdot" style="background:var(--yellow)"></div>
+            <div class="fdot" style="background:var(--cyan)"></div>
+          </div>
+        </div>
+        <div class="chevron-icon">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="session-note">Biggest push day. Shoulders first, chest second, triceps finish it off. Triceps make up 2/3 of your upper arm — direct work here makes arms look significantly bigger.</div>
+
+        <div class="section-label">🔥 Warm-up + Neck</div>
+        <div class="neck-block">
+          <div class="neck-title">💪 Isometric Neck Holds — 2 rounds</div>
+          <div class="neck-steps">
+            <div class="neck-step"><span>Forward</span>Hand on forehead. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Backward</span>Hand on back of head. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Left + Right</span>Hand on each temple. Push and resist. 15 sec each.</div>
+          </div>
+        </div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">〇</div><div class="ex-info"><div class="ex-name">Pendulum swings + arm circles</div><div class="ex-tip">Both shoulders. Full range warm-up before loading.</div></div><div class="ex-sets green">3 min</div></div>
+          <div class="ex-row"><div class="ex-icon">〇</div><div class="ex-info"><div class="ex-name">Light lateral raises (no weight)</div><div class="ex-tip">20 slow reps. Activate medial delt before loading.</div></div><div class="ex-sets green">2 × 20</div></div>
+        </div>
+
+        <div class="section-label">💪 Shoulders — All 3 Heads</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Dumbbell Overhead Press</div><div class="ex-tip">Shoulders packed DOWN. Push heavy. Don't shrug at lockout.</div></div><div class="ex-sets">4 × 8–10</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Lateral Raises — Drop set</div><div class="ex-tip">12 full reps then 12 partial (halfway up). Stop at shoulder height — above that is traps.</div></div><div class="ex-sets">4 × 12+12p</div></div>
+          <div class="ex-row hl"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Elevated Pike Push-ups <span class="key-badge">key</span></div><div class="ex-tip">Feet on chair, hips high, oil applied. Nose to floor slowly. Stop short of lockout.</div></div><div class="ex-sets">4 × 12</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Bent-over Rear Delt Fly</div><div class="ex-tip">Back parallel to floor. 3-sec negative. Shoulders stay packed down.</div></div><div class="ex-sets">4 × 15</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Arnold Press</div><div class="ex-tip">Palms face you, rotate out as you press. All 3 delt heads.</div></div><div class="ex-sets">3 × 10</div></div>
+        </div>
+
+        <div class="section-label">🏋️ Chest Block</div>
+        <div class="exercise-list">
+          <div class="ex-row hl-red"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Chair Dips <span class="new-badge">new</span></div><div class="ex-tip">Lean slightly forward for chest emphasis. Lower to 90° elbows. Control the descent.</div></div><div class="ex-sets red">4 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Wide Grip Push-ups</div><div class="ex-tip">Full chest stretch at bottom. Max reps.</div></div><div class="ex-sets red">3 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Dumbbell Floor Press</div><div class="ex-tip">3 sec descent. Squeeze at top.</div></div><div class="ex-sets red">4 × 12</div></div>
+          <div class="ex-row"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Dumbbell Chest Fly (floor)</div><div class="ex-tip">Arc motion. Feel the stretch across the chest.</div></div><div class="ex-sets red">3 × 12</div></div>
+        </div>
+
+        <div class="section-label">💪 Tricep Finisher <span class="new-badge" style="font-size:0.6rem">arms</span></div>
+        <div class="exercise-list">
+          <div class="ex-row hl-yellow"><div class="ex-icon">〉</div><div class="ex-info"><div class="ex-name">Overhead Tricep Extension</div><div class="ex-tip">One dumbbell (15 lb) behind head, both hands. Elbows in tight. Lower slowly, press to full extension. Best tricep stretch available.</div></div><div class="ex-sets yellow">3 × 12</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">〉</div><div class="ex-info"><div class="ex-name">Tricep Kickbacks</div><div class="ex-tip">Hinge forward, upper arm pinned to side. Extend arm fully back. Squeeze at full extension. Slow negative.</div></div><div class="ex-sets yellow">3 × 15 each</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">〉</div><div class="ex-info"><div class="ex-name">Diamond Push-ups</div><div class="ex-tip">Hands form diamond under chest. Go to failure. Tricep and inner chest burnout.</div></div><div class="ex-sets yellow">2 × max</div></div>
+        </div>
+
+        <div class="section-label">🔥 Abs Block</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Hanging Knee Raises</div><div class="ex-tip">Tuck pelvis at top. Controlled. Don't swing.</div></div><div class="ex-sets cyan">3 × 20</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Plank</div><div class="ex-tip">Squeeze glutes and abs. Beat last week's hold.</div></div><div class="ex-sets cyan">3 × 60s</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Leg Raises (floor)</div><div class="ex-tip">Lower back pressed down. Slow controlled descent.</div></div><div class="ex-sets cyan">3 × 20</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TUESDAY -->
+    <div class="day-card" id="day-2">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">03</div>
+        <div class="day-meta">
+          <div class="day-name">Tuesday — Pull-ups + Biceps + Abs</div>
+          <div class="day-theme">Pull focus · Bicep finisher · V-taper · Core</div>
+          <div class="focus-dots">
+            <div class="fdot" style="background:var(--green)"></div>
+            <div class="fdot" style="background:var(--yellow)"></div>
+            <div class="fdot" style="background:var(--cyan)"></div>
+          </div>
+        </div>
+        <div class="chevron-icon">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="session-note">Pull day with direct bicep work. Chin-ups and rows already hit biceps indirectly — the finisher isolates them. Curls on pull day, triceps on push day. That's how arms grow.</div>
+
+        <div class="section-label">🔥 Warm-up + Neck</div>
+        <div class="neck-block">
+          <div class="neck-title">💪 Isometric Neck Holds — 2 rounds</div>
+          <div class="neck-steps">
+            <div class="neck-step"><span>Forward</span>Hand on forehead. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Backward</span>Hand on back of head. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Left + Right</span>Hand on each temple. Push and resist. 15 sec each.</div>
+          </div>
+        </div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">〇</div><div class="ex-info"><div class="ex-name">Dead hangs</div><div class="ex-tip">2 × 30s. Shoulder decompression. Don't skip.</div></div><div class="ex-sets green">2 × 30s</div></div>
+          <div class="ex-row"><div class="ex-icon">〇</div><div class="ex-info"><div class="ex-name">Scapular pull-ups</div><div class="ex-tip">Depress shoulder blades only. Lat activation.</div></div><div class="ex-sets green">2 × 8</div></div>
+        </div>
+
+        <div class="section-label">💪 Pull-up Block</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">↑</div><div class="ex-info"><div class="ex-name">Wide-Grip Pull-ups</div><div class="ex-tip">Widest grip. Full hang to chin over bar. Personal best attempt.</div></div><div class="ex-sets">4 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">↑</div><div class="ex-info"><div class="ex-name">Chin-ups (underhand)</div><div class="ex-tip">Biceps and lower lats. Push for more reps than last week.</div></div><div class="ex-sets">3 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">↑</div><div class="ex-info"><div class="ex-name">Neutral Grip Pull-ups</div><div class="ex-tip">Palms face each other. Hits brachialis — makes arms look thicker from front. Swap for extra chin-ups if no neutral grip.</div></div><div class="ex-sets">3 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">↑</div><div class="ex-info"><div class="ex-name">Dumbbell Bent-over Row</div><div class="ex-tip">Hinge at hip. Pull elbow to hip — not upward. No shrugging at top.</div></div><div class="ex-sets">4 × 12 each</div></div>
+          <div class="ex-row"><div class="ex-icon">↑</div><div class="ex-info"><div class="ex-name">Rear Delt Fly (bent over)</div><div class="ex-tip">3-sec negative. Shoulders stay down. Key for rear shoulder width.</div></div><div class="ex-sets">4 × 15</div></div>
+        </div>
+
+        <div class="section-label">💪 Bicep Finisher <span class="new-badge" style="font-size:0.6rem">arms</span></div>
+        <div class="exercise-list">
+          <div class="ex-row hl-yellow"><div class="ex-icon">〈</div><div class="ex-info"><div class="ex-name">Dumbbell Curl (standard)</div><div class="ex-tip">Supinate at the top — rotate palm fully upward. Squeeze hard. Slow negative (3 sec down). No swinging.</div></div><div class="ex-sets yellow">3 × 12 each</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">〈</div><div class="ex-info"><div class="ex-name">Hammer Curl</div><div class="ex-tip">Palms face each other the whole time. Hits brachialis and brachioradialis — adds thickness and that peak from the side.</div></div><div class="ex-sets yellow">3 × 12 each</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">〈</div><div class="ex-info"><div class="ex-name">Concentration Curl</div><div class="ex-tip">Elbow braced against inner thigh. Full range. Peak contraction at top. Isolates the bicep completely.</div></div><div class="ex-sets yellow">2 × 12 each</div></div>
+        </div>
+
+        <div class="section-label">🔥 Abs Block</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Hanging Knee Raises</div><div class="ex-tip">Tuck pelvis at top. Don't swing.</div></div><div class="ex-sets cyan">3 × 20</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Plank Hold</div><div class="ex-tip">Max effort every set.</div></div><div class="ex-sets cyan">3 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Side Plank</div><div class="ex-tip">Stack feet. Lift hip. Don't sag.</div></div><div class="ex-sets cyan">3 × 40s each</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Bicycle Crunches</div><div class="ex-tip">Slow rotation. Elbow to opposite knee.</div></div><div class="ex-sets cyan">3 × 25</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEDNESDAY -->
+    <div class="day-card" id="day-3">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">04</div>
+        <div class="day-meta">
+          <div class="day-name">Wednesday — Shoulders + Chest + Triceps + Legs</div>
+          <div class="day-theme">Second shoulder session · Dips · Tricep work · Legs activated</div>
+          <div class="focus-dots">
+            <div class="fdot" style="background:var(--accent)"></div>
+            <div class="fdot" style="background:var(--red)"></div>
+            <div class="fdot" style="background:var(--yellow)"></div>
+            <div class="fdot" style="background:var(--cyan)"></div>
+          </div>
+        </div>
+        <div class="chevron-icon">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="session-note">Second shoulder session. High frequency is what brings up lagging delts. Tricep finisher again — two push days means two tricep sessions this week. That's how arms grow fast.</div>
+
+        <div class="section-label">🔥 Warm-up + Neck</div>
+        <div class="neck-block">
+          <div class="neck-title">💪 Isometric Neck Holds — 2 rounds</div>
+          <div class="neck-steps">
+            <div class="neck-step"><span>Forward</span>Hand on forehead. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Backward</span>Hand on back of head. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Left + Right</span>Hand on each temple. Push and resist. 15 sec each.</div>
+          </div>
+        </div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">〇</div><div class="ex-info"><div class="ex-name">Arm circles + pendulum swings</div><div class="ex-tip">Full shoulder warm-up before loading.</div></div><div class="ex-sets green">3 min</div></div>
+        </div>
+
+        <div class="section-label">💪 Shoulders</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Dumbbell Overhead Press</div><div class="ex-tip">Shoulders packed down. Beat Monday's reps.</div></div><div class="ex-sets">4 × 10</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Lateral Raises</div><div class="ex-tip">Slow and controlled. Lead with pinky. Stop at shoulder height.</div></div><div class="ex-sets">4 × 15</div></div>
+          <div class="ex-row hl"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Elevated Pike Push-ups <span class="key-badge">key</span></div><div class="ex-tip">Feet elevated, hips high, oil applied. Slow descent. Stop short of lockout.</div></div><div class="ex-sets">3 × 12</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Bent-over Rear Delt Fly</div><div class="ex-tip">Slow negative. Shoulders stay down. Don't rush.</div></div><div class="ex-sets">3 × 15</div></div>
+        </div>
+
+        <div class="section-label">🏋️ Chest Block</div>
+        <div class="exercise-list">
+          <div class="ex-row hl-red"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Chair Dips <span class="new-badge">new</span></div><div class="ex-tip">Lean slightly forward for chest focus. Lower to 90° elbows. Control the descent.</div></div><div class="ex-sets red">4 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Dumbbell Floor Press</div><div class="ex-tip">3 sec descent. Full press at top.</div></div><div class="ex-sets red">4 × 12</div></div>
+          <div class="ex-row"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Push-up to T-rotation</div><div class="ex-tip">Push-up then rotate to side plank. Chest + obliques + stability.</div></div><div class="ex-sets red">3 × 8 each</div></div>
+        </div>
+
+        <div class="section-label">💪 Tricep Finisher <span class="new-badge" style="font-size:0.6rem">arms</span></div>
+        <div class="exercise-list">
+          <div class="ex-row hl-yellow"><div class="ex-icon">〉</div><div class="ex-info"><div class="ex-name">Overhead Tricep Extension</div><div class="ex-tip">One dumbbell behind head, both hands. Elbows in tight. Slow descent, full extension at top.</div></div><div class="ex-sets yellow">3 × 12</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">〉</div><div class="ex-info"><div class="ex-name">Tricep Kickbacks</div><div class="ex-tip">Upper arm pinned to side. Extend fully back. Squeeze at lockout. Slow negative.</div></div><div class="ex-sets yellow">3 × 15 each</div></div>
+        </div>
+
+        <div class="section-label">🦵 Light Legs Finisher</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Bodyweight Squats</div><div class="ex-tip">Full depth. Pause at bottom.</div></div><div class="ex-sets cyan">3 × 20</div></div>
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Reverse Lunges</div><div class="ex-tip">Step back, not forward. Torso upright.</div></div><div class="ex-sets cyan">3 × 12 each</div></div>
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Glute Bridges</div><div class="ex-tip">Drive through heels. Squeeze at top for 1 sec.</div></div><div class="ex-sets cyan">3 × 20</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THURSDAY SPRINTS -->
+    <div class="day-card" id="day-4">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">05</div>
+        <div class="day-meta">
+          <div class="day-name">Thursday — Indoor Sprints + Legs + Abs + Daily Hit</div>
+          <div class="day-theme">Testosterone · Explosive power · Leg burn · Core · Daily pull-ups</div>
+          <div class="focus-dots">
+            <div class="fdot" style="background:var(--orange)"></div>
+            <div class="fdot" style="background:var(--cyan)"></div>
+            <div class="fdot" style="background:var(--yellow)"></div>
+          </div>
+        </div>
+        <div class="chevron-icon">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="session-note">Sprint day — all-out effort every round. The 40 sec rest is not optional. Abs after legs while you're already warm. Pull-ups and push-ups throughout the day on top of this.</div>
+
+        <div class="section-label">🔥 Warm-up + Neck</div>
+        <div class="neck-block">
+          <div class="neck-title">💪 Isometric Neck Holds — 2 rounds</div>
+          <div class="neck-steps">
+            <div class="neck-step"><span>Forward</span>Hand on forehead. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Backward</span>Hand on back of head. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Left + Right</span>Hand on each temple. Push and resist. 15 sec each.</div>
+          </div>
+        </div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">〇</div><div class="ex-info"><div class="ex-name">Light jog in place + leg swings</div><div class="ex-tip">2 min. Get legs and hips warm before explosive work.</div></div><div class="ex-sets green">2 min</div></div>
+        </div>
+
+        <div class="sprint-block">
+          <div class="sprint-title">⚡ Burpee Intervals — 8 Rounds</div>
+          <div class="sprint-sub">Best indoor testosterone trigger — same hormonal response as outdoor sprints</div>
+          <div class="sprint-steps">
+            <div class="sprint-step"><span class="rs-num">1.</span><span>20 sec ON — burpees at max effort. Jump at top, chest to floor at bottom. Every rep explosive.</span></div>
+            <div class="sprint-step"><span class="rs-num">2.</span><span>40 sec OFF — stand still, breathe, recover fully. Actually rest — this is where testosterone spikes.</span></div>
+            <div class="sprint-step"><span class="rs-num">3.</span><span>8 rounds. About 8 min total. Round 8 should be as explosive as round 1.</span></div>
+            <div class="sprint-step"><span class="rs-num">💡</span><span>Can substitute jump squats or high knees — same protocol, same effort.</span></div>
+          </div>
+        </div>
+
+        <div class="section-label">🦵 Leg Finisher</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Jump Squats</div><div class="ex-tip">Squat down, explode up, land soft.</div></div><div class="ex-sets orange">3 × 15</div></div>
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Bulgarian Split Squat (rear foot elevated)</div><div class="ex-tip">Back foot on chair. Front leg does the work.</div></div><div class="ex-sets orange">3 × 12 each</div></div>
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Dumbbell Romanian Deadlift</div><div class="ex-tip">Hinge at hip. Hamstring stretch. 15 lb each. Slow descent.</div></div><div class="ex-sets orange">3 × 12</div></div>
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Wall Sit</div><div class="ex-tip">90 degrees. Hold till failure.</div></div><div class="ex-sets orange">2 × max</div></div>
+        </div>
+
+        <div class="section-label">🔥 Abs Finisher</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Hanging Knee Raises</div><div class="ex-tip">Tuck pelvis. Controlled. Don't swing.</div></div><div class="ex-sets cyan">3 × 20</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Plank Hold</div><div class="ex-tip">Max effort. Go to failure on last set.</div></div><div class="ex-sets cyan">3 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◎</div><div class="ex-info"><div class="ex-name">Leg Raises (floor)</div><div class="ex-tip">Lower back pressed down. Slow controlled descent.</div></div><div class="ex-sets cyan">3 × 18</div></div>
+        </div>
+
+        <div class="daily-block" style="margin-top:14px;">
+          <div class="daily-title">⚡ Daily Hit — Throughout the Day</div>
+          <div class="daily-note">On and off while working. Pull-ups and push-ups anytime. These don't interfere with the sprint session — they're separate stimulus on top of it.</div>
+        </div>
+        <div class="exercise-list" style="margin-top:8px;">
+          <div class="ex-row hl-yellow"><div class="ex-icon">↑</div><div class="ex-info"><div class="ex-name">Pull-ups — any grip</div><div class="ex-tip">Spread throughout the day. Never to complete failure — leave 1-2 reps in the tank each set.</div></div><div class="ex-sets yellow">3–5 × max</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Push-ups — any style</div><div class="ex-tip">Wide, diamond, pike — mix it up throughout the day.</div></div><div class="ex-sets yellow">3–5 × max</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FRIDAY -->
+    <div class="day-card" id="day-5">
+      <div class="day-header" onclick="toggleDay(this)">
+        <div class="day-num">06</div>
+        <div class="day-meta">
+          <div class="day-name">Friday — Shoulders + Chest + Biceps + Legs</div>
+          <div class="day-theme">Third shoulder session · Bicep finisher · End the week strong</div>
+          <div class="focus-dots">
+            <div class="fdot" style="background:var(--accent)"></div>
+            <div class="fdot" style="background:var(--red)"></div>
+            <div class="fdot" style="background:var(--yellow)"></div>
+            <div class="fdot" style="background:var(--cyan)"></div>
+          </div>
+        </div>
+        <div class="chevron-icon">▼</div>
+      </div>
+      <div class="day-body">
+        <div class="session-note">Third shoulder session. Rest day tomorrow — push hard today. Bicep finisher here because you haven't hit them since Tuesday and arms need the frequency too.</div>
+
+        <div class="section-label">🔥 Warm-up + Neck</div>
+        <div class="neck-block">
+          <div class="neck-title">💪 Isometric Neck Holds — 2 rounds</div>
+          <div class="neck-steps">
+            <div class="neck-step"><span>Forward</span>Hand on forehead. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Backward</span>Hand on back of head. Push and resist. 15 sec.</div>
+            <div class="neck-step"><span>Left + Right</span>Hand on each temple. Push and resist. 15 sec each.</div>
+          </div>
+        </div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">〇</div><div class="ex-info"><div class="ex-name">Pendulum swings + arm circles</div><div class="ex-tip">Full shoulder warm-up.</div></div><div class="ex-sets green">3 min</div></div>
+        </div>
+
+        <div class="section-label">💪 Shoulders</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Dumbbell Overhead Press</div><div class="ex-tip">Heaviest effort of the week. Shoulders packed down. Push hard.</div></div><div class="ex-sets">4 × 8–10</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Lateral Raises — Drop set</div><div class="ex-tip">12 full then 12 partial. Lead with pinky. Stop at shoulder height.</div></div><div class="ex-sets">4 × 12+12p</div></div>
+          <div class="ex-row hl"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Elevated Pike Push-ups <span class="key-badge">key</span></div><div class="ex-tip">Feet elevated, hips high, oil applied. Slow descent. Stop short of lockout.</div></div><div class="ex-sets">4 × 12</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Bent-over Rear Delt Fly</div><div class="ex-tip">3-sec negative. Shoulders packed down. Rear delt width.</div></div><div class="ex-sets">4 × 15</div></div>
+          <div class="ex-row"><div class="ex-icon">△</div><div class="ex-info"><div class="ex-name">Arnold Press</div><div class="ex-tip">Palms face you, rotate out as you press. All 3 delt heads.</div></div><div class="ex-sets">3 × 10</div></div>
+        </div>
+
+        <div class="section-label">🏋️ Chest Block</div>
+        <div class="exercise-list">
+          <div class="ex-row hl-red"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Chair Dips <span class="new-badge">new</span></div><div class="ex-tip">Lean slightly forward. Lower to 90° elbows. Rest day tomorrow — go to failure on last set.</div></div><div class="ex-sets red">4 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Wide Grip Push-ups</div><div class="ex-tip">Full chest stretch at bottom. Max reps.</div></div><div class="ex-sets red">3 × max</div></div>
+          <div class="ex-row"><div class="ex-icon">◻</div><div class="ex-info"><div class="ex-name">Dumbbell Floor Press</div><div class="ex-tip">3 sec descent. Squeeze at top. Beat Wednesday's reps.</div></div><div class="ex-sets red">4 × 12</div></div>
+        </div>
+
+        <div class="section-label">💪 Bicep Finisher <span class="new-badge" style="font-size:0.6rem">arms</span></div>
+        <div class="exercise-list">
+          <div class="ex-row hl-yellow"><div class="ex-icon">〈</div><div class="ex-info"><div class="ex-name">Dumbbell Curl (standard)</div><div class="ex-tip">Supinate at top. Slow 3-sec negative. No swinging. Full range.</div></div><div class="ex-sets yellow">3 × 12 each</div></div>
+          <div class="ex-row hl-yellow"><div class="ex-icon">〈</div><div class="ex-info"><div class="ex-name">Hammer Curl</div><div class="ex-tip">Palms face each other. Hits brachialis — arm thickness from the side.</div></div><div class="ex-sets yellow">3 × 12 each</div></div>
+        </div>
+
+        <div class="section-label">🦵 Light Legs Finisher</div>
+        <div class="exercise-list">
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Walking Lunges</div><div class="ex-tip">12 steps per leg. Hip flexor stretch at bottom.</div></div><div class="ex-sets cyan">3 × 12 each</div></div>
+          <div class="ex-row"><div class="ex-icon">▽</div><div class="ex-info"><div class="ex-name">Calf Raises</div><div class="ex-tip">Full range. Slow at top. On a step if available.</div></div><div class="ex-sets cyan">3 × 25</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAT REST -->
+    <div class="rest-card" id="day-6">
+      <div class="rest-label">💤 Saturday — Full Rest</div>
+      <div class="rest-sub">6 days of training. Shoulders, chest, arms, legs, abs — everything got hit. Eat protein. Sleep 8+ hrs. This is when every adaptation locks in. Don't train today.</div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:28px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px 16px;">
+    <div style="font-family:'Barlow Condensed',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); margin-bottom:10px;">📌 Week 4 Rules</div>
+    <div style="display:flex; flex-direction:column; gap:7px;">
+      <div style="font-size:0.8rem; color:var(--text); line-height:1.5; padding-left:10px; border-left:2px solid var(--yellow);">Arms — curls on pull days (Tue + Fri), triceps on push days (Mon + Wed). This is the frequency that builds arms fast.</div>
+      <div style="font-size:0.8rem; color:var(--text); line-height:1.5; padding-left:10px; border-left:2px solid var(--red);">Chair dips — lean slightly forward for chest emphasis. 90° elbow depth. No lower or you stress the shoulder joint.</div>
+      <div style="font-size:0.8rem; color:var(--text); line-height:1.5; padding-left:10px; border-left:2px solid var(--yellow);">Daily pull-ups and push-ups — spread throughout the day on and off. Never to complete failure. Leave 1-2 reps in the tank each set so you can keep doing them all day.</div>
+      <div style="font-size:0.8rem; color:var(--text); line-height:1.5; padding-left:10px; border-left:2px solid var(--accent);">Lateral raises — lead with pinky, stop at shoulder height. Above that recruits traps not delts.</div>
+      <div style="font-size:0.8rem; color:var(--text); line-height:1.5; padding-left:10px; border-left:2px solid var(--green);">Neck holds every session — 2 rounds, 15 sec each direction. Trap-neutral. 2 min total.</div>
+      <div style="font-size:0.8rem; color:var(--text); line-height:1.5; padding-left:10px; border-left:2px solid var(--orange);">Burpee intervals — 20 sec max, 40 sec full rest. Walk the recovery. That's where testosterone spikes.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleDay(header) {
+  header.parentElement.classList.toggle('open');
+}
+function scrollToDay(index) {
+  document.querySelectorAll('.strip-day').forEach((c,i) => c.classList.toggle('active', i === index));
+  const day = document.getElementById('day-' + index);
+  if (day) {
+    day.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (day.classList.contains('day-card') && !day.classList.contains('open')) day.classList.add('open');
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two-Year Reading Curriculum — Complete with Sciences</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: #0e0c0a;
+  color: #e8e0d0;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 60px 40px 100px;
+}
+
+/* HEADER */
+.site-header {
+  border-bottom: 1px solid #2a2520;
+  padding-bottom: 40px;
+  margin-bottom: 48px;
+}
+
+.site-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #f0e8d8;
+  margin-bottom: 10px;
+}
+
+.site-header .tagline {
+  font-size: 17px;
+  font-style: italic;
+  color: #7a6e60;
+  margin-bottom: 24px;
+}
+
+.header-stats {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.header-stats span {
+  font-size: 13px;
+  color: #5a5048;
+}
+
+.header-stats span b { color: #c8983a; font-weight: 600; }
+
+/* KEY */
+.key-box {
+  background: #141210;
+  border: 1px solid #2a2520;
+  padding: 20px 24px;
+  margin-bottom: 44px;
+}
+
+.key-box h3 {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5a5048;
+  margin-bottom: 14px;
+}
+
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 24px;
+}
+
+.key-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #8a7d6e;
+}
+
+.dot {
+  width: 10px; height: 10px;
+  border-radius: 50%; flex-shrink: 0;
+}
+
+.d-now    { background: #c8983a; }
+.d-1      { background: #9e2a1c; }
+.d-2      { background: #7a8a5a; }
+.d-3      { background: #5a7a8a; }
+.d-4      { background: #3a3028; border: 1px solid #5a5048; }
+.d-tech   { background: #3d9960; }
+.d-sci    { background: #4a7a9a; }
+.d-b      { background: #7a5a9a; }
+
+/* BLOOM NOTE */
+.bloom-note {
+  border-left: 3px solid #c8983a;
+  padding: 18px 22px;
+  margin: 28px 0;
+  background: #121008;
+}
+.bloom-note .label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #c8983a;
+  margin-bottom: 8px;
+}
+.bloom-note p {
+  font-size: 15px;
+  font-style: italic;
+  color: #7a6e60;
+  line-height: 1.75;
+}
+.bloom-note p strong { color: #c8b878; font-style: normal; }
+
+/* SECTION LABELS */
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #9e2a1c;
+  margin-bottom: 6px;
+}
+
+h2.quarter-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f0e8d8;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.quarter-desc {
+  font-size: 15px;
+  font-style: italic;
+  color: #7a6e60;
+  margin-bottom: 24px;
+}
+
+/* TIER HEADERS */
+.tier-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 10px;
+}
+.tier-header .dot { width: 8px; height: 8px; }
+.tier-header span {
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #5a5048;
+}
+
+/* BOOK ENTRIES */
+.book {
+  padding: 13px 0 13px 18px;
+  border-bottom: 1px solid #1e1a16;
+  border-left: 2px solid #2a2520;
+  margin-bottom: 2px;
+}
+.book:last-child { border-bottom: none; }
+.book.now   { border-left-color: #c8983a; }
+.book.tier1 { border-left-color: #9e2a1c; }
+.book.tier2 { border-left-color: #7a8a5a; }
+.book.tier3 { border-left-color: #5a7a8a; }
+.book.tier4 { border-left-color: #2a2520; }
+.book.tech  { border-left-color: #3d9960; }
+.book.sci   { border-left-color: #4a7a9a; }
+.book.buddh { border-left-color: #7a5a9a; }
+
+.book .author {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5a5048;
+  margin-bottom: 2px;
+}
+.book .in-progress {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #c8983a;
+  border: 1px solid #c8983a;
+  padding: 1px 6px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.book .title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: #f0e8d8;
+  margin-bottom: 4px;
+  line-height: 1.25;
+}
+.book .note {
+  font-size: 13.5px;
+  color: #6a5e52;
+  line-height: 1.6;
+}
+.book .note.bloom-text { color: #9a8868; font-style: italic; }
+
+/* SCIENCE BOX */
+.sci-box {
+  background: #090e14;
+  border: 1px solid #1a2a3a;
+  border-top: 2px solid #4a7a9a;
+  padding: 24px 28px;
+  margin: 36px 0;
+}
+.sci-box .label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6aaa c8;
+  color: #6aaac8;
+  margin-bottom: 10px;
+}
+.sci-box .intro {
+  font-size: 15px;
+  font-style: italic;
+  color: #5a7a8a;
+  margin-bottom: 20px;
+  line-height: 1.7;
+}
+.sci-box .intro strong { color: #8ab8d0; font-style: normal; }
+
+/* TECH BOX */
+.tech-box {
+  background: #0a150e;
+  border: 1px solid #1a3a26;
+  padding: 20px 24px;
+  margin: 28px 0;
+}
+.tech-box .label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #3d9960;
+  margin-bottom: 12px;
+}
+.tech-box ul { list-style: none; }
+.tech-box li {
+  font-size: 14px;
+  color: #4a7a5a;
+  padding: 5px 0;
+  border-bottom: 1px solid #1a3a26;
+  line-height: 1.5;
+}
+.tech-box li:last-child { border-bottom: none; }
+.tech-box li b { color: #3d9960; font-weight: 600; }
+
+/* BUDDHIST BOX */
+.buddhist-box {
+  background: #0e0a14;
+  border: 1px solid #2a1a3a;
+  border-top: 2px solid #7a5a9a;
+  padding: 22px 26px;
+  margin: 36px 0;
+}
+.buddhist-box .label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #9a7ab4;
+  margin-bottom: 8px;
+}
+.buddhist-box .intro {
+  font-size: 15px;
+  font-style: italic;
+  color: #6a5a78;
+  margin-bottom: 18px;
+  line-height: 1.7;
+}
+.buddhist-box .intro strong { color: #b48ad4; font-style: normal; }
+
+/* NOW BOX */
+.now-box {
+  background: #121008;
+  border: 1px solid #3a3020;
+  border-top: 2px solid #c8983a;
+  padding: 22px 26px;
+  margin-bottom: 44px;
+}
+.now-box .label {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #c8983a;
+  margin-bottom: 8px;
+}
+.now-box .intro {
+  font-size: 15px;
+  font-style: italic;
+  color: #7a6e60;
+  margin-bottom: 18px;
+  line-height: 1.7;
+}
+
+/* YEAR BREAK */
+.year-break {
+  text-align: center;
+  padding: 60px 0;
+  margin: 60px 0;
+  border-top: 1px solid #2a2520;
+  border-bottom: 1px solid #2a2520;
+}
+.year-break .year-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 96px;
+  font-weight: 700;
+  color: #1e1a16;
+  line-height: 1;
+  display: block;
+}
+.year-break .year-label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #9e2a1c;
+  display: block;
+  margin-top: 10px;
+}
+.year-break .year-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-style: italic;
+  color: #c8983a;
+  display: block;
+  margin-top: 8px;
+}
+
+.quarter-break {
+  border-top: 1px solid #2a2520;
+  margin: 52px 0 38px;
+}
+
+/* RESERVE */
+.reserve h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #f0e8d8;
+  margin-bottom: 8px;
+}
+.reserve .intro {
+  font-size: 15px;
+  font-style: italic;
+  color: #7a6e60;
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+.reserve-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.res-col h3 {
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #c8983a;
+  margin-bottom: 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #2a2520;
+}
+.res-col ul { list-style: none; }
+.res-col li {
+  font-size: 14px;
+  color: #5a5048;
+  padding: 4px 0;
+  border-bottom: 1px solid #1a1612;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* PARALLEL */
+.parallel-section { border: 1px solid #2a2520; margin: 44px 0; }
+.parallel-section .label {
+  padding: 14px 22px;
+  background: #141210;
+  border-bottom: 1px solid #2a2520;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #c8983a;
+}
+.parallel-body {
+  padding: 20px 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 22px;
+}
+.par-col h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: #e8e0d0;
+  margin-bottom: 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #2a2520;
+}
+.par-col ul { list-style: none; }
+.par-col li {
+  font-size: 13px;
+  color: #5a5048;
+  padding: 4px 0;
+  font-style: italic;
+  border-bottom: 1px solid #1a1612;
+  line-height: 1.4;
+}
+
+/* SCIENCE CURRICULUM OVERVIEW */
+.sci-overview {
+  background: #090e14;
+  border: 1px solid #1a2a3a;
+  padding: 32px 36px;
+  margin: 48px 0;
+}
+.sci-overview h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f0e8d8;
+  margin-bottom: 8px;
+}
+.sci-overview .sci-intro {
+  font-size: 15px;
+  font-style: italic;
+  color: #5a7a8a;
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+.sci-overview .sci-intro strong { color: #8ab8d0; font-style: normal; }
+
+.sci-field {
+  margin-bottom: 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid #1a2a3a;
+}
+.sci-field:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.sci-field h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: #8ab8d0;
+  margin-bottom: 6px;
+}
+
+.sci-field .field-desc {
+  font-size: 14px;
+  font-style: italic;
+  color: #5a7a8a;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+.sci-field .book { border-left-color: #4a7a9a; }
+
+/* FOOTER */
+footer {
+  margin-top: 64px;
+  padding-top: 28px;
+  border-top: 1px solid #2a2520;
+  text-align: center;
+}
+footer p {
+  font-size: 13px;
+  color: #3a3028;
+  letter-spacing: 0.08em;
+  line-height: 2;
+}
+footer .quote {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: #5a5048;
+  max-width: 520px;
+  margin: 0 auto 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .page { padding: 28px 18px 60px; }
+  .site-header h1 { font-size: 32px; }
+  .key-grid { grid-template-columns: 1fr; }
+  .reserve-cols { grid-template-columns: 1fr; }
+  .parallel-body { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<header class="site-header">
+  <h1>Two-Year Reading Curriculum</h1>
+  <p class="tagline">Literature · Philosophy · History · Sciences · Mathematics · Buddhist Philosophy · Technology<br>Built from your library. Starting where you already are.</p>
+  <div class="header-stats">
+    <span><b>~2.5 years</b> total</span>
+    <span><b>2 hrs</b> daily reading</span>
+    <span><b>~40</b> deep reads</span>
+    <span><b>~90</b> substantial</span>
+    <span><b>~150</b> encounter texts</span>
+    <span><b>Science track</b> woven throughout</span>
+  </div>
+</header>
+
+<!-- KEY -->
+<div class="key-box">
+  <h3>Colour Key</h3>
+  <div class="key-grid">
+    <div class="key-item"><div class="dot d-now"></div>Currently reading — continue &amp; finish</div>
+    <div class="key-item"><div class="dot d-1"></div>Tier I — Deep read, full attention (3–6 weeks)</div>
+    <div class="key-item"><div class="dot d-2"></div>Tier II — Substantial, full text (1–3 weeks)</div>
+    <div class="key-item"><div class="dot d-3"></div>Tier III — Encounter, key selections (days)</div>
+    <div class="key-item"><div class="dot d-4"></div>Tier IV — Dip, always available, no schedule</div>
+    <div class="key-item"><div class="dot d-sci"></div>Science track — integrated throughout</div>
+    <div class="key-item"><div class="dot d-tech"></div>Tech track — parallel, daily 20–30 min</div>
+    <div class="key-item"><div class="dot d-b"></div>Buddhist strand — parallel, daily</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCIENCE CURRICULUM OVERVIEW          -->
+<!-- ══════════════════════════════════════ -->
+
+<div class="sci-overview">
+  <h2>The Science Curriculum</h2>
+  <p class="sci-intro">The great universities of the 20th century — Chicago, Harvard, Oxford, Caltech — required all students regardless of major to engage with the primary texts of science. Not popular summaries, but <strong>the actual books that changed how humanity understood itself and the natural world</strong>. This is that curriculum, rebuilt from your library and supplemented with the classic texts that belong alongside it. The science track runs as a parallel strand — one science book always in progress alongside the main literary curriculum, roughly one per month.</p>
+
+  <!-- FIELD 1: EVOLUTION & NATURAL HISTORY -->
+  <div class="sci-field">
+    <h3>Evolution, Natural History &amp; Biology</h3>
+    <p class="field-desc">Darwin is the anchor — primary text, not summary. Everything else in biology and ecology is a response to or extension of the argument Darwin made in 1859. The great field naturalists come next: Gilbert White inventing ecology before the word existed, Audubon and Peterson transforming how we see birds, E.O. Wilson synthesizing everything.</p>
+
+    <div class="book sci">
+      <div class="author">Charles Darwin — Tier I · Read in Q5 (Year Two)</div>
+      <div class="title">The Origin of Species</div>
+      <div class="note bloom-text">Harvard, Chicago, and Oxford all required this as a primary text — not for biology students but for everyone. The argument is one of the great achievements of human prose reasoning. Read the Introduction, Chapters I, III, IV, and XIV at minimum. Chapter XIV's conclusion is the most quietly devastating ending in English scientific prose. "There is grandeur in this view of life..."</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Richard Dawkins — Tier I · Read in Q5 alongside Darwin</div>
+      <div class="title">The Selfish Gene</div>
+      <div class="note">Published 1976, instantly canonical. Dawkins reformulates Darwinian evolution at the level of the gene rather than the organism and introduces the concept of the meme. The finest work of science writing of the late 20th century. Read Darwin first, then Dawkins — the conversation between them is the education.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">E.O. Wilson — Tier II · Q6</div>
+      <div class="title">On Human Nature · The Diversity of Life</div>
+      <div class="note">Wilson's Pulitzer-winning synthesis of evolutionary biology and human behaviour. On Human Nature (1978) asks the hardest question: what does evolution imply about ethics, religion, and the meaning of human existence? The Diversity of Life is his great ecological work — the most eloquent account of what we are losing.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Ernst Mayr — Tier II · Q6</div>
+      <div class="title">What Evolution Is</div>
+      <div class="note">Mayr was the greatest evolutionary biologist of the 20th century. This late summary (2001) is the clearest account of what evolution actually is — written for the intelligent general reader after a lifetime of research. Read after Darwin and Dawkins to consolidate.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Stephen Jay Gould — Tier III · Dip throughout</div>
+      <div class="title">The Panda's Thumb · Ever Since Darwin</div>
+      <div class="note">Gould's collected essays — the best science essays written in English since Huxley. Pull these out whenever the longer books feel too dense. Each essay is complete and brilliant on its own.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Francis Crick — Tier III · Q6</div>
+      <div class="title">What Mad Pursuit · The Double Helix (Watson)</div>
+      <div class="note">The discovery of DNA as personal narrative. Watson's account is more dramatic and controversial; Crick's is more reflective. Read both for the inside view of how science actually works — ambition, competition, luck, and genuine insight.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 2: ECOLOGY & NATURAL HISTORY WRITING -->
+  <div class="sci-field">
+    <h3>Ecology, Natural History &amp; the Literature of Place</h3>
+    <p class="field-desc">The great tradition of natural history writing is as much literature as science. Gilbert White's Selborne (1789) invented ecology before Darwin. Thoreau's Walden invented environmental consciousness. Rachel Carson's Silent Spring changed the world. These books belong alongside Montaigne and Emerson — they are essays in the fullest sense.</p>
+
+    <div class="book sci">
+      <div class="author">Gilbert White — Tier I · Q3 (read alongside the ancients)</div>
+      <div class="title">The Natural History of Selborne</div>
+      <div class="note bloom-text">Published 1789. The founding text of modern ecology — and one of the most beautiful books in English prose. A curate in a Hampshire village observing the natural world for thirty years with inexhaustible patience and curiosity. Virginia Woolf loved it. Keats read it. Darwin said it taught him how to observe. One letter per day alongside the primary reading.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Aldo Leopold — Tier I · Q4</div>
+      <div class="title">A Sand County Almanac</div>
+      <div class="note bloom-text">The founding text of modern environmental ethics. Leopold invented the concept of "the land ethic" — the idea that human beings have moral obligations to the natural community, not just to other people. Required reading in ecology, philosophy, and environmental studies at every major university since its publication in 1949. The most important environmental book ever written.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Rachel Carson — Tier I · Q7</div>
+      <div class="title">Silent Spring · The Sea Around Us</div>
+      <div class="note">Silent Spring (1962) launched the modern environmental movement — one book that changed government policy, public consciousness, and the fate of species. The Sea Around Us won the National Book Award and is Carson at her most lyrical. Both required reading in the great university curricula after 1962.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Henry David Thoreau — Tier II · Q2</div>
+      <div class="title">Walden</div>
+      <div class="note">The foundational text of American environmental consciousness. Thoreau spent two years in a cabin by a pond and transformed the experience into the most influential piece of American prose after the founding documents. Read it slowly — one chapter per day alongside the Greeks. It is also philosophy: how to live, what is essential, what can be discarded.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Henry Beston — Tier II · Q3</div>
+      <div class="title">The Outermost House</div>
+      <div class="note">A year alone in a dune cottage on Cape Cod, 1928. The finest book of nature writing in the American tradition after Thoreau. Required at many New England universities through the 1970s. "The world today is sick to its thin blood for lack of elemental things."</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Konrad Lorenz — Tier II · Q5</div>
+      <div class="title">King Solomon's Ring · On Aggression</div>
+      <div class="note">Lorenz won the Nobel Prize for his work on animal behaviour (ethology). King Solomon's Ring is the most charming science book of the 20th century — Lorenz writing about jackdaws, geese, and dogs with the combination of rigour and affection that only the greatest naturalists achieve. On Aggression is the harder, more controversial book: animal aggression and what it implies about human violence.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Bernd Heinrich — Tier II · Q6</div>
+      <div class="title">Mind of the Raven · A Year in the Maine Woods</div>
+      <div class="note">Heinrich is the heir to both Lorenz and Thoreau — a biologist who can write. Mind of the Raven is his masterpiece: fifteen years studying raven intelligence. A Year in the Maine Woods is his Walden. Both required in natural history courses at major universities from the 1990s onward.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">John Muir — Tier III · Dip throughout</div>
+      <div class="title">My First Summer in the Sierra · The Mountains of California</div>
+      <div class="note">The founding texts of the American conservation movement. Muir's prose at its best is rapturous — the Sierra Nevada as religious experience, ecological observation as devotion. Dip in whenever you need air.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Robert Macfarlane — Tier III · Dip</div>
+      <div class="title">The Wild Places · Mountains of the Mind</div>
+      <div class="note">The finest living writer in the British natural history tradition. Macfarlane writes about landscape with the same precision and feeling that the best novelists bring to character. Pull these in when reading about ecology becomes too abstract.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 3: ORNITHOLOGY -->
+  <div class="sci-field">
+    <h3>Ornithology &amp; the Art of Observation</h3>
+    <p class="field-desc">Ornithology is the oldest and most democratic of the natural sciences — it requires only patience, attention, and a willingness to be outside. The great ornithology books are also masterpieces of observation and description. They teach you to see.</p>
+
+    <div class="book sci">
+      <div class="author">Roger Tory Peterson — Tier II · Begin Year One</div>
+      <div class="title">A Field Guide to the Birds</div>
+      <div class="note">Peterson's 1934 field guide invented the modern field guide and launched the mass popular interest in birds. Not just a reference book — a philosophy of attention. Keep it with you. The practice of identifying birds is a practice in the same careful observation that the best scientists and writers share. Use it in the field alongside anything else you are reading.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Peter Matthiessen — Tier I · Q6</div>
+      <div class="title">The Wind Birds · The Snow Leopard</div>
+      <div class="note bloom-text">The Wind Birds is Matthiessen's account of the shorebirds of the Atlantic Coast — ornithology as meditation on impermanence and migration. The Snow Leopard is his masterpiece: a journey into the Himalaya in search of the snow leopard, and a journey into grief, Buddhism, and the nature of attention. It belongs simultaneously in the science strand and the Buddhist strand.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">J.A. Baker — Tier I · Any quarter</div>
+      <div class="title">The Peregrine</div>
+      <div class="note bloom-text">Published 1967. The greatest work of ornithology ever written — and one of the great works of English prose, full stop. Baker spent ten years following peregrine falcons across the Essex landscape and wrote a book of extraordinary intensity. Robert Macfarlane calls it "one of the finest nature books ever written." Werner Herzog considers it essential reading for filmmakers. Read it in autumn, outdoors when possible.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Audubon — Tier III · Encounter</div>
+      <div class="title">The Birds of America — Selected Plates + Ornithological Biography</div>
+      <div class="note">Audubon's great plates are visual documents of the natural world at a moment before industrial transformation. The Ornithological Biography — the text that accompanies the plates — is extraordinary nature writing. Encounter the plates in a library edition if possible.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Mark Cocker — Tier III</div>
+      <div class="title">Birds Britannica · Crow Country</div>
+      <div class="note">Cocker is the great historian of human relationships with birds. Birds Britannica is encyclopedic; Crow Country is a sustained meditation on rooks and landscape. Both teach you how to look.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 4: ANTHROPOLOGY -->
+  <div class="sci-field">
+    <h3>Anthropology &amp; Human Origins</h3>
+    <p class="field-desc">Anthropology was required at every major university from the 1920s through the 1970s as the essential supplement to history — it asks what human beings are across cultures and time, rather than within a single tradition. The foundational texts remain essential.</p>
+
+    <div class="book sci">
+      <div class="author">James George Frazer — Tier I · Q4</div>
+      <div class="title">The Golden Bough — Abridged Edition</div>
+      <div class="note bloom-text">The most influential work of comparative anthropology ever written. Frazer collected the myths, rituals, and magical beliefs of cultures across the world and showed their underlying structural similarities — the dying and rising god, the scapegoat, the sacred king. Eliot used it to write The Waste Land. Joyce used it to write Ulysses. Required at every major university 1900–1970. Read the abridged edition; it is still enormous and magnificent.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Claude Lévi-Strauss — Tier I · Q6</div>
+      <div class="title">Tristes Tropiques</div>
+      <div class="note bloom-text">The most beautiful book ever written by an anthropologist. Lévi-Strauss's account of his fieldwork among the indigenous peoples of Brazil — and simultaneously a meditation on civilization, modernity, and the vanishing of the world. Sartre called it "the most beautiful book of the second half of the 20th century." Required at Paris, Cambridge, and Harvard from the 1950s.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Ruth Benedict — Tier II · Q5</div>
+      <div class="title">Patterns of Culture</div>
+      <div class="note">Benedict's 1934 masterwork arguing that cultures, like individuals, have distinct personalities and that no culture's values are universal. One of the most important books of the 20th century for breaking down cultural parochialism. Required at American universities from the 1930s through the 1970s.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Bronisław Malinowski — Tier II · Q5</div>
+      <div class="title">Argonauts of the Western Pacific</div>
+      <div class="note">The founding text of modern participant-observation fieldwork. Malinowski spent two years in the Trobriand Islands and produced a detailed account of the Kula exchange system that transformed anthropology. Required at Oxford and Cambridge from the 1920s.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">E.E. Evans-Pritchard — Tier II · Q5</div>
+      <div class="title">Witchcraft, Oracles and Magic Among the Azande</div>
+      <div class="note">The classic of British social anthropology. Evans-Pritchard shows how the Azande system of belief in witchcraft is internally consistent and rational — a devastating challenge to Western assumptions of cognitive superiority. Required at Oxford from the 1930s.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Desmond Morris — Tier III · Q4</div>
+      <div class="title">The Naked Ape</div>
+      <div class="note">Morris's 1967 popular account of human beings as a species of primate — examining courting, rearing, fighting, feeding, and comfort-seeking through the lens of zoology. A bestseller that changed how educated people thought about human nature. Read alongside E.O. Wilson.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Jared Diamond — Tier II · Q7</div>
+      <div class="title">Guns, Germs and Steel</div>
+      <div class="note">Diamond's Pulitzer Prize–winning account of why some civilizations came to dominate others — not through racial or intellectual superiority but through geographical accidents of domesticable plants and animals, navigable rivers, and continental orientation. One of the most important books of popular science of the late 20th century.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Richard Wrangham — Tier III · Q7</div>
+      <div class="title">Catching Fire: How Cooking Made Us Human</div>
+      <div class="note">Wrangham's argument that cooking — not tool use or language — is the defining adaptation of the human species. Recent science that belongs with the classical anthropology.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 5: PHYSICS & COSMOLOGY -->
+  <div class="sci-field">
+    <h3>Physics, Cosmology &amp; Mathematics</h3>
+    <p class="field-desc">Every educated person in the 20th century was expected to understand, at a conceptual level, what Newton achieved, what Einstein revised, and what quantum mechanics implies. Not to solve the equations — but to understand the argument. The books below make this possible without a mathematics degree.</p>
+
+    <div class="book sci">
+      <div class="author">Richard Feynman — Tier I · Q5</div>
+      <div class="title">The Feynman Lectures on Physics — Vol. I (selected chapters) · Surely You're Joking, Mr. Feynman!</div>
+      <div class="note bloom-text">Feynman's Lectures are the greatest work of physics pedagogy ever produced. Vol. I (mechanics, radiation, heat) — read Chapters 1–6 and you will understand what physics is trying to do and why it is beautiful. Surely You're Joking is the autobiography — the most enjoyable science book of the 20th century. Required at Caltech and imitated everywhere.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Albert Einstein — Tier II · Q5</div>
+      <div class="title">Relativity: The Special and General Theory</div>
+      <div class="note">Einstein's own popular exposition, written for the general reader. The argument that space and time are not absolute but relative to the observer — explained by the man who discovered it, in language that does not require calculus. Required at Chicago and Harvard as a primary text in their general education programmes.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">George Gamow — Tier II · Q6</div>
+      <div class="title">One Two Three... Infinity · Mr. Tompkins in Paperback</div>
+      <div class="note">Gamow was the greatest populariser of physics in the mid-20th century. One Two Three... Infinity covers mathematics, physics, biology and cosmology with extraordinary range. Mr. Tompkins makes relativity and quantum mechanics tangible through a series of dreams. Both were standard texts in 20th century university general education.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Stephen Hawking — Tier II · Q7</div>
+      <div class="title">A Brief History of Time</div>
+      <div class="note">The best-selling science book of the late 20th century — and a genuine work of popular science that delivers what it promises. Black holes, the Big Bang, the arrow of time, the possibility of a unified theory. Read after Einstein and Feynman for the context.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">G.H. Hardy — Tier I · Q3</div>
+      <div class="title">A Mathematician's Apology</div>
+      <div class="note bloom-text">The most beautiful short book about mathematics ever written. Hardy — one of the greatest mathematicians of the 20th century — defends pure mathematics as an art form, not a utility. Written in 1940 when Hardy felt his mathematical powers fading. Required at Cambridge. Essential for understanding what mathematics is and why anyone would devote a life to it.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Euclid — Tier I · Q2</div>
+      <div class="title">Elements — Books I, II, VI, XI</div>
+      <div class="note bloom-text">Chicago's Great Books program required Euclid as primary text alongside Homer and Plato. The reason: Euclid's Elements is the model for all rigorous reasoning — the demonstration that you can begin from simple axioms and derive, by pure logic, results of astonishing complexity and beauty. Books I and II (plane geometry) are the essential reading. Lincoln taught himself Euclid by candlelight to learn how to construct an argument.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Richard Courant &amp; Herbert Robbins — Tier II · Q4</div>
+      <div class="title">What Is Mathematics?</div>
+      <div class="note">The classic introduction to mathematics for the intelligent non-specialist. Einstein recommended it. Required in many university general education programmes. Covers number theory, geometry, topology, functions, limits, and the calculus — not as techniques to memorise but as ideas to understand.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">George Pólya — Tier II · Q3</div>
+      <div class="title">How to Solve It</div>
+      <div class="note">Pólya's 1945 guide to mathematical problem-solving — but really a guide to thinking. The heuristics Pólya describes (understand the problem, draw a diagram, find a related problem you can solve) apply equally to writing, to engineering, to diagnosis. Required at Stanford for decades.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Henri Poincaré — Tier III · Q5</div>
+      <div class="title">Science and Hypothesis · The Value of Science</div>
+      <div class="note">Poincaré was the last great mathematician to work across every field of mathematics simultaneously. These essays on the nature and philosophy of science were required reading at the grandes écoles and influenced Einstein directly. Brief, penetrating, essential.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 6: HISTORY & PHILOSOPHY OF SCIENCE -->
+  <div class="sci-field">
+    <h3>History &amp; Philosophy of Science</h3>
+    <p class="field-desc">Chicago, Harvard, and Oxford all required a course in the history of science — not as history of technology but as intellectual history: how did human beings change their fundamental ideas about the natural world? Kuhn's Structure of Scientific Revolutions is the most cited academic book of the 20th century.</p>
+
+    <div class="book sci">
+      <div class="author">Thomas Kuhn — Tier I · Q6</div>
+      <div class="title">The Structure of Scientific Revolutions</div>
+      <div class="note bloom-text">The most cited academic book of the 20th century. Kuhn introduced the concept of the paradigm shift — the idea that science does not progress smoothly but through revolutionary discontinuities in which one framework of understanding is overthrown by another. Read this and you will think differently about all knowledge, not just science. Required everywhere from 1962 onward.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Jacob Bronowski — Tier I · Q7</div>
+      <div class="title">The Ascent of Man</div>
+      <div class="note bloom-text">Bronowski's 1973 companion to the BBC series is the finest popular history of science and human intellectual development ever written. From the first stone tools through Newton, Darwin, and Einstein, Bronowski traces the development of human knowledge as a continuous act of imagination. The final chapter — at Auschwitz — is one of the most devastating passages in 20th century prose.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Herbert Butterfield — Tier II · Q5</div>
+      <div class="title">The Origins of Modern Science</div>
+      <div class="note">Butterfield's 1949 account of the Scientific Revolution of the 16th and 17th centuries — Copernicus, Galileo, Newton. Required at Cambridge and many American universities through the 1970s. The argument: the Scientific Revolution was not a discovery of new facts but a change in the way people thought about facts.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Karl Popper — Tier III · Q6</div>
+      <div class="title">The Logic of Scientific Discovery — Selected Chapters</div>
+      <div class="note">Popper's criterion of falsifiability: a theory is scientific only if it can in principle be proved wrong. This is the sharpest philosophical account of what distinguishes science from non-science. Read Chapters 1–4 and the summary. Required at Oxford and LSE from the 1950s.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Alfred North Whitehead — Tier III · Q5</div>
+      <div class="title">Science and the Modern World</div>
+      <div class="note">Whitehead's 1925 account of how science shaped modern thought — and where it runs into limits. Harvard required it for decades. One of the most intellectually generous books ever written: Whitehead was a mathematician who could write about poetry.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 7: EARTH SCIENCES & GEOLOGY -->
+  <div class="sci-field">
+    <h3>Earth Sciences, Geology &amp; Deep Time</h3>
+    <p class="field-desc">Darwin read Lyell's Principles of Geology on the Beagle and it transformed his thinking. The concept of deep time — geological time, billions of years — is as intellectually revolutionary as the heliocentric universe or evolution. These books give you that concept.</p>
+
+    <div class="book sci">
+      <div class="author">John McPhee — Tier I · Q4</div>
+      <div class="title">Annals of the Former World</div>
+      <div class="note bloom-text">McPhee's Pulitzer Prize–winning series on the geology of North America — the greatest work of science writing in the American tradition. McPhee follows geologists across the continent and explains deep time, plate tectonics, and the formation of the landscape with the narrative skill of a novelist and the rigour of a scientist. Required in geology courses and science writing programmes everywhere. Read Basin and Range as the entry point.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Charles Lyell — Tier III · Q3</div>
+      <div class="title">Principles of Geology — Selected Chapters</div>
+      <div class="note">Darwin read this on the Beagle. Lyell established that the Earth is vastly older than scripture suggested and that geological processes are uniform and ongoing — the same forces that shaped the past are shaping the present. This was the conceptual prerequisite for Darwinian evolution. Read the introduction and first five chapters.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Richard Fortey — Tier II · Q5</div>
+      <div class="title">Life: A Natural History of the First Four Billion Years</div>
+      <div class="note">Fortey's account of the history of life on Earth from the first cells to the present. A palaeontologist who writes with the range and pleasure of the best Victorian naturalists. Required in many natural history courses from the 1990s.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 8: CHEMISTRY & MEDICINE -->
+  <div class="sci-field">
+    <h3>Chemistry, Medicine &amp; the Sciences of the Body</h3>
+
+    <div class="book sci">
+      <div class="author">Primo Levi — Tier I · Q7</div>
+      <div class="title">The Periodic Table</div>
+      <div class="note bloom-text">Levi was a chemist and a survivor of Auschwitz. In The Periodic Table he organizes his autobiography around the elements — each chapter named for a chemical element that shaped or illuminated an episode in his life. The most beautiful book ever written about chemistry, and one of the most beautiful memoirs in any language. It belongs simultaneously in the science strand and the literature track.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Linus Pauling — Tier III · Q5</div>
+      <div class="title">General Chemistry — Selected Chapters</div>
+      <div class="note">Pauling's 1947 textbook was required at Caltech, MIT, and in science programmes at major universities for thirty years. The opening chapters on atomic structure and the nature of chemical bonds are essential conceptual reading — not problem sets, but the ideas.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Oliver Sacks — Tier II · Q6</div>
+      <div class="title">The Man Who Mistook His Wife for a Hat · An Anthropologist on Mars</div>
+      <div class="note">Sacks was the greatest medical writer of the late 20th century. These case histories — neurological patients with extraordinary conditions — are simultaneously clinical documents and profound meditations on what it means to be a person. Required in medical humanities courses everywhere. Read as literature as much as science.</div>
+    </div>
+  </div>
+
+  <!-- FIELD 9: ECOLOGY & ECONOMICS OF NATURE -->
+  <div class="sci-field">
+    <h3>Ecology, Economics &amp; the Natural World</h3>
+    <p class="field-desc">You already have Wendell Berry, James Rebanks, and Paul Kingsnorth in your library. These belong in the science curriculum as well as the literary one — they are the tradition of thinking about human relationships with land that runs from Gilbert White and Thoreau through Leopold and Carson to the present.</p>
+
+    <div class="book sci">
+      <div class="author">Wendell Berry (you have it) — Tier I · Q4</div>
+      <div class="title">The World-Ending Fire — Selected Essays</div>
+      <div class="note bloom-text">Berry is the great American writer on the relationship between human communities and the land. These essays are simultaneously ecological argument, political economy, and moral philosophy. Read "The Peace of Wild Things" first — his finest poem, which is also his central argument. Read alongside Aldo Leopold.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">James Rebanks (you have it) — Tier II · Q3</div>
+      <div class="title">English Pastoral: An Inheritance</div>
+      <div class="note">Rebanks — a Lake District sheep farmer — has written the finest account of traditional farming and its destruction by industrial agriculture. Read alongside Gilbert White for the long view of the English landscape.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Robert MacFarlane — Tier II · Q4</div>
+      <div class="title">The Old Ways · Underland</div>
+      <div class="note">MacFarlane's two masterpieces. The Old Ways traces ancient footpaths and the knowledge embedded in landscape. Underland goes underground — caves, mines, the deep past beneath our feet. Together they complete a vision of the natural world that Gilbert White, Thoreau, and Leopold began.</div>
+    </div>
+    <div class="book sci">
+      <div class="author">Vaclav Smil (you have it) — Tier II · Q7</div>
+      <div class="title">Energy and Civilization: A History</div>
+      <div class="note">The most important book about the relationship between energy and human history. Smil argues that all of human history can be understood as the successive capture of new energy sources. Required reading in energy policy, economics, and environmental studies.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- NOW READING -->
+<div class="now-box">
+  <div class="label">You Are Already Reading These — Do Not Stop</div>
+  <p class="intro">These books are in progress. Each maps onto the quarter below where they belong. You are already at Q2, Q4, and Q7 level simultaneously — your instincts are correct.</p>
+
+  <div class="tier-header"><div class="dot d-now"></div><span>All Active — Carry Forward</span></div>
+  <div class="book now">
+    <div class="author">The Bible (KJV) <span class="in-progress">In Progress</span></div>
+    <div class="title">Old &amp; New Testaments</div>
+    <div class="note">Q1 core. Keep reading. Job → Psalms → Gospels is the right sequence.</div>
+  </div>
+  <div class="book now">
+    <div class="author">Aeschylus <span class="in-progress">In Progress</span></div>
+    <div class="title">The Oresteia</div>
+    <div class="note">Q2 core. Finish it — you are ahead of the syllabus. Read all three plays as one work.</div>
+  </div>
+  <div class="book now">
+    <div class="author">Montaigne <span class="in-progress">In Progress</span></div>
+    <div class="title">The Complete Essays</div>
+    <div class="note">Q4 core. Browse, don't rush. Keep dipping in daily throughout both years.</div>
+  </div>
+  <div class="book now">
+    <div class="author">William Faulkner <span class="in-progress">In Progress</span></div>
+    <div class="title">The Sound and the Fury</div>
+    <div class="note">Q7 material — reading ahead. Finish it, then go straight to Absalom, Absalom!</div>
+  </div>
+  <div class="book now">
+    <div class="author">Robert Caro <span class="in-progress">In Progress</span></div>
+    <div class="title">The Path to Power (LBJ Vol. 1)</div>
+    <div class="note">Q5 Tier II. Your history reading for the next two months.</div>
+  </div>
+  <div class="book now">
+    <div class="author">Shelby Foote <span class="in-progress">Front-Loaded</span></div>
+    <div class="title">The Civil War: A Narrative — Vol. I</div>
+    <div class="note">Front-loaded per request. The American Iliad. Second-hour reading running alongside everything else. Vols. II &amp; III continue through Q6 and Q7.</div>
+  </div>
+  <div class="book now">
+    <div class="author">Alexandre Dumas <span class="in-progress">In Progress</span></div>
+    <div class="title">The Count of Monte Cristo</div>
+    <div class="note">Tier II pleasure novel. Your evening reading when the primary texts are heavy.</div>
+  </div>
+  <div class="book now">
+    <div class="author">Charles Dickens <span class="in-progress">In Progress</span></div>
+    <div class="title">Oliver Twist</div>
+    <div class="note">Tier II. Run alongside Monte Cristo.</div>
+  </div>
+  <div class="book now">
+    <div class="author">Chekhov · Wodehouse <span class="in-progress">Always</span></div>
+    <div class="title">Short Stories</div>
+    <div class="note">Tier IV forever. Never stop.</div>
+  </div>
+  <div class="book now">
+    <div class="author">MIT Python · Thomas Sowell <span class="in-progress">In Progress</span></div>
+    <div class="title">Introduction to CS · Basic Economics</div>
+    <div class="note">Tech track and Tier III. Python daily 20–30 min. Sowell read alongside history texts.</div>
+  </div>
+</div>
+
+
+<!-- BLOOM LETTER -->
+<div class="bloom-note">
+  <div class="label">Tutor's Preface — In the Spirit of Harold Bloom</div>
+  <p>You are already reading. This is the first and most important fact about your education. The Oresteia is in your hands. The Bible is open. Faulkner is giving you difficulty, which means he is giving you something real. <strong>Do not stop any of it to "begin" a curriculum. You have already begun.</strong></p>
+  <br>
+  <p>The science curriculum has been added as a parallel strand — one science book always in progress alongside the main literary track. This is how it was done at Chicago, Harvard, and Oxford: not a separate science course but an integrated education in which <strong>Darwin sits beside Plato, Feynman beside Shakespeare, Aldo Leopold beside Montaigne.</strong> The greatest minds of the 20th century read across these disciplines without apology, and so should you. A Mathematician's Apology and The Peregrine are as important to your education as any novel on this list.</p>
+  <br>
+  <p>Walpola Rahula's What the Buddha Taught is your Buddhist scholarly entry point. Shelby Foote's Civil War Vol. I is front-loaded as you asked. J.A. Baker's The Peregrine can be read in any quarter — it will change how you see.</p>
+</div>
+
+
+<!-- BUDDHIST STRAND -->
+<div class="buddhist-box">
+  <div class="label">Buddhist &amp; Contemplative Philosophy Strand — Both Years</div>
+  <p class="intro">Runs alongside the main curriculum. <strong>Buddhism and Greek philosophy are asking the same questions</strong> and arriving at different answers. Read them in parallel. Begin with Rahula — the scholarly entry point, not a popular introduction.</p>
+
+  <div class="tier-header"><div class="dot d-b"></div><span>Begin Month 1</span></div>
+  <div class="book buddh">
+    <div class="author">Walpola Rahula</div>
+    <div class="title">What the Buddha Taught</div>
+    <div class="note bloom-text">A Theravada monk with a doctorate from the Sorbonne. Brief, clear, authoritative. The Four Noble Truths, the Eightfold Path, the nature of the self — without sentimentality. One week. Start here before anything else in the Buddhist strand.</div>
+  </div>
+  <div class="book buddh">
+    <div class="author">The Dhammapada (Penguin Classics)</div>
+    <div class="title">The Dhammapada — one chapter daily</div>
+    <div class="note">423 verses. Read one chapter per day alongside your other reading throughout both years. The opening verse: "Mind is the forerunner of all actions." Read alongside Job and notice two ancient traditions asking the same question.</div>
+  </div>
+
+  <div class="tier-header"><div class="dot d-b"></div><span>Tier II — Year One into Year Two</span></div>
+  <div class="book buddh">
+    <div class="author">Bhikkhu Bodhi (trans.)</div>
+    <div class="title">In the Buddha's Words</div>
+    <div class="note">The definitive Pali Canon anthology in English. Your scholarly foundation after Rahula.</div>
+  </div>
+  <div class="book buddh">
+    <div class="author">Shantideva</div>
+    <div class="title">The Way of the Bodhisattva — Chapter VI (Patience)</div>
+    <div class="note">Read Chapter VI alongside Marcus Aurelius. Both writing about responding to anger without being destroyed by it. The Buddhist and Stoic answers differ; the question is identical.</div>
+  </div>
+  <div class="book buddh">
+    <div class="author">Nagarjuna (trans. Jay Garfield)</div>
+    <div class="title">Mulamadhyamakakarika — Fundamental Verses on the Middle Way</div>
+    <div class="note bloom-text">Graduate-level Buddhist metaphysics — you already have it. Read after Rahula and Bodhi. Nagarjuna: nothing exists independently; everything arises in dependence on other things. Read alongside Plato's Parmenides — two of the greatest philosophical minds thinking about the same problem from opposite starting points.</div>
+  </div>
+  <div class="book buddh">
+    <div class="author">Surendranath Dasgupta (you have it)</div>
+    <div class="title">A History of Indian Philosophy Vol. I</div>
+    <div class="note">Use as scholarly context for the Buddhist primary texts throughout.</div>
+  </div>
+  <div class="book buddh">
+    <div class="author">Peter Matthiessen</div>
+    <div class="title">The Snow Leopard</div>
+    <div class="note">A journey into the Himalaya in search of the snow leopard — and simultaneously a Buddhist meditation on grief, impermanence, and attention. Belongs in both the science strand (ornithology, natural history) and the Buddhist strand.</div>
+  </div>
+
+  <div class="tier-header"><div class="dot d-b"></div><span>Tier IV — Dip Throughout</span></div>
+  <div class="book buddh">
+    <div class="author">D.T. Suzuki · Shunryu Suzuki · Chogyam Trungpa · Kornfield · Goldstein</div>
+    <div class="title">Intro to Zen Buddhism · Zen Mind Beginner's Mind · Cutting Through Spiritual Materialism · Path With Heart · Experience of Insight</div>
+    <div class="note">Dip in throughout both years. You already have all of these. Trungpa pairs with Nietzsche on self-deception.</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- YEAR ONE                              -->
+<!-- ══════════════════════════════════════ -->
+
+<div class="year-break">
+  <span class="year-num">I</span>
+  <span class="year-label">Year One · 2026</span>
+  <span class="year-title">Sacred, Greek, Roman, Medieval, Renaissance</span>
+</div>
+
+
+<!-- Q1 -->
+<div class="section-label">Months 1–3 · January through March</div>
+<h2 class="quarter-title">Q1 — The Sacred &amp; The Carnivalesque</h2>
+<p class="quarter-desc">The Bible. Rabelais. Gilgamesh. Shelby Foote Vol. I. Buddhist strand begins. Science: Gilbert White and Euclid.</p>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — Deep Read</span></div>
+<div class="book tier1">
+  <div class="author">The Bible (KJV) — continuing</div>
+  <div class="title">Job · Genesis · Exodus · Psalms · Ecclesiastes · Song of Solomon · Mark · John · Romans · Revelation</div>
+  <div class="note bloom-text">Job first, always. The oldest text in the Bible and the most modern in sensibility. Read Psalms aloud. Ecclesiastes is the most honest book ever written. Read the Gospels as literature: Mark is urgent; John is literary.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Rabelais (M.A. Screech trans.)</div>
+  <div class="title">Gargantua and Pantagruel — Books I, II, III</div>
+  <div class="note bloom-text">Read in alternation with the Bible — one hour each. Rabelais invented the essay, the satirical novel, and the carnivalesque mode. Do not skip the lists — the lists are the argument.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Anonymous (Penguin)</div>
+  <div class="title">The Epic of Gilgamesh</div>
+  <div class="note">One sitting. 4,000 years old. The flood narrative predates Noah by a thousand years. Read alongside Genesis.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q1</span></div>
+<div class="book sci">
+  <div class="author">Gilbert White</div>
+  <div class="title">The Natural History of Selborne</div>
+  <div class="note bloom-text">One letter per day alongside the primary reading. The founding text of ecology — and one of the most beautiful books in English prose. Darwin said it taught him how to observe. A curate in a Hampshire village, thirty years of patient attention. Begin here and the whole natural world will start to come into focus.</div>
+</div>
+<div class="book sci">
+  <div class="author">Euclid</div>
+  <div class="title">Elements — Books I &amp; II</div>
+  <div class="note">Chicago's Great Books program required Euclid alongside Homer and Plato. Books I and II take about three weeks at one proposition per day. Lincoln taught himself Euclid to learn how to construct an argument. The model for all rigorous reasoning.</div>
+</div>
+<div class="book sci">
+  <div class="author">Roger Tory Peterson</div>
+  <div class="title">A Field Guide to the Birds</div>
+  <div class="note">Begin using this in the field now. The practice of identifying birds is a practice in the careful observation that the best scientists and writers share. Keep it with you throughout both years.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-b"></div><span>Buddhist Strand — Begin</span></div>
+<div class="book buddh">
+  <div class="author">Walpola Rahula</div>
+  <div class="title">What the Buddha Taught</div>
+  <div class="note">One week. The scholarly entry point. See Buddhist strand section above.</div>
+</div>
+<div class="book buddh">
+  <div class="author">The Dhammapada</div>
+  <div class="title">One chapter daily — throughout both years</div>
+  <div class="note">Begin now, continue every day.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q1</div>
+  <ul>
+    <li><b>In Progress:</b> MIT Python — keep going, 3 sessions/week, 30 min each</li>
+    <li><b>Mathematics:</b> Begin Mathematics for Machine Learning (Deisenroth) — linear algebra chapters</li>
+    <li><b>Goal by March:</b> Comfortable Python fundamentals. Understand vectors and matrices</li>
+  </ul>
+</div>
+
+
+<!-- Q2 -->
+<div class="quarter-break"></div>
+<div class="section-label">Months 4–6 · April through June</div>
+<h2 class="quarter-title">Q2 — Homer &amp; the Greek World</h2>
+<p class="quarter-desc">Finish the Oresteia. The Iliad. The Odyssey. Sophocles. Thucydides. Science: Thoreau's Walden. Mathematics: G.H. Hardy.</p>
+
+<div class="tier-header"><div class="dot d-now"></div><span>Finish This Quarter</span></div>
+<div class="book now">
+  <div class="author">Aeschylus <span class="in-progress">Finish First</span></div>
+  <div class="title">The Oresteia</div>
+  <div class="note">Finish it. Read all three plays in one long weekend if possible. The trilogy must be read as one work.</div>
+</div>
+<div class="book now">
+  <div class="author">J.B. Bury <span class="in-progress">In Progress</span></div>
+  <div class="title">A History of Greece</div>
+  <div class="note">Keep reading as contextual history for the whole quarter.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — Deep Read</span></div>
+<div class="book tier1">
+  <div class="author">Homer (Chapman's — you have the Princeton/Bollingen set)</div>
+  <div class="title">The Iliad</div>
+  <div class="note bloom-text">Read aloud when alone. Mark every simile — in the midst of carnage Homer pauses to describe a bee, a river, a woman weaving. The contrast between the simile's peace and the battle's violence is the poem's moral argument.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Homer (Fagles or Lattimore)</div>
+  <div class="title">The Odyssey</div>
+  <div class="note">After the Iliad this reads like a novel. Books IX–XI are the essential core.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Sophocles (Fagles)</div>
+  <div class="title">Oedipus Rex · Oedipus at Colonus · Antigone</div>
+  <div class="note bloom-text">Oedipus Rex is the perfect tragedy. Read Antigone immediately after — the two plays ask the same question and reach opposite answers. The founding argument of Western political thought, dramatized better than any philosopher has managed.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Thucydides</div>
+  <div class="title">History of the Peloponnesian War</div>
+  <div class="note">Books II and V essential. The Melian Dialogue: ten pages that changed political thought permanently.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II</span></div>
+<div class="book tier2">
+  <div class="author">Herodotus (Folio Society — you have it)</div>
+  <div class="title">The Histories</div>
+  <div class="note">The first historian, first travel writer, first ethnographer. Read as a novel. Books VII–VIII are the dramatic core.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Euripides (Penguin)</div>
+  <div class="title">Medea · The Bacchae</div>
+  <div class="note">The first modern playwright. Read after Sophocles for the contrast.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-3"></div><span>Tier III — Encounter (Greece &amp; Rome Secondary Reading)</span></div>
+<div class="book tier3">
+  <div class="author">H.D.F. Kitto</div>
+  <div class="title">The Greeks</div>
+  <div class="note">The best short introduction to Greek civilization ever written. Read alongside Homer.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Edith Hamilton</div>
+  <div class="title">The Greek Way</div>
+  <div class="note">Required at dozens of American universities through the 1960s. The Roman Way follows in Q3.</div>
+</div>
+<div class="book tier3">
+  <div class="author">M.I. Finley</div>
+  <div class="title">The Ancient Greeks</div>
+  <div class="note">More rigorous than Hamilton. Read the chapters on the polis and democracy.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Heraclitus (trans. Brooks Haxton)</div>
+  <div class="title">Fragments</div>
+  <div class="note">One hour. "You cannot step in the same river twice." Read alongside the Dhammapada — Heraclitus and the Buddha were contemporaries, both thinking about impermanence.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q2</span></div>
+<div class="book sci">
+  <div class="author">Henry David Thoreau</div>
+  <div class="title">Walden</div>
+  <div class="note bloom-text">One chapter per day alongside the Greeks. Thoreau spent two years in a cabin by a pond and wrote the most influential piece of American prose about nature and how to live. It is also philosophy: what is essential, what can be discarded. Read it slowly.</div>
+</div>
+<div class="book sci">
+  <div class="author">G.H. Hardy</div>
+  <div class="title">A Mathematician's Apology</div>
+  <div class="note bloom-text">The most beautiful short book about mathematics ever written. Hardy defends pure mathematics as an art form. Written when he felt his powers fading — the most honest professional autobiography in any discipline. Required at Cambridge. Read in one afternoon.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q2</div>
+  <ul>
+    <li><b>Statistics:</b> Introduction to Statistical Learning (James et al.) Chapters 1–4</li>
+    <li><b>Applied:</b> Begin Hands-On Machine Learning (Géron) — train your first model end-to-end</li>
+    <li><b>Latin:</b> Wheelock's Grammar Chapters 1–15. 20 min/day</li>
+  </ul>
+</div>
+
+
+<!-- Q3 -->
+<div class="quarter-break"></div>
+<div class="section-label">Months 7–9 · July through September</div>
+<h2 class="quarter-title">Q3 — Plato, Aristotle, Rome &amp; the Stoics</h2>
+<p class="quarter-desc">The Republic. The Ethics. Virgil's Aeneid. The Stoics. Caesar. I, Claudius. Science: Henry Beston, Pólya, Lyell selections.</p>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — Deep Read</span></div>
+<div class="book tier1">
+  <div class="author">Plato (Adam's Cambridge ed. — you have both volumes)</div>
+  <div class="title">The Republic</div>
+  <div class="note bloom-text">The most important book in Western thought — not because it is right but because everything subsequent is arguing with it. Take six weeks. Mark everything you disagree with. The education is in the disagreement.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Plato</div>
+  <div class="title">Symposium · Apology · Phaedo · Gorgias</div>
+  <div class="note bloom-text">The Symposium first — Plato at his most literary. The Apology and Phaedo together: a man on trial for his ideas, then dying for them without regret. The most moving philosophical text ever written.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Aristotle (Hackett)</div>
+  <div class="title">Nicomachean Ethics · Poetics</div>
+  <div class="note">The Ethics: what is the good life? Virtue, community, luck. The Poetics in one afternoon — read it after the Greek plays.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Virgil (Fagles)</div>
+  <div class="title">The Aeneid</div>
+  <div class="note bloom-text">Books I, II, IV, VI, XII essential. Book VI (the underworld) is the most influential single book in the Latin canon — Dante could not have written the Comedy without it.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II — The Stoics &amp; Autobiographers of Power</span></div>
+<div class="book tier2">
+  <div class="author">Marcus Aurelius</div>
+  <div class="title">Meditations</div>
+  <div class="note bloom-text">The most honest book a powerful man has ever written. Read one or two entries per day. The man running an empire fighting every day not to become the kind of man that power makes you. Read alongside Shantideva's Chapter VI on patience.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Seneca</div>
+  <div class="title">Letters from a Stoic · On the Shortness of Life</div>
+  <div class="note">Written while waiting for Nero's execution order. On the Shortness of Life in one sitting: you are not running out of time; you are wasting the time you have.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Epictetus</div>
+  <div class="title">The Enchiridion · Discourses (selected)</div>
+  <div class="note">A freed slave who became the most influential Stoic teacher. The Enchiridion in one sitting. Some things are in your power; some are not. Everything follows from this distinction.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Julius Caesar</div>
+  <div class="title">The Gallic War · The Civil War</div>
+  <div class="note">Caesar writing about himself in the third person. Also the simplest classical Latin prose — read key passages in Latin alongside English.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Robert Graves</div>
+  <div class="title">I, Claudius · Claudius the God</div>
+  <div class="note bloom-text">The finest historical novel in English. Graves reconstructed the Julio-Claudians from Suetonius and Tacitus and put it in the mouth of Claudius. Required at several Oxbridge colleges in the 1960s alongside the primary sources.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Plutarch (Penguin)</div>
+  <div class="title">Lives: Alexander · Caesar · Cicero · Pericles · Alcibiades · Brutus</div>
+  <div class="note">Six lives. Shakespeare read Plutarch — read the Life of Caesar alongside the play and see exactly what he took and what he transformed.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-3"></div><span>Tier III — Encounter</span></div>
+<div class="book tier3">
+  <div class="author">Suetonius · Tacitus (Annals I–VI) · Boethius</div>
+  <div class="title">The Twelve Caesars · The Annals · The Consolation of Philosophy</div>
+  <div class="note">Suetonius: the gossip Tacitus refuses to tell you. Tacitus: the most acute political historian of antiquity. Boethius: the most-read book in medieval Europe after the Bible — written in prison awaiting execution. Read in a day before Dante.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Aquinas (trans. Richard J. Regan)</div>
+  <div class="title">Commentary on Aristotle's Politics · Commentary on Aristotle's Physics (Dumb Ox Books)</div>
+  <div class="note">Aquinas as Aristotle's medieval interpreter — essential for understanding how Greek philosophy was absorbed and transformed by Catholic theology. Read alongside the Nicomachean Ethics you have already covered. The Politics commentary belongs in Q3; the Physics in Q4 alongside Dante.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Dionysius the Areopagite</div>
+  <div class="title">The Complete Works — Selected (3-vol. collection)</div>
+  <div class="note">The great 5th century mystical theologian whose writings shaped medieval Christian thought more than almost any other figure. Dante placed him in Paradiso. Without Dionysius you cannot fully understand Dante's conception of light, hierarchy, and the ascent toward God. Read selections alongside Paradiso.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Reginald Garrigou-Lagrange</div>
+  <div class="title">Reality: A Synthesis of Thomistic Thought</div>
+  <div class="note">The 20th century's finest systematic exposition of Thomism — Aquinas's philosophy laid out with rigour and clarity. Required reading in Catholic universities and seminaries throughout the 20th century. Use as a reference alongside the Aquinas primary texts.</div>
+</div>
+<div class="book tier3">
+  <div class="author">R.H. Barrow · Edith Hamilton · Theodor Mommsen</div>
+  <div class="title">The Romans · The Roman Way · History of Rome (selected)</div>
+  <div class="note">Barrow and Hamilton: the best short accounts of Roman civilization. Mommsen: the great 19th century narrative, Nobel Prize 1902. Read the Republic books as your framework for Caesar.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q3</span></div>
+<div class="book sci">
+  <div class="author">Henry Beston</div>
+  <div class="title">The Outermost House</div>
+  <div class="note">A year alone in a dune cottage on Cape Cod, 1928. The finest book of nature writing in the American tradition after Thoreau. Read alongside the Stoics — Beston's solitude is a form of philosophical practice.</div>
+</div>
+<div class="book sci">
+  <div class="author">George Pólya</div>
+  <div class="title">How to Solve It</div>
+  <div class="note">Pólya's guide to mathematical problem-solving — really a guide to thinking. The heuristics apply equally to writing, engineering, and diagnosis. Required at Stanford for decades. Read in a week.</div>
+</div>
+<div class="book sci">
+  <div class="author">Charles Lyell</div>
+  <div class="title">Principles of Geology — Introduction + Chapters 1–5</div>
+  <div class="note">Darwin read this on the Beagle. Lyell established that the Earth is vastly older than scripture suggested and that the same geological forces that shaped the past are shaping the present. The conceptual prerequisite for Darwin.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q3</div>
+  <ul>
+    <li><b>Applied ML:</b> Hands-On Machine Learning (Géron) Chapters 1–9. Train classifiers. Build a neural network</li>
+    <li><b>First real project:</b> Build a text classifier on a domain you care about. Train, evaluate, deploy it</li>
+    <li><b>Spanish:</b> Pimsleur Spanish I + Assimil. 20 min/day</li>
+  </ul>
+</div>
+
+
+<!-- Q4 -->
+<div class="quarter-break"></div>
+<div class="section-label">Months 10–12 · October through December</div>
+<h2 class="quarter-title">Q4 — Medieval, Renaissance &amp; Political Philosophy</h2>
+<p class="quarter-desc">Dante. Chaucer. Cervantes Part I. Machiavelli. Hobbes. Science: Aldo Leopold, Courant &amp; Robbins, Frazer, Wendell Berry.</p>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — Deep Read</span></div>
+<div class="book tier1">
+  <div class="author">Dante (Kirkpatrick — all 3 vols.)</div>
+  <div class="title">The Divine Comedy: Inferno · Purgatorio · Paradiso</div>
+  <div class="note bloom-text">Three cantos per session. Inferno in one month. Do not skip Purgatorio or Paradiso. Read with Boethius fresh in your mind — the Consolation is the philosophical scaffolding of the whole Comedy.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Cervantes</div>
+  <div class="title">Don Quixote — Part I</div>
+  <div class="note bloom-text">The novel is born here. Comedy and tragedy are simultaneous — that is what the novel can do that no other form can.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Aldo Leopold</div>
+  <div class="title">A Sand County Almanac</div>
+  <div class="note bloom-text">The founding text of modern environmental ethics. Leopold invented the concept of "the land ethic" — human beings have moral obligations to the natural community, not just to other people. Required in ecology, philosophy, and environmental studies at every major university since 1949. Read it month by month alongside the main curriculum — the structure of the book follows the seasons.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II</span></div>
+<div class="book tier2">
+  <div class="author">Chaucer (Skeat's Oxford — you have all 7 vols.)</div>
+  <div class="title">The Canterbury Tales — General Prologue + 6 Tales</div>
+  <div class="note">General Prologue + Knight's, Miller's, Wife of Bath's, Pardoner's, Franklin's, Nun's Priest's. Read the Prologue aloud in Middle English.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Machiavelli (Oxford World's Classics)</div>
+  <div class="title">The Prince · Discourses on Livy</div>
+  <div class="note">The Prince in one sitting. The Discourses over two weeks — where Machiavelli's real thought lives.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Edmund Spenser (you have it)</div>
+  <div class="title">The Faerie Queene — Books I &amp; II</div>
+  <div class="note">Books I and II are the essential reading. The full six books belong to the reserve.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Thomas Hobbes</div>
+  <div class="title">Leviathan — Parts I &amp; II</div>
+  <div class="note">The foundation of modern political philosophy. Required alongside Machiavelli at all major universities through the 1970s.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-3"></div><span>Tier III — Encounter</span></div>
+<div class="book tier3">
+  <div class="author">Augustine · Frances Yates · Boccaccio</div>
+  <div class="title">Confessions · The Art of Memory (Ch. 1–6) · Decameron (20 tales)</div>
+  <div class="note">Augustine: the first autobiography — read before Dante. Yates: how Dante's Comedy works as a memory palace. Boccaccio: the Italian complement to Chaucer, written the same decade.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Augustine</div>
+  <div class="title">City of God — Selected Books (I–II, XI, XIX)</div>
+  <div class="note">Augustine's great political theology — the two cities, earthly and divine, and the relationship between Christian faith and political order. Books I–II (Rome's fall), XI (creation and time), and XIX (peace and justice) are the essential selections. Required in medieval studies courses everywhere. Read alongside Dante.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Pope Leo XIII · ed. Etienne Gilson</div>
+  <div class="title">The Church Speaks to the Modern World: The Social Teachings of Leo XIII</div>
+  <div class="note">Leo XIII's great encyclicals — Rerum Novarum chief among them — constitute the Catholic Church's response to industrial capitalism and the social question. Essential for understanding the political theology tradition running from Aquinas through to 20th century Catholic thought. Gilson's editorship gives it exactly the right scholarly frame.</div>
+</div>
+<div class="book tier3">
+  <div class="author">Peter de Roo</div>
+  <div class="title">Material for a History of Pope Alexander VI, His Relatives and His Time — Vol. I: Family De Borgia (1924)</div>
+  <div class="note">The serious scholarly account of the Borgias — the most notorious papal family, whose excesses scandalized even Renaissance Italy. Read alongside I, Claudius for the parallel: both are accounts of a dynasty in which power corrupts spectacularly. De Roo is the corrective to popular mythology; rigorous and primary-source based.</div>
+</div>
+<div class="book tier3">
+  <div class="author">John Addington Symonds</div>
+  <div class="title">Renaissance in Italy: The Catholic Reaction</div>
+  <div class="note">Symonds's magisterial account of the Counter-Reformation and its cultural consequences — the Church's response to Protestant challenge reshaping Italian art, literature, and intellectual life. Essential context for understanding Dante's world in retrospect and the Renaissance material in Q4–Q5.</div>
+</div>
+<div class="book tier3">
+  <div class="author">James George Frazer</div>
+  <div class="title">The Golden Bough — Abridged Edition (selected chapters)</div>
+  <div class="note bloom-text">The most influential work of comparative anthropology ever written. Eliot used it to write The Waste Land. Joyce used it to write Ulysses. Required at every major university 1900–1970. Read the chapters on the dying and rising god, the scapegoat, and the sacred king. You will recognise these patterns everywhere once you have seen them.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q4</span></div>
+<div class="book sci">
+  <div class="author">Wendell Berry (you have it)</div>
+  <div class="title">The World-Ending Fire — Selected Essays</div>
+  <div class="note">Read alongside Aldo Leopold. Berry is the great American writer on human communities and the land. Read "The Peace of Wild Things" first.</div>
+</div>
+<div class="book sci">
+  <div class="author">Richard Courant &amp; Herbert Robbins</div>
+  <div class="title">What Is Mathematics? — Selected Chapters</div>
+  <div class="note">Einstein recommended it. The classic introduction to mathematics for the intelligent non-specialist. Read the chapters on number, geometry, and topology — not as techniques but as ideas. Required in many university general education programmes.</div>
+</div>
+<div class="book sci">
+  <div class="author">Desmond Morris</div>
+  <div class="title">The Naked Ape</div>
+  <div class="note">Morris's 1967 account of human beings as a species of primate. A bestseller that changed how educated people thought about human nature. Read alongside Frazer for the longer anthropological view.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q4</div>
+  <ul>
+    <li><b>ML systems:</b> Introduction to Statistical Learning — complete remaining chapters</li>
+    <li><b>Goal by December:</b> Have deployed a real ML model. Know the full pipeline: data → model → deployment</li>
+    <li><b>Spanish:</b> Continue Pimsleur. Beginning to read simple Spanish texts</li>
+  </ul>
+</div>
+
+
+<!-- ══════════════════════════════════════ -->
+<!-- YEAR TWO                              -->
+<!-- ══════════════════════════════════════ -->
+
+<div class="year-break">
+  <span class="year-num">II</span>
+  <span class="year-label">Year Two · 2027</span>
+  <span class="year-title">The Modern Canon — Shakespeare Through Joyce</span>
+</div>
+
+
+<!-- Q5 -->
+<div class="section-label">Months 13–15 · January through March</div>
+<h2 class="quarter-title">Q5 — Shakespeare, Milton &amp; the Men of Action</h2>
+<p class="quarter-desc">Shakespeare. Cervantes Part II. Paradise Lost. Napoleon. Boswell. Tocqueville. Burke. Darwin. Feynman. Einstein. Butterfield.</p>
+
+<div class="bloom-note">
+  <div class="label">Bloom's Note</div>
+  <p>Shakespeare is the center of the Western literary canon. Not Homer, not Dante — <strong>Shakespeare.</strong> He invented the human as we understand it: the self that overhears itself, that changes through self-reflection. Read at least one play aloud, even alone — these are scripts, not poems; they require the breath.</p>
+</div>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — Deep Read</span></div>
+<div class="book tier1">
+  <div class="author">Shakespeare (Complete Works)</div>
+  <div class="title">Hamlet · King Lear · Macbeth · Othello · The Tempest · Measure for Measure</div>
+  <div class="note bloom-text">One play per two-and-a-half weeks. Hamlet first — the modern mind begins here. King Lear last — by the time you reach it your eyes should be ready for what it costs.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Cervantes</div>
+  <div class="title">Don Quixote — Part II</div>
+  <div class="note bloom-text">The first metafiction — the characters know they are in a novel. This is Borges and Nabokov, written in 1615. The ending is among the most heartbreaking in all literature.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Milton (Fowler's Routledge ed.)</div>
+  <div class="title">Paradise Lost</div>
+  <div class="note bloom-text">Books I, II, IV, IX essential. Satan is the first modern hero — ambitious, self-created, magnificent, and wrong. Blake thought Milton was unconsciously on Satan's side. He may have been right.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Charles Darwin</div>
+  <div class="title">The Origin of Species</div>
+  <div class="note bloom-text">Harvard, Chicago, and Oxford all required this as a primary text for everyone. The argument is one of the great achievements of human prose reasoning. Read Introduction, Chapters I, III, IV, XIV. "There is grandeur in this view of life..." Read alongside Dawkins immediately after.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II — Men of Action &amp; Political Philosophy</span></div>
+<div class="book tier2">
+  <div class="author">Napoleon Bonaparte · Andrew Roberts (you have it)</div>
+  <div class="title">Napoleon's Maxims of War · Selected Letters · Roberts's Napoleon</div>
+  <div class="note bloom-text">Napoleon writing about war and power is primary text — not secondary reading. His maxims are a philosophy of action. Read Roberts as the frame; Napoleon's own words as the substance.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Alexis de Tocqueville</div>
+  <div class="title">Democracy in America — Vol. I + Selected Vol. II Chapters</div>
+  <div class="note">The greatest book ever written about America — by a Frenchman who spent nine months here. Tocqueville predicted everything. Required everywhere through the 1970s.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Edmund Burke</div>
+  <div class="title">Reflections on the Revolution in France</div>
+  <div class="note">Written 1790, before the Terror. More frightening read after the Terror — because Burke predicted it.</div>
+</div>
+<div class="book tier2">
+  <div class="author">James Boswell (you have it)</div>
+  <div class="title">The Life of Samuel Johnson</div>
+  <div class="note">The greatest biography in the English language. Boswell invented modern biography.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Benvenuto Cellini</div>
+  <div class="title">Autobiography</div>
+  <div class="note">The most outrageous autobiography in any language. Goethe said it was the fullest portrait of a man he had ever read.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q5</span></div>
+<div class="book sci">
+  <div class="author">Richard Dawkins</div>
+  <div class="title">The Selfish Gene</div>
+  <div class="note bloom-text">Read immediately after Darwin. Dawkins reformulates Darwinian evolution at the level of the gene and introduces the concept of the meme. The finest work of science writing of the late 20th century. Together Darwin and Dawkins constitute the two essential texts in the life sciences.</div>
+</div>
+<div class="book sci">
+  <div class="author">Richard Feynman</div>
+  <div class="title">The Feynman Lectures Vol. I — Chapters 1–6 · Surely You're Joking, Mr. Feynman!</div>
+  <div class="note bloom-text">Chapters 1–6 of the Lectures give you what physics is trying to do and why it is beautiful — without requiring calculus. Surely You're Joking is the autobiography and the most enjoyable science book of the 20th century. Required at Caltech; imitated everywhere.</div>
+</div>
+<div class="book sci">
+  <div class="author">Albert Einstein</div>
+  <div class="title">Relativity: The Special and General Theory</div>
+  <div class="note">Einstein's own popular exposition, written for the general reader. The argument that space and time are not absolute — explained by the man who discovered it. Required at Chicago and Harvard as a primary text.</div>
+</div>
+<div class="book sci">
+  <div class="author">Herbert Butterfield</div>
+  <div class="title">The Origins of Modern Science — Selected Chapters</div>
+  <div class="note">The argument: the Scientific Revolution was not a discovery of new facts but a change in the way people thought about facts. Required at Cambridge through the 1970s.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q5</div>
+  <ul>
+    <li><b>Deep Learning:</b> Deep Learning for Coders (Howard/Gugger) — build and fine-tune neural networks</li>
+    <li><b>Transformers:</b> Begin LLM Engineer's Handbook — transformer architecture, attention mechanisms</li>
+    <li><b>Goal by March:</b> Have fine-tuned a small language model on custom data</li>
+  </ul>
+</div>
+
+
+<!-- Q6 -->
+<div class="quarter-break"></div>
+<div class="section-label">Months 16–18 · April through June</div>
+<h2 class="quarter-title">Q6 — The 19th Century at Full Force</h2>
+<p class="quarter-desc">Dostoevsky. Tolstoy. Flaubert. Goethe. Balzac. Zola. Melville. George Eliot. Science: E.O. Wilson, Kuhn, Lévi-Strauss, Oliver Sacks, Watson &amp; Crick.</p>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — Deep Read</span></div>
+<div class="book tier1">
+  <div class="author">Dostoevsky (Pevear &amp; Volokhonsky) — The Complete Academic Sequence</div>
+  <div class="title">Crime and Punishment → The Brothers Karamazov → The Idiot → Demons</div>
+  <div class="note bloom-text">The canonical order followed by Oxford, Chicago, and Yale. Each novel prepares you for the next — do not read out of sequence.</div>
+</div>
+<div class="book tier1">
+  <div class="author">① Crime and Punishment <span class="in-progress">Complete ✓</span></div>
+  <div class="title">Crime and Punishment</div>
+  <div class="note">Done. Raskolnikov's theory, its failure, and the long descent into confession.</div>
+</div>
+<div class="book tier1">
+  <div class="author">② The Brothers Karamazov <span class="in-progress">Complete ✓</span></div>
+  <div class="title">The Brothers Karamazov</div>
+  <div class="note bloom-text">Done. The summit. "The Grand Inquisitor" (Book V, Chapter 5) is the greatest single scene in prose fiction. Christ returns to Seville, is arrested by the Cardinal Inquisitor, says nothing — and then kisses the old man on the lips. Read this scene fifty times. It does not diminish.</div>
+</div>
+<div class="book tier1">
+  <div class="author">③ The Idiot <span class="in-progress">Read Next</span></div>
+  <div class="title">The Idiot</div>
+  <div class="note bloom-text">Next. Dostoevsky's attempt to portray a perfectly good man — Prince Myshkin — and show how the world destroys him. You need the full weight of C&amp;P and Brothers K to feel what Myshkin's goodness costs. The most heartbreaking of the four great novels. Begin after Monte Cristo (May 2026).</div>
+</div>
+<div class="book tier1">
+  <div class="author">④ Demons (The Possessed)</div>
+  <div class="title">Demons</div>
+  <div class="note">After The Idiot. The most political of the four — a revolutionary cell in a provincial town, based on a real murder. The darkest of the four and the one that reads most like prophecy about the 20th century.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Tolstoy</div>
+  <div class="title">Anna Karenina · The Death of Ivan Ilych</div>
+  <div class="note bloom-text">Anna Karenina is the greatest novel. The Death of Ivan Ilych in one sitting: a man discovers he is dying and discovers simultaneously that he has never lived. Read it twice in the same week.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Flaubert (Steegmuller trans.)</div>
+  <div class="title">Madame Bovary · Sentimental Education</div>
+  <div class="note bloom-text">Madame Bovary: the first truly modern novel. Sentimental Education: the novel about failing to live your life, in which nothing happens for 600 pages and the reader feels the weight of every wasted year.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Thomas Kuhn</div>
+  <div class="title">The Structure of Scientific Revolutions</div>
+  <div class="note bloom-text">The most cited academic book of the 20th century. Kuhn introduced the concept of the paradigm shift — science does not progress smoothly but through revolutionary discontinuities. Read this and you will think differently about all knowledge. Required everywhere from 1962. Read it alongside Dostoevsky — both are about the violent overthrow of a prevailing worldview.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II</span></div>
+<div class="book tier2">
+  <div class="author">Goethe (Penguin)</div>
+  <div class="title">Faust, Part One · The Sorrows of Young Werther</div>
+  <div class="note">Werther first — invented Romanticism. Then Faust: the myth of modernity. You live in Faust's world.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Balzac</div>
+  <div class="title">Père Goriot · Lost Illusions · Cousin Bette</div>
+  <div class="note bloom-text">Père Goriot introduces the Comédie Humaine. Lost Illusions is Balzac's masterpiece — ambition meeting the market, a young man destroyed by the world he wanted to conquer. Cousin Bette is the most bitter; read it last.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Zola</div>
+  <div class="title">Germinal · Nana</div>
+  <div class="note">Germinal: the supreme novel of labour and class. Nana: the flesh and its consequences.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Herman Melville</div>
+  <div class="title">Moby-Dick</div>
+  <div class="note bloom-text">The greatest American novel. Do not skip the cetology chapters — they are the argument. Ahab is magnificent and wrong.</div>
+</div>
+<div class="book tier2">
+  <div class="author">George Eliot</div>
+  <div class="title">Middlemarch</div>
+  <div class="note">The greatest English novel. Dorothea Brooke is Eliot's argument about what Victorian England did to women of extraordinary capacity.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Stendhal</div>
+  <div class="title">The Red and the Black</div>
+  <div class="note">The template for every ambitious young man in fiction since 1830. Still the sharpest political novel ever written.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q6</span></div>
+<div class="book sci">
+  <div class="author">Claude Lévi-Strauss</div>
+  <div class="title">Tristes Tropiques</div>
+  <div class="note bloom-text">The most beautiful book ever written by an anthropologist. Lévi-Strauss's account of fieldwork in Brazil — and simultaneously a meditation on civilization and the vanishing of the world. Sartre called it "the most beautiful book of the second half of the 20th century." Read alongside the Russian novels as a different kind of account of what modernity destroys.</div>
+</div>
+<div class="book sci">
+  <div class="author">E.O. Wilson</div>
+  <div class="title">On Human Nature · The Diversity of Life</div>
+  <div class="note">On Human Nature: what does evolution imply about ethics and religion? The Diversity of Life: the most eloquent account of what we are losing ecologically.</div>
+</div>
+<div class="book sci">
+  <div class="author">Oliver Sacks</div>
+  <div class="title">The Man Who Mistook His Wife for a Hat · An Anthropologist on Mars</div>
+  <div class="note">Neurological case histories that are simultaneously clinical documents and profound meditations on what it means to be a person. The finest medical writing of the late 20th century.</div>
+</div>
+<div class="book sci">
+  <div class="author">James Watson</div>
+  <div class="title">The Double Helix</div>
+  <div class="note">The discovery of DNA as personal narrative — ambition, competition, luck, and genuine insight. The inside view of how science actually works.</div>
+</div>
+<div class="book sci">
+  <div class="author">Bernd Heinrich</div>
+  <div class="title">Mind of the Raven</div>
+  <div class="note">Fifteen years studying raven intelligence. Heinrich is the heir to both Lorenz and Thoreau. The finest ornithological science writing since Baker's The Peregrine.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q6</div>
+  <ul>
+    <li><b>LLMs:</b> Building LLMs for Production + AI Engineering (O'Reilly) — RAG pipelines, agents with tool use</li>
+    <li><b>Systems:</b> Designing Data-Intensive Applications (Kleppmann) Chapters 1–5</li>
+    <li><b>Goal by June:</b> Have built and deployed a working LLM-powered application</li>
+  </ul>
+</div>
+
+
+<!-- Q7 -->
+<div class="quarter-break"></div>
+<div class="section-label">Months 19–21 · July through September</div>
+<h2 class="quarter-title">Q7 — Nietzsche, the Americans &amp; Kafka</h2>
+<p class="quarter-desc">Nietzsche. Faulkner completed. Whitman. Kafka. Mann. Bulgakov. Science: Rachel Carson, Bronowski, Jared Diamond, Primo Levi, Hawking.</p>
+
+<div class="tier-header"><div class="dot d-now"></div><span>Now In Full Context — Finish</span></div>
+<div class="book now">
+  <div class="author">Faulkner <span class="in-progress">Finish + Absalom</span></div>
+  <div class="title">The Sound and the Fury → Absalom, Absalom!</div>
+  <div class="note bloom-text">You are reading ahead — which is correct. Finish Sound and the Fury, then immediately Absalom, Absalom! By Q7 you will have read Homer, Dante, Shakespeare, Dostoevsky, Tolstoy — and Absalom will read entirely differently for it.</div>
+</div>
+<div class="book now">
+  <div class="author">Shelby Foote <span class="in-progress">Vol. III</span></div>
+  <div class="title">The Civil War Vol. III</div>
+  <div class="note">The final volume. The exhaustion of the war, the death of Lincoln. Vol. III ends on a note no reader forgets.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — Deep Read</span></div>
+<div class="book tier1">
+  <div class="author">Friedrich Nietzsche</div>
+  <div class="title">Genealogy of Morals · Thus Spoke Zarathustra · Untimely Meditations</div>
+  <div class="note bloom-text">Genealogy first — the most dangerous book of the 19th century. Then Zarathustra: not philosophy but poetry. Untimely Meditations last: his critique of historical consciousness, which is also a critique of you reading this syllabus. Take it seriously.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Rachel Carson</div>
+  <div class="title">Silent Spring · The Sea Around Us</div>
+  <div class="note bloom-text">Silent Spring (1962) changed the world — one book that altered government policy, public consciousness, and the fate of species. Required reading everywhere after 1962. The Sea Around Us is Carson at her most lyrical. Read them alongside Nietzsche — one destroys old complacencies, the other builds new ones.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II</span></div>
+<div class="book tier2">
+  <div class="author">Walt Whitman</div>
+  <div class="title">Leaves of Grass — Song of Myself · Crossing Brooklyn Ferry</div>
+  <div class="note bloom-text">Read "Song of Myself" aloud — all 52 sections. Whitman invented a voice that had never existed before: the democratic self that contains all other selves.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Kafka</div>
+  <div class="title">The Trial · The Metamorphosis</div>
+  <div class="note">The Trial in one week. Read as realism, not allegory. The Metamorphosis in one sitting; again the next morning.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Bulgakov</div>
+  <div class="title">The Master and Margarita</div>
+  <div class="note">Satan visits Soviet Moscow. Profoundly funny, metaphysically serious. Read in one long weekend.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Thomas Mann</div>
+  <div class="title">The Magic Mountain</div>
+  <div class="note bloom-text">Two characters argue Fascism and Liberalism across 800 pages while the protagonist does nothing decisive. Written before 1924. The most prophetic novel of the 20th century.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Shelby Foote — Civil War Vol. II</div>
+  <div class="title">The Civil War Vol. II — Fredericksburg to Meridian</div>
+  <div class="note">Vicksburg and Gettysburg in the same week — the greatest week in American history, narrated by its greatest chronicler.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q7</span></div>
+<div class="book sci">
+  <div class="author">Jacob Bronowski</div>
+  <div class="title">The Ascent of Man</div>
+  <div class="note bloom-text">The finest popular history of science and human intellectual development ever written. From the first stone tools through Newton, Darwin, and Einstein, Bronowski traces the development of human knowledge as a continuous act of imagination. The final chapter — at Auschwitz — is one of the most devastating passages in 20th century prose. Read it and you will know what science is for.</div>
+</div>
+<div class="book sci">
+  <div class="author">Jared Diamond</div>
+  <div class="title">Guns, Germs and Steel</div>
+  <div class="note">Why some civilizations came to dominate others — not through superiority but through geographical accidents. The most important book of popular science of the late 20th century. Read alongside the histories of empire you have already encountered.</div>
+</div>
+<div class="book sci">
+  <div class="author">Primo Levi</div>
+  <div class="title">The Periodic Table</div>
+  <div class="note bloom-text">Levi was a chemist and a survivor of Auschwitz. He organizes his autobiography around the chemical elements — each chapter named for a substance that shaped or illuminated an episode in his life. The most beautiful book ever written about chemistry, and one of the most beautiful memoirs in any language. It belongs in both the science strand and the literature track.</div>
+</div>
+<div class="book sci">
+  <div class="author">Stephen Hawking</div>
+  <div class="title">A Brief History of Time</div>
+  <div class="note">Black holes, the Big Bang, the arrow of time. Read after Einstein and Feynman for the context. Still the best popular account of modern cosmology.</div>
+</div>
+<div class="book sci">
+  <div class="author">Vaclav Smil (you have it)</div>
+  <div class="title">Energy and Civilization: A History</div>
+  <div class="note">All of human history as the successive capture of new energy sources. Required in energy policy and environmental studies. Read alongside Rachel Carson.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q7</div>
+  <ul>
+    <li><b>Specialization:</b> Choose your domain: NLP, computer vision, or RL. Go deep on one. Read foundational papers</li>
+    <li><b>MLOps:</b> Introducing MLOps (O'Reilly) — monitoring, retraining, data pipelines at scale</li>
+    <li><b>Goal by September:</b> Portfolio of 3 real projects. Ready to contribute to or lead a technical team</li>
+  </ul>
+</div>
+
+
+<!-- Q8 -->
+<div class="quarter-break"></div>
+<div class="section-label">Months 22–24 · October through December</div>
+<h2 class="quarter-title">Q8 — Nabokov, World Literature &amp; Ulysses</h2>
+<p class="quarter-desc">Nabokov. Proust Vol. I. The Japanese tradition. And at the very end: Joyce's Ulysses. Science: J.A. Baker's The Peregrine. Anthropology: Matthiessen's The Snow Leopard.</p>
+
+<div class="bloom-note">
+  <div class="label">Bloom's Note — Final Quarter</div>
+  <p><strong>Ulysses is the summit of the Western literary tradition.</strong> Your eyes, after two years of Homer, Dante, Shakespeare, Dostoevsky, and Faulkner, are ready. You will recognise the Homeric parallels. You will recognise the Shakespearean riffs. You will recognise what Joyce is doing with interiority because you have read Tolstoy. <strong>This is why the sequence matters.</strong> The final word is "yes."</p>
+</div>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — The Summit</span></div>
+<div class="book tier1">
+  <div class="author">James Joyce (Oxford World's Classics + Annotations — you have both)</div>
+  <div class="title">Ulysses</div>
+  <div class="note bloom-text">One episode per week with the Annotations alongside. "Calypso" (Bloom's morning) is the easiest entry. "Proteus" is the hardest — survive it and you will survive the rest. "Ithaca" — written as a catechism — is the emotional core. "Penelope" on a Sunday morning, in one sitting. The final word is "yes."</div>
+</div>
+<div class="book tier1">
+  <div class="author">Vladimir Nabokov (Everyman's)</div>
+  <div class="title">Pale Fire · Speak, Memory</div>
+  <div class="note bloom-text">Pale Fire: formal virtuosity as the most precise instrument for expressing human loss. Speak, Memory: the greatest literary autobiography since Augustine. Every sentence demonstrates what prose can do when the writer cares about language above all else.</div>
+</div>
+<div class="book tier1">
+  <div class="author">J.A. Baker</div>
+  <div class="title">The Peregrine</div>
+  <div class="note bloom-text">Published 1967. The greatest work of ornithology ever written — and one of the great works of English prose. Baker spent ten years following peregrine falcons across the Essex landscape and wrote a book of extraordinary intensity. Werner Herzog considers it essential for filmmakers. Read it in autumn, outdoors when possible. It will change how you see — which is the point of the whole education.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II — World Literature</span></div>
+<div class="book tier2">
+  <div class="author">Murasaki Shikibu (Royall Tyler trans.)</div>
+  <div class="title">The Tale of Genji</div>
+  <div class="note">The world's first novel, c. 1000 CE. Read it against Proust and understand both better.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Mishima (Vintage)</div>
+  <div class="title">The Temple of the Golden Pavilion · Spring Snow</div>
+  <div class="note">Temple is a standalone masterpiece. Spring Snow opens the Sea of Fertility tetralogy, completed on the day Mishima died.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Sōseki · Kawabata · Tanizaki</div>
+  <div class="title">Kokoro · Snow Country · The Makioka Sisters</div>
+  <div class="note">The three pillars of modern Japanese fiction alongside Mishima. One per month.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Marcel Proust (Penguin Modern Classics)</div>
+  <div class="title">In Search of Lost Time, Vol. I: Swann's Way</div>
+  <div class="note">20 minutes before sleep every night. Vol. I is the beginning; the subsequent six volumes are your reading life for the years ahead.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Marguerite Yourcenar</div>
+  <div class="title">Memoirs of Hadrian</div>
+  <div class="note bloom-text">The greatest historical novel. By this point in the syllabus you know Hadrian's world intimately. The recognition will be extraordinary.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-sci"></div><span>Science Track — Q8</span></div>
+<div class="book sci">
+  <div class="author">Peter Matthiessen</div>
+  <div class="title">The Snow Leopard</div>
+  <div class="note bloom-text">A journey into the Himalaya in search of the snow leopard — and a Buddhist meditation on grief, impermanence, and attention. It belongs simultaneously in the science strand, the ornithology/natural history strand, and the Buddhist strand. Read it in the final quarter when all three streams are fully alive in you. One of the great books of the 20th century.</div>
+</div>
+<div class="book sci">
+  <div class="author">George Gamow</div>
+  <div class="title">One Two Three... Infinity</div>
+  <div class="note">Gamow's great synthesis of mathematics, physics, biology, and cosmology. Read in the final quarter as a consolidation of the science curriculum — it covers the whole territory with extraordinary range and pleasure.</div>
+</div>
+<div class="book sci">
+  <div class="author">Ruth Benedict · Bronisław Malinowski</div>
+  <div class="title">Patterns of Culture · Argonauts of the Western Pacific</div>
+  <div class="note">The founding texts of 20th century anthropology. Benedict: cultures have distinct personalities and no culture's values are universal. Malinowski: the founding text of participant-observation fieldwork. Both required at American and British universities from the 1930s.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-3"></div><span>Tier III — Encounter (Final Quarter)</span></div>
+<div class="book tier3">
+  <div class="author">Borges · Beckett · Chuang Tzu</div>
+  <div class="title">Labyrinths (selected) · Waiting for Godot · Mystic, Moralist and Social Reformer</div>
+  <div class="note bloom-text">Borges: "Pierre Menard, Author of the Quixote" rewrites everything you have read about reading. Beckett: what comes after Joyce? Less. More silence. Chuang Tzu on the final day: the Taoist text changes how you read everything you have already read. Read it and laugh. This is the right note on which to end.</div>
+</div>
+
+<div class="tech-box">
+  <div class="label">Tech Track — Q8</div>
+  <ul>
+    <li><b>Agents &amp; Production:</b> AI Engineering (O'Reilly) — agents that use tools, search, and memory</li>
+    <li><b>Goal by December:</b> Portfolio of 4–5 real projects. Ready to lead a technical team building AI products</li>
+    <li><b>Spanish:</b> Reading Borges and Cervantes in Spanish. Two years of daily practice has brought you here</li>
+  </ul>
+</div>
+
+
+<!-- HALF YEAR EXTENSION -->
+<div class="year-break">
+  <span class="year-num" style="font-size:72px;">+½</span>
+  <span class="year-label">Optional Extension · First Half of 2028</span>
+  <span class="year-title">Depth, Consolidation &amp; the Reserve Library</span>
+</div>
+
+<div class="bloom-note">
+  <div class="label">On the Extension</div>
+  <p>If you want to grow to 2.5 years — and you should — the extension does three things. First, it gives breathing room: some quarters above are dense and would benefit from a slower pace. Second, it opens the great works that had to be deferred: Proust Vols. II–III, Tolstoy's War and Peace, Gibbon, Braudel, Kierkegaard. Third, it allows the science curriculum to be read more fully — <strong>the science books deserve the same unhurried attention as the literary ones.</strong></p>
+</div>
+
+<div class="section-label">Extension Months 25–30 · Jan–Jun 2028</div>
+<h2 class="quarter-title">Consolidation &amp; the Great Deferrals</h2>
+<p class="quarter-desc">The works that could not fit in two years. Proust. Tolstoy's War and Peace. Gibbon. Braudel. Kierkegaard. The full Shelby Foote if not complete. Science: McPhee's Annals of the Former World, Wilson's Diversity of Life, Lorenz, full Frazer.</p>
+
+<div class="tier-header"><div class="dot d-1"></div><span>Tier I — The Great Deferrals</span></div>
+<div class="book tier1">
+  <div class="author">Leo Tolstoy</div>
+  <div class="title">War and Peace</div>
+  <div class="note bloom-text">The greatest novel ever written. I have said Anna Karenina is the greatest — and for two years it was the correct statement. At 2.5 years, the answer changes. You now have the patience War and Peace requires and the historical knowledge to follow what it is doing. Save it for this moment.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Marcel Proust</div>
+  <div class="title">In Search of Lost Time — Vols. II &amp; III</div>
+  <div class="note">Continue where you began in Q8. Proust is a life's work; the extension allows you to go deeper into it before the syllabus formally closes.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Søren Kierkegaard</div>
+  <div class="title">Either/Or · Fear and Trembling · The Sickness unto Death</div>
+  <div class="note bloom-text">Either/Or is the masterpiece — a 900-page argument between the aesthetic life and the ethical life, written pseudonymously. Fear and Trembling can be read in one night; return to it repeatedly. By this point in the education you have read Plato, Aristotle, the Stoics, Nietzsche, and Augustine — Kierkegaard is the synthesis that no one else attempted.</div>
+</div>
+<div class="book tier1">
+  <div class="author">Edward Gibbon</div>
+  <div class="title">The Decline and Fall of the Roman Empire — Vols. I &amp; II (abridged)</div>
+  <div class="note bloom-text">The greatest work of English historical prose. Chapters XV and XVI — on the rise of Christianity — are the most audacious thing in English historiography. By this point you know the Roman world intimately. Gibbon read alongside everything you have read will feel like the long view coming into focus.</div>
+</div>
+<div class="book tier1">
+  <div class="author">John McPhee</div>
+  <div class="title">Annals of the Former World — Basin and Range + In Suspect Terrain</div>
+  <div class="note bloom-text">McPhee's Pulitzer Prize–winning geology of North America. The greatest work of science writing in the American tradition. Geology teaches you deep time — billions of years — and deep time changes how you read everything else. By the extension, your sense of the human timescale has been established by history; now McPhee gives you geological time to set against it.</div>
+</div>
+
+<div class="tier-header"><div class="dot d-2"></div><span>Tier II — Extension Science</span></div>
+<div class="book tier2">
+  <div class="author">Fernand Braudel</div>
+  <div class="title">The Mediterranean — Vol. I</div>
+  <div class="note">The most ambitious history book of the 20th century. Geography and economics as destiny. Chapter 1 will change how you think about time.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Konrad Lorenz</div>
+  <div class="title">King Solomon's Ring · On Aggression</div>
+  <div class="note">Lorenz's Nobel Prize–winning ethology. King Solomon's Ring: jackdaws, geese, and dogs written with rigour and affection. On Aggression: animal behaviour and what it implies about human violence.</div>
+</div>
+<div class="book tier2">
+  <div class="author">E.O. Wilson</div>
+  <div class="title">The Diversity of Life</div>
+  <div class="note">The most eloquent account of what we are losing ecologically. Wilson at his most passionate and most precise.</div>
+</div>
+<div class="book tier2">
+  <div class="author">Robert MacFarlane</div>
+  <div class="title">The Old Ways · Underland</div>
+  <div class="note">MacFarlane's two masterpieces. Ancient footpaths and the deep underground. Together they complete a vision of the natural world that Gilbert White, Thoreau, and Leopold began.</div>
+</div>
+
+
+<!-- PARALLEL TRACKS -->
+<div class="quarter-break"></div>
+<div class="parallel-section">
+  <div class="label">Parallel Tracks — Running Alongside Both Years</div>
+  <div class="parallel-body">
+    <div class="par-col">
+      <h4>Year One Essays</h4>
+      <ul>
+        <li>T.S. Eliot — "Tradition and the Individual Talent"</li>
+        <li>Emerson — "Circles" · "Self-Reliance"</li>
+        <li>Hazlitt — "On the Prose-Style of Poets"</li>
+        <li>Woolf — "Mr. Bennett and Mrs. Brown"</li>
+        <li>Orwell — "Politics and the English Language"</li>
+        <li>Keats — Letters to Bailey &amp; George Keats</li>
+        <li>Ruskin — "The Lamp of Memory"</li>
+        <li>De Quincey — "On Knocking at the Gate in Macbeth"</li>
+        <li>Johnson — Rambler No. 4</li>
+        <li>Hume — "Of the Standard of Taste"</li>
+        <li>Lamb — "On the Tragedies of Shakespeare"</li>
+        <li>Carlyle — On Heroes (selected lectures)</li>
+      </ul>
+    </div>
+    <div class="par-col">
+      <h4>Year Two Essays</h4>
+      <ul>
+        <li>Sontag — "On Style"</li>
+        <li>Trilling — "The Fate of Pleasure"</li>
+        <li>Merleau-Ponty — "Cézanne's Doubt"</li>
+        <li>Heidegger — "The Origin of the Work of Art"</li>
+        <li>Paul Valéry — "The Method of Leonardo"</li>
+        <li>Gass — "The Soul Inside the Sentence"</li>
+        <li>Guy Davenport — "Geography of the Imagination"</li>
+        <li>Woolf — "Modern Fiction"</li>
+        <li>Henry James — "The Art of Fiction"</li>
+        <li>Nabokov — "Good Readers and Good Writers"</li>
+        <li>Borges — "Kafka and His Precursors"</li>
+        <li>Cioran — "Some Blind Alleys: A Letter"</li>
+      </ul>
+    </div>
+    <div class="par-col">
+      <h4>Daily Poetry — Both Years</h4>
+      <ul>
+        <li>Keats — Complete Poems</li>
+        <li>Blake — Songs of Innocence &amp; Experience</li>
+        <li>Hopkins — Major Works (Oxford)</li>
+        <li>Herbert — Complete Poetry</li>
+        <li>Shelley — Selected Poems</li>
+        <li>Milton — Complete Shorter Poems</li>
+        <li>Whitman — Leaves of Grass</li>
+        <li>Rilke — Selected Poetry (Vintage)</li>
+        <li>Dylan Thomas — The Poems</li>
+        <li>Basho — Haiku (Penguin)</li>
+        <li>Robert Lowell — Collected Poems</li>
+        <li>The Dhammapada — daily, both years</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- RESERVE LIBRARY -->
+<div class="quarter-break"></div>
+<div class="reserve">
+  <h2>The Reserve Library</h2>
+  <p class="intro">Everything here has been verified against your complete catalogue across all sessions. These are your reading life for the years that follow — not failures or deferrals but the great works that require more time than 2.5 years can honestly give.</p>
+
+  <div class="reserve-cols">
+    <div class="res-col">
+      <h3>Fiction — First Priority</h3>
+      <ul>
+        <li>Proust — In Search of Lost Time, Vols. IV–VII</li>
+        <li>Musil — The Man Without Qualities</li>
+        <li>Mann — Joseph and His Brothers</li>
+        <li>Pynchon — Gravity's Rainbow · Mason &amp; Dixon</li>
+        <li>Gaddis — The Recognitions</li>
+        <li>DeLillo — Underworld</li>
+        <li>Céline — Journey to the End of the Night</li>
+        <li>Pessoa — The Book of Disquiet</li>
+        <li>Mishima — Sea of Fertility (Vols. II–IV)</li>
+        <li>Joyce — Finnegans Wake (a life's work)</li>
+        <li>Beckett — The Trilogy</li>
+        <li>Hugo — Les Misérables</li>
+      </ul>
+    </div>
+    <div class="res-col">
+      <h3>History &amp; Biography</h3>
+      <ul>
+        <li>Gibbon — Decline &amp; Fall (complete, 6 vols.)</li>
+        <li>Braudel — The Mediterranean (complete)</li>
+        <li>Caro — LBJ Vols. 2–4</li>
+        <li>Freeman — R.E. Lee (4 vols.)</li>
+        <li>Spengler — Decline of the West</li>
+        <li>Hobsbawm — Age of Revolution</li>
+        <li>Mote — Imperial China 900–1800</li>
+        <li>Spence — The Search for Modern China</li>
+        <li>Evans — The Coming of the Third Reich</li>
+        <li>Stach — Kafka (3 vols.)</li>
+        <li>Parker — Herman Melville: A Biography</li>
+        <li>Rostovtzeff — Social &amp; Economic History of Rome</li>
+      </ul>
+    </div>
+    <div class="res-col">
+      <h3>Philosophy &amp; Ideas</h3>
+      <ul>
+        <li>Strauss/Cropsey — History of Political Philosophy</li>
+        <li>Voegelin — The New Science of Politics</li>
+        <li>Arendt — The Life of the Mind</li>
+        <li>Russell — History of Western Philosophy</li>
+        <li>Hofstadter — Gödel, Escher, Bach</li>
+        <li>Von Neumann — Theory of Games</li>
+        <li>Yates — The Art of Memory (complete)</li>
+        <li>Jaeger — Paideia (3 vols.)</li>
+        <li>Schopenhauer — Essays and Aphorisms</li>
+        <li>Guénon — The Crisis of the Modern World</li>
+        <li>Popper — The Logic of Scientific Discovery</li>
+        <li>Whitehead — Science and the Modern World</li>
+      </ul>
+    </div>
+    <div class="res-col">
+      <h3>Science — Deep Reserve</h3>
+      <ul>
+        <li>Feynman Lectures — Vols. II &amp; III (complete)</li>
+        <li>Poincaré — Science and Hypothesis</li>
+        <li>Euclid — Elements (complete)</li>
+        <li>Dobzhansky — Genetics and the Origin of Species</li>
+        <li>Ernst Mayr — What Evolution Is</li>
+        <li>Gould — The Panda's Thumb (complete essays)</li>
+        <li>E.E. Evans-Pritchard — Witchcraft, Oracles and Magic</li>
+        <li>Pauling — General Chemistry (selected chapters)</li>
+        <li>Richard Fortey — Life: A Natural History</li>
+        <li>Wrangham — Catching Fire</li>
+        <li>McPhee — Annals of the Former World (complete)</li>
+        <li>Audubon — Birds of America + Ornithological Biography</li>
+      </ul>
+    </div>
+    <div class="res-col">
+      <h3>Japanese &amp; East Asian</h3>
+      <ul>
+        <li>Mishima — Sea of Fertility (complete)</li>
+        <li>Kawabata — Master of Go · Thousand Cranes</li>
+        <li>Sōseki — I Am a Cat · Sanshirō · Kusamakura</li>
+        <li>Dazai — No Longer Human</li>
+        <li>Ōe — The Silent Cry</li>
+        <li>Abe — The Box Man</li>
+        <li>Kenkō / Chōmei — Essays in Idleness / Hōjōki</li>
+        <li>The Tale of the Heike (Tyler trans.)</li>
+        <li>Three Kingdoms — Luo Guanzhong</li>
+        <li>Confucius — Analects (complete)</li>
+        <li>Xunzi — The Complete Text</li>
+        <li>Chuang Tzu (if not done)</li>
+      </ul>
+    </div>
+    <div class="res-col">
+      <h3>Short Fiction — Always Open</h3>
+      <ul>
+        <li>Chekhov — Complete Stories (forever)</li>
+        <li>Wodehouse — (forever, never stop)</li>
+        <li>Babel — Complete Works</li>
+        <li>Joyce — Dubliners</li>
+        <li>Carver — Cathedral · Will You Please Be Quiet</li>
+        <li>Hemingway — Complete Short Stories</li>
+        <li>Flannery O'Connor — Complete Stories</li>
+        <li>M.R. James — Ghost Stories of an Antiquary</li>
+        <li>Borges — Labyrinths (complete)</li>
+        <li>Katherine Mansfield — Stories</li>
+        <li>Zweig — Chess &amp; collected stories</li>
+        <li>Kawabata — Palm-of-the-Hand Stories</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+<!-- FOOTER -->
+<footer>
+  <p class="quote">"The world today is sick to its thin blood for lack of elemental things."</p>
+  <p>Henry Beston · The Outermost House · 1928</p>
+  <br>
+  <p>2.5 Years · 2026–2028 · Literature · Philosophy · History · Sciences · Mathematics · Buddhist Philosophy · Technology</p>
+  <p>Begin where you already are · End with "yes" · Then begin again</p>
+</footer>
+
+</div>
+</body>
+</html>

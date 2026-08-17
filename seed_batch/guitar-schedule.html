@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jazz & Flatpicking Guitar Practice Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --aged: #e8dfc8;
+    --gold: #c8922a;
+    --gold-light: #e8b84b;
+    --rust: #8b3a1e;
+    --green: #2d5a3d;
+    --cream: #faf6ee;
+    --shadow: rgba(26,18,8,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 48px 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead::before {
+    content: '♩ ♪ ♫ ♬';
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 64px;
+    opacity: 0.06;
+    letter-spacing: 12px;
+  }
+
+  .masthead-rule {
+    border: none;
+    border-top: 1px solid var(--gold);
+    margin: 16px 0;
+    opacity: 0.6;
+  }
+
+  .masthead-top {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .masthead h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .masthead h1 em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .masthead-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: rgba(245,240,232,0.5);
+    margin-top: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* Philosophy block */
+  .philosophy {
+    background: var(--ink);
+    color: var(--paper);
+    margin: 0 -20px;
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .philosophy-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .philosophy p {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: rgba(245,240,232,0.75);
+    letter-spacing: 0.05em;
+  }
+
+  .philosophy strong {
+    color: var(--gold-light);
+  }
+
+  /* Section headers */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin: 40px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .section-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    opacity: 0.3;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  /* Daily schedule block */
+  .daily-block {
+    background: var(--cream);
+    border: 1px solid var(--aged);
+    border-left: 4px solid var(--gold);
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    overflow: hidden;
+  }
+
+  .daily-time {
+    background: var(--ink);
+    color: var(--gold-light);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 8px;
+    text-align: center;
+    line-height: 1.4;
+    letter-spacing: 0.05em;
+  }
+
+  .daily-time .mins {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--paper);
+    display: block;
+  }
+
+  .daily-content {
+    padding: 14px 18px;
+  }
+
+  .daily-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .daily-content p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(26,18,8,0.7);
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 1px;
+    margin-right: 4px;
+    margin-bottom: 6px;
+  }
+
+  .tag-jazz { background: var(--gold); color: var(--ink); }
+  .tag-theory { background: var(--green); color: white; }
+  .tag-bluegrass { background: var(--rust); color: white; }
+  .tag-warmup { background: var(--aged); color: var(--ink); }
+
+  /* Weekly grid */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 32px;
+  }
+
+  .day-card {
+    background: var(--cream);
+    border: 1px solid var(--aged);
+    padding: 14px 10px;
+    text-align: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .day-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--shadow);
+  }
+
+  .day-card.focus-jazz { border-top: 3px solid var(--gold); }
+  .day-card.focus-bluegrass { border-top: 3px solid var(--rust); }
+  .day-card.focus-theory { border-top: 3px solid var(--green); }
+  .day-card.focus-rest { border-top: 3px solid var(--aged); opacity: 0.7; }
+
+  .day-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(26,18,8,0.5);
+    margin-bottom: 8px;
+  }
+
+  .day-focus {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .day-emoji { font-size: 18px; margin-bottom: 6px; }
+
+  .day-note {
+    font-size: 10px;
+    color: rgba(26,18,8,0.55);
+    line-height: 1.4;
+  }
+
+  /* Resources */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 600px) {
+    .resources-grid { grid-template-columns: 1fr; }
+    .week-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .resource-card {
+    background: var(--cream);
+    border: 1px solid var(--aged);
+    padding: 18px;
+    position: relative;
+  }
+
+  .resource-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .resource-card.online::before { background: var(--gold); }
+  .resource-card.book::before { background: var(--rust); }
+
+  .resource-type {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(26,18,8,0.45);
+    margin-bottom: 10px;
+  }
+
+  .resource-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .resource-list {
+    list-style: none;
+  }
+
+  .resource-list li {
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--aged);
+    color: rgba(26,18,8,0.8);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .resource-list li:last-child { border-bottom: none; }
+
+  .resource-list li::before {
+    content: '→';
+    color: var(--gold);
+    flex-shrink: 0;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
+  /* Milestone tracker */
+  .milestone-row {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+    align-items: start;
+  }
+
+  .milestone-period {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    font-weight: 500;
+    text-align: right;
+    padding-top: 2px;
+  }
+
+  .milestone-content {
+    border-left: 2px solid var(--aged);
+    padding-left: 16px;
+    position: relative;
+  }
+
+  .milestone-content::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: absolute;
+    left: -5px;
+    top: 4px;
+  }
+
+  .milestone-content h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .milestone-content p {
+    font-size: 12px;
+    color: rgba(26,18,8,0.65);
+    line-height: 1.5;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    border-top: 3px double var(--gold);
+    border-bottom: 3px double var(--gold);
+    padding: 20px 0;
+    margin: 40px 0;
+    text-align: center;
+  }
+
+  .pull-quote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  .pull-quote cite {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    display: block;
+    margin-top: 8px;
+  }
+
+  /* Footer */
+  footer {
+    background: var(--ink);
+    color: rgba(245,240,232,0.4);
+    text-align: center;
+    padding: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    margin: 0 -20px -60px;
+  }
+
+  footer strong { color: var(--gold); }
+
+  .phase-badge {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--gold);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="masthead-top">The Serious Player's Curriculum — Jazz, Gypsy & Flatpicking</div>
+  <hr class="masthead-rule">
+  <h1>Your <em>Guitar Practice</em><br>Master Schedule</h1>
+  <div class="masthead-sub">30–45 min/day · Jazz · Gypsy Jazz · Flatpicking · Bluegrass · Music Theory</div>
+</div>
+
+<div class="philosophy">
+  <div class="philosophy-icon">🎸</div>
+  <p><strong>Core principle:</strong> Every session has ONE primary focus and ONE secondary. Jazz harmony is woven into most days because it's the connective tissue between all your goals. Theory isn't studied in isolation — it's applied directly to the guitar neck, chord voicings, and solos you're already learning.</p>
+</div>
+
+<div class="container">
+
+  <!-- Daily Template -->
+  <div class="section-header">
+    <div class="section-number">I</div>
+    <div class="section-title">Daily Session Structure (30–45 min)</div>
+  </div>
+
+  <div class="daily-block">
+    <div class="daily-time"><span class="mins">5</span>min<br>warmup</div>
+    <div class="daily-content">
+      <span class="tag tag-warmup">Warmup</span>
+      <h3>Chromatic Exercises + Stretch</h3>
+      <p>Spider exercises across all 6 strings, slow chromatic runs. Never skip — protects your hands and primes your ear. Use a metronome at 60 bpm.</p>
+    </div>
+  </div>
+
+  <div class="daily-block">
+    <div class="daily-time"><span class="mins">15</span>min<br>primary</div>
+    <div class="daily-content">
+      <span class="tag tag-jazz">Jazz / Gypsy</span>
+      <h3>Main Focus Block</h3>
+      <p>Deep work on the day's primary topic (see weekly schedule). One concept at a time. If it's a chord voicing, learn it in 3 keys minimum. If it's a lick, slow it down 50% first.</p>
+    </div>
+  </div>
+
+  <div class="daily-block">
+    <div class="daily-time"><span class="mins">10</span>min<br>secondary</div>
+    <div class="daily-content">
+      <span class="tag tag-bluegrass">Flatpick / Theory</span>
+      <h3>Secondary Skill Block</h3>
+      <p>Alternate between flatpicking technique (alternating pick strokes, crosspicking) and applied theory. Theory always maps to something physical — scales on the neck, not just paper.</p>
+    </div>
+  </div>
+
+  <div class="daily-block">
+    <div class="daily-time"><span class="mins">5–15</span>min<br>play</div>
+    <div class="daily-content">
+      <span class="tag tag-jazz">Freeplay</span>
+      <h3>Apply + Enjoy</h3>
+      <p>Jam over a backing track (iReal Pro is essential). Use whatever you worked on today. No stopping to fix mistakes — just flow. This is where it all becomes music.</p>
+    </div>
+  </div>
+
+  <!-- Weekly Plan -->
+  <div class="section-header">
+    <div class="section-number">II</div>
+    <div class="section-title">The Weekly Rotation</div>
+  </div>
+
+  <div class="week-grid">
+    <div class="day-card focus-jazz">
+      <div class="day-emoji">🎷</div>
+      <div class="day-name">Mon</div>
+      <div class="day-focus">Jazz Chords & Comping</div>
+      <div class="day-note">Drop-2 voicings, shell chords, ii-V-I progressions</div>
+    </div>
+    <div class="day-card focus-bluegrass">
+      <div class="day-emoji">🪕</div>
+      <div class="day-name">Tue</div>
+      <div class="day-focus">Flatpicking & Bluegrass</div>
+      <div class="day-note">Crosspicking, runs, fiddle tune arrangements</div>
+    </div>
+    <div class="day-card focus-jazz">
+      <div class="day-emoji">🐱‍🚀</div>
+      <div class="day-name">Wed</div>
+      <div class="day-focus">Gypsy Jazz</div>
+      <div class="day-note">La Pompe, Manouche licks, Django repertoire</div>
+    </div>
+    <div class="day-card focus-theory">
+      <div class="day-emoji">📐</div>
+      <div class="day-name">Thu</div>
+      <div class="day-focus">Theory on the Neck</div>
+      <div class="day-note">Modes, chord-scale relationships, fretboard mapping</div>
+    </div>
+    <div class="day-card focus-jazz">
+      <div class="day-emoji">🎵</div>
+      <div class="day-name">Fri</div>
+      <div class="day-focus">Jazz Soloing</div>
+      <div class="day-note">Bebop scales, guide tones, melodic vocabulary</div>
+    </div>
+    <div class="day-card focus-bluegrass">
+      <div class="day-emoji">🎶</div>
+      <div class="day-name">Sat</div>
+      <div class="day-focus">Repertoire Day</div>
+      <div class="day-note">Full song run-throughs, rhythm + lead combined</div>
+    </div>
+    <div class="day-card focus-rest">
+      <div class="day-emoji">🎧</div>
+      <div class="day-name">Sun</div>
+      <div class="day-focus">Active Listening</div>
+      <div class="day-note">No guitar. Just listen deeply to 2–3 records</div>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>"The goal is not to learn songs. The goal is to learn the language — then the songs speak themselves."</p>
+    <cite>— Berklee school of thought on jazz fundamentals</cite>
+  </div>
+
+  <!-- Resources -->
+  <div class="section-header">
+    <div class="section-number">III</div>
+    <div class="section-title">Your Resource Stack</div>
+  </div>
+
+  <div class="resources-grid">
+    <div class="resource-card online">
+      <div class="resource-type">📺 Online — Jazz & Theory</div>
+      <h4>Video Curriculum</h4>
+      <ul class="resource-list">
+        <li><strong>Adam Neely (YouTube)</strong> — best jazz theory educator online, Berklee-level depth</li>
+        <li><strong>TalkingGuitars / Paul Davids</strong> — jazz chord deep dives, ii-V-I mastery</li>
+        <li><strong>Justin Guitar Jazz</strong> — structured jazz pathway for players with foundation</li>
+        <li><strong>StudyWithAlex (YouTube)</strong> — concise bebop vocabulary, great for guitar soloists</li>
+        <li><strong>GuitarZoom (Steve Stine)</strong> — fretboard theory visualization</li>
+        <li><strong>iReal Pro app</strong> — essential backing track player with jazz/bluegrass charts</li>
+      </ul>
+    </div>
+
+    <div class="resource-card online">
+      <div class="resource-type">🐱‍🏍 Online — Gypsy Jazz</div>
+      <h4>Manouche Resources</h4>
+      <ul class="resource-list">
+        <li><strong>DjangoBooks.com</strong> — gold standard for gypsy jazz, tab, and lessons</li>
+        <li><strong>Gonzalo Bergara (YouTube)</strong> — la pompe, manouche rhythm masterclass</li>
+        <li><strong>Djangostation.com</strong> — lick library and style breakdowns</li>
+        <li><strong>Andreas Oberg (YouTube)</strong> — hybrid gypsy-jazz fusion, incredible technique</li>
+        <li><strong>Bireli Lagrène interviews/lessons</strong> — authentic style cues</li>
+      </ul>
+    </div>
+
+    <div class="resource-card online">
+      <div class="resource-type">🪕 Online — Flatpicking & Bluegrass</div>
+      <h4>Flatpick Curriculum</h4>
+      <ul class="resource-list">
+        <li><strong>Tony Rice tribute lessons (YouTube)</strong> — study the master's technique closely</li>
+        <li><strong>Flatpicking Guitar Magazine archive</strong> — decades of lessons</li>
+        <li><strong>Bryan Sutton lessons (ArtistWorks)</strong> — best structured flatpicking course online</li>
+        <li><strong>Crosspicking Deep Dive — Rob Ickes & Trey Hensley</strong> channel</li>
+        <li><strong>Peghead Nation</strong> — bluegrass guitar with Scott Nygaard</li>
+      </ul>
+    </div>
+
+    <div class="resource-card book">
+      <div class="resource-type">📚 Books — Theory & Reference</div>
+      <h4>The Short Stack</h4>
+      <ul class="resource-list">
+        <li><strong>Chord Chemistry — Ted Greene</strong> — the jazz guitarist's bible, start here</li>
+        <li><strong>The Advancing Guitarist — Mick Goodrick</strong> — Berklee's secret weapon, mindset + theory</li>
+        <li><strong>Jazz Theory Book — Mark Levine</strong> — definitive jazz theory reference</li>
+        <li><strong>Fretboard Logic — Bill Edwards</strong> — cheapest, fastest fretboard mapping system</li>
+        <li><strong>Gypsy Jazz — Michael Dregni</strong> — cultural/historical context, invaluable for the style</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Milestones -->
+  <div class="section-header">
+    <div class="section-number">IV</div>
+    <div class="section-title">Progress Milestones</div>
+  </div>
+
+  <div class="phase-badge">Phase 1: Foundation</div>
+
+  <div class="milestone-row">
+    <div class="milestone-period">Weeks 1–4</div>
+    <div class="milestone-content">
+      <h4>Build the Jazz Vocabulary Base</h4>
+      <p>Know all shell chords (3rds & 7ths) for major, minor, dominant. Understand ii-V-I in 3 keys. Learn la pompe rhythm for gypsy. Know 2 fiddle tunes for flatpicking. Complete Fretboard Logic Vol. 1.</p>
+    </div>
+  </div>
+
+  <div class="milestone-row">
+    <div class="milestone-period">Weeks 5–8</div>
+    <div class="milestone-content">
+      <h4>Expand Drop-2 Voicings + Bebop Entry</h4>
+      <p>Drop-2 chords on all string sets. First bebop scale (dominant bebop). 3 gypsy jazz standards (Minor Swing, Nuages, All of Me). Crosspicking clean at 80 bpm. Modes learned positionally on neck.</p>
+    </div>
+  </div>
+
+  <div class="phase-badge" style="margin-top: 20px;">Phase 2: Integration</div>
+
+  <div class="milestone-row">
+    <div class="milestone-period">Months 3–4</div>
+    <div class="milestone-content">
+      <h4>Chord-Scale Fluency + Repertoire</h4>
+      <p>5+ jazz standards you can play rhythm and solo over. Flatpicking up to 100 bpm with accuracy. Guide tone soloing over changes. Begin reading Mark Levine. Record yourself weekly.</p>
+    </div>
+  </div>
+
+  <div class="milestone-row">
+    <div class="milestone-period">Months 5–6</div>
+    <div class="milestone-content">
+      <h4>Stylistic Confidence</h4>
+      <p>Sit in with others or jam online. Play a Django tune start-to-finish with rhythm. Bluegrass rhythm behind a singer. Your theory understanding maps to improvisation — you know where to go and why.</p>
+    </div>
+  </div>
+
+  <!-- Sunday listening -->
+  <div class="section-header">
+    <div class="section-number">V</div>
+    <div class="section-title">Sunday Listening — The Essential Records</div>
+  </div>
+
+  <div class="resources-grid">
+    <div class="resource-card online">
+      <div class="resource-type">Jazz Guitar</div>
+      <h4>Listen Deeply To</h4>
+      <ul class="resource-list">
+        <li>Wes Montgomery — <em>Smokin' at the Half Note</em></li>
+        <li>Joe Pass — <em>Virtuoso</em> (solo guitar — essential)</li>
+        <li>Django Reinhardt — <em>Djangology</em></li>
+        <li>Jim Hall — <em>Undercurrent</em></li>
+        <li>Pat Metheny — <em>80/81</em></li>
+      </ul>
+    </div>
+    <div class="resource-card book">
+      <div class="resource-type">Flatpicking / Bluegrass</div>
+      <h4>Listen Deeply To</h4>
+      <ul class="resource-list">
+        <li>Tony Rice — <em>Manzanita</em> (the flatpicking bible)</li>
+        <li>Doc Watson — <em>Doc Watson on Stage</em></li>
+        <li>Clarence White — Kentucky Colonels recordings</li>
+        <li>Bryan Sutton — anything recent</li>
+        <li>David Grisman Quintet — gypsy-bluegrass fusion</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <strong>Your Guitar Practice Schedule</strong> — Starting Next Week · 30–45 min/day · Trust the process, stay slow, go deep.
+</footer>
+
+</body>
+</html>

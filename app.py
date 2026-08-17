@@ -507,7 +507,7 @@ def get_plaid_token():
 def load_kb():
     try:
         rows = sb_select('kb', 'select=dept,content&order=dept')
-        return '\n\n'.join(f"[{r['dept'].upper()}]\n{r['content']}" for r in rows)[:26000]
+        return '\n\n'.join(f"[{r['dept'].upper()}]\n{r['content']}" for r in rows)[:36000]
     except Exception:
         return ''
 

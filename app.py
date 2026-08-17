@@ -547,15 +547,60 @@ def recent_chat():
         return ''
 
 
+def _fmt_amt(a):
+    a = float(a)
+    if a > 0:
+        return f"+${a:,.0f}"
+    if a < 0:
+        return f"-${abs(a):,.0f}"
+    return "$0"
+
+
 def life_context():
+    now = _now_et()
+    today_iso = now.strftime('%Y-%m-%d')
+    horizon_iso = (now + _td(days=7)).strftime('%Y-%m-%d')
+
     try:
-        tasks = sb_select('tasks', 'status=eq.open&order=created_at.desc&limit=15&select=title')
-        projects = sb_select('projects', 'stage=neq.Complete&order=created_at.desc&limit=15&select=title,stage,type')
-        t = '; '.join(x['title'] for x in tasks) or 'none'
-        p = '; '.join(f"{x['title']} ({x.get('type') or 'creative'}, {x['stage']})" for x in projects) or 'none'
-        return f"Open tasks: {t}\nActive projects: {p}"
+        tasks = sb_select('tasks', 'status=eq.open&order=created_at.desc&limit=15&select=title,category')
+        by_cat = {}
+        for x in tasks:
+            by_cat.setdefault(x.get('category') or 'Uncategorized', []).append(x['title'])
+        task_lines = '; '.join(f"{cat}: {', '.join(titles)}" for cat, titles in by_cat.items()) or 'none'
     except Exception:
-        return ''
+        task_lines = 'none'
+
+    try:
+        projects = sb_select('projects', 'stage=neq.Complete&order=created_at.desc&limit=15&select=title,stage,type')
+        proj_lines = '; '.join(f"{x['title']} ({x.get('type') or 'creative'}, {x['stage']})" for x in projects) or 'none'
+    except Exception:
+        proj_lines = 'none'
+
+    try:
+        wk = sb_select('workout_week', 'select=day,title,rest&order=day_order')
+        wk_lines = '; '.join(f"{r['day']}: {r['title']}" + (' (REST)' if r.get('rest') else '') for r in wk) or 'none'
+    except Exception:
+        wk_lines = 'none'
+
+    try:
+        ev = sb_select('events', f'date=gte.{today_iso}&date=lte.{horizon_iso}&kind=neq.ledger&order=date&select=title,date')
+        ev_lines = '; '.join(f"{e['date']} {e['title']}" for e in ev) or 'none'
+    except Exception:
+        ev_lines = 'none'
+
+    try:
+        fin = sb_select('events', f'date=gte.{today_iso}&kind=eq.ledger&order=date&limit=3&select=title,date,amount')
+        fin_lines = '; '.join(f"{f['date']} {f['title']} {_fmt_amt(f['amount'])}" for f in fin) or 'none'
+    except Exception:
+        fin_lines = 'none'
+
+    return (
+        f"Open tasks by category: {task_lines}\n"
+        f"Active projects: {proj_lines}\n"
+        f"This week's workout: {wk_lines}\n"
+        f"Upcoming events (next 7 days): {ev_lines}\n"
+        f"Finance - upcoming: {fin_lines}"
+    )
 
 
 # ---------- Henry, the whole man ----------

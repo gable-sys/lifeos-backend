@@ -1140,10 +1140,34 @@ def _due(t, now, window_min=15):
 
 
 def _reminder_due(r, now, window_min=15):
-    """Like _due(), but a reminder with a date set only fires on that day (one-time); no date = daily."""
+    """Like _due(), but a reminder with a date set only fires on that day (one-time); no date = daily.
+    last_fired guards against duplicate sends when a cron polls more than once inside the window."""
     if r.get('date') and now.strftime('%Y-%m-%d') != r['date']:
         return False
+    if r.get('last_fired') == now.strftime('%Y-%m-%d'):
+        return False
     return _due(r['time'], now, window_min)
+
+
+def _brief_sent_map():
+    try:
+        rows = sb_select('state', 'key=eq.brief_last_sent&select=value')
+        return dict(rows[0].get('value') or {}) if rows else {}
+    except Exception:
+        return {}
+
+
+def _mark_brief_sent(slot, today):
+    try:
+        sent = _brief_sent_map()
+        sent[slot] = today
+        _rq.post(
+            f"{SUPABASE_URL}/rest/v1/state?on_conflict=key",
+            headers={**_sb_headers(), 'Prefer': 'resolution=merge-duplicates,return=representation'},
+            json={'key': 'brief_last_sent', 'value': sent}, timeout=15,
+        )
+    except Exception:
+        pass
 
 
 @app.route('/tick')
@@ -1151,20 +1175,23 @@ def tick():
     if not CRON_KEY or request.args.get('key') != CRON_KEY:
         return jsonify({'ok': False}), 403
     now = _now_et()
+    today = now.strftime('%Y-%m-%d')
     sent = []
     # timed reminders
     try:
-        for r in sb_select('reminders', 'active=eq.true&select=id,label,time,date'):
+        for r in sb_select('reminders', 'active=eq.true&select=id,label,time,date,last_fired'):
             if _reminder_due(r, now):
                 tg_send(TELEGRAM_CHAT_ID, '\u23F0 ' + r['label'], [[{'text': 'done', 'callback_data': f"td:r:{r['id']}"}]])
                 sent.append(r['label'])
                 if r.get('date'):  # one-time reminder - don't fire again tomorrow
-                    sb_update('reminders', r['id'], {'active': False})
+                    sb_update('reminders', r['id'], {'active': False, 'last_fired': today})
+                else:  # daily recurring - mark fired today so a second poll in-window skips it
+                    sb_update('reminders', r['id'], {'last_fired': today})
     except Exception:
         pass
     # scheduled briefs
     slot = 'morning' if _due('08:30', now) else 'midday' if _due('12:30', now) else 'eod' if _due('21:00', now) else None
-    if slot:
+    if slot and _brief_sent_map().get(slot) != today:
         try:
             prompt = BRIEF_PROMPTS[slot].replace('{weekday}', now.strftime('%A'))
             out = henry_say(MISSION + '\n\n' + prompt, max_tokens=700)
@@ -1172,6 +1199,7 @@ def tick():
                 out += '\n\n→ /desk'
             tg_send(TELEGRAM_CHAT_ID, out)
             sent.append('brief:' + slot)
+            _mark_brief_sent(slot, today)
         except Exception as e:
             sent.append('brief-failed: ' + str(e)[:80])
     return jsonify({'ok': True, 'et': now.strftime('%H:%M'), 'sent': sent})

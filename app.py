@@ -2,6 +2,10 @@ import os
 import json
 import base64
 import re
+import hmac
+import hashlib
+import time
+from functools import wraps
 from datetime import datetime
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
@@ -22,7 +26,7 @@ from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=False)
+CORS(app, resources={r"/*": {"origins": "*", "allow_headers": "*"}}, supports_credentials=False)
 
 PLAID_CLIENT_ID = os.environ.get('PLAID_CLIENT_ID')
 PLAID_SECRET    = os.environ.get('PLAID_SECRET')
@@ -413,6 +417,32 @@ from datetime import date as _date
 
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_CHAT_ID   = os.environ.get('TELEGRAM_CHAT_ID', '')
+
+# Henry OS Mini App deep links (t.me startapp). Unset until the BotFather
+# registration step (/newapp) is done — miniapp_link() falls back to a plain
+# site link until then, so nothing breaks in the meantime.
+TELEGRAM_BOT_USERNAME = os.environ.get('TELEGRAM_BOT_USERNAME', '')
+MINIAPP_SHORT_NAME    = os.environ.get('MINIAPP_SHORT_NAME', '')
+MINIAPP_URL           = os.environ.get('MINIAPP_URL', '')
+
+
+def miniapp_link(dept=None):
+    if TELEGRAM_BOT_USERNAME and MINIAPP_SHORT_NAME:
+        base = f"https://t.me/{TELEGRAM_BOT_USERNAME}/{MINIAPP_SHORT_NAME}"
+        return base + (f"?startapp={dept}" if dept else "")
+    return MINIAPP_URL or ''
+
+
+# dept_view()/DEPT_ORDER call this 'wander'; the mini app's grid (matching
+# the site's PORTALS array) calls the same door 'map'.
+BOT_DEPT_TO_MINIAPP = {'wander': 'map'}
+
+
+def miniapp_button(text, dept=None):
+    if not MINIAPP_URL:
+        return None
+    url = MINIAPP_URL + (f"?dept={BOT_DEPT_TO_MINIAPP.get(dept, dept)}" if dept else '')
+    return {'text': text, 'web_app': {'url': url}}
 SUPABASE_URL       = os.environ.get('SUPABASE_URL', '')
 SUPABASE_KEY       = os.environ.get('SUPABASE_SERVICE_KEY', '')
 SITE_URL           = 'https://stupendous-concha-2d70be.netlify.app'
@@ -948,7 +978,8 @@ def dept_view(chat_id, dept):
     elif len(lines) == 1:
         lines.append('Nothing open here.')
 
-    tg_send(chat_id, '\n'.join(lines))
+    btn = miniapp_button('Open in Henry OS', dept)
+    tg_send(chat_id, '\n'.join(lines), [[btn]] if btn else None)
 
 
 def cmd_desk(chat_id):
@@ -960,7 +991,8 @@ def cmd_desk(chat_id):
             row = []
     if row:
         buttons.append(row)
-    tg_send(chat_id, 'the desk \u2014 pick a department:', buttons)
+    top = miniapp_button('\u25b8 Open Henry OS')
+    tg_send(chat_id, 'the desk \u2014 pick a department:', ([[top]] if top else []) + buttons)
 
 
 def handle_callback(cb):
@@ -1294,6 +1326,276 @@ def capture():
         tg_send(chat_id, f'Capture failed: {e}')
 
     return jsonify({'ok': True})
+
+
+# ============================================================
+# HENRY OS MINI APP — generic department viewer (Telegram Web App)
+# Same brain as the bot/site: reads/writes the same Supabase tables.
+# The mini app (app.html, in the lifeos repo) never talks to Supabase
+# directly — everything goes through these /app/api/* routes, verified
+# against Telegram's WebApp initData so only Gable's Telegram client can
+# read or write.
+# ============================================================
+
+WD_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+DAY_CODES = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+
+# Mirrors the site's PORTALS array (index.html) — same ids, order, labels —
+# plus a `kind` telling the generic viewer how to render it and a
+# `task_category` matching the `tasks.category` values Henry files under.
+# kb_depts are first-pass guesses at which kb rows belong to each department;
+# trivial to adjust later, nothing structural depends on getting these exactly right.
+DEPARTMENTS = [
+    {'id': 'calendar', 'no': 'No. 02', 'dept': 'Schedule',           'title': 'Calendar', 'kind': 'schedule', 'task_category': 'Calendar', 'kb_depts': []},
+    {'id': 'finance',  'no': 'No. 03', 'dept': 'Treasury',           'title': 'Finance',  'kind': 'finance',  'task_category': 'Finance',  'kb_depts': []},
+    {'id': 'workout',  'no': 'No. 04', 'dept': 'Performance',        'title': 'Workout',  'kind': 'workout',  'task_category': 'Workout',  'kb_depts': []},
+    {'id': 'music',    'no': 'No. 05', 'dept': 'Music',              'title': 'Music',    'kind': 'kb',       'task_category': 'Music',    'kb_depts': ['piano_plan', 'guitar_master_plan', 'guitar_schedule']},
+    {'id': 'reading',  'no': 'No. 06', 'dept': 'Letters',            'title': 'Reading',  'kind': 'reading',  'task_category': 'Reading',  'kb_depts': ['reading_curriculum']},
+    {'id': 'creative', 'no': 'No. 07', 'dept': 'Creative · Zen Gun', 'title': 'Creative', 'kind': 'kb',       'task_category': 'Creative', 'kb_depts': ['zen_gun_spec']},
+    {'id': 'body',     'no': 'No. 08', 'dept': 'The Body',           'title': 'Body',     'kind': 'kb',       'task_category': 'Body',     'kb_depts': ['workout_spec']},
+    {'id': 'lab',      'no': 'No. 09', 'dept': 'Technical',          'title': 'Lab',      'kind': 'kb',       'task_category': 'Lab',      'kb_depts': []},
+    {'id': 'library',  'no': 'No. 10', 'dept': 'Reference',          'title': 'Library',  'kind': 'kb',       'task_category': 'Library',  'kb_depts': []},
+    {'id': 'fridge',   'no': 'No. 11', 'dept': 'Provisions',         'title': 'Fridge',   'kind': 'kb',       'task_category': 'Fridge',   'kb_depts': []},
+    {'id': 'closet',   'no': 'No. 12', 'dept': 'Wardrobe',           'title': 'Closet',   'kind': 'kb',       'task_category': 'Closet',   'kb_depts': []},
+    {'id': 'map',      'no': 'No. 13', 'dept': 'Soul · Gestation',   'title': 'The Map',  'kind': 'kb',       'task_category': 'Wander',   'kb_depts': ['dating_spec']},
+]
+CORK_BOARD_TILE = {'id': 'cork', 'no': '', 'dept': 'All Categories', 'title': 'Cork Board', 'kind': 'todos', 'task_category': None, 'kb_depts': []}
+DEPT_BY_ID = {d['id']: d for d in DEPARTMENTS}
+
+
+def verify_telegram_init_data(init_data, bot_token, max_age_seconds=86400):
+    """Validates Telegram WebApp initData per Telegram's documented HMAC scheme.
+    Returns the parsed {'user': {...}, 'auth_date': int} on success, else None."""
+    if not init_data or not bot_token:
+        return None
+    try:
+        from urllib.parse import parse_qsl
+        pairs = dict(parse_qsl(init_data, keep_blank_values=True))
+        received_hash = pairs.pop('hash', None)
+        if not received_hash:
+            return None
+        data_check_string = '\n'.join(f'{k}={v}' for k, v in sorted(pairs.items()))
+        secret_key = hmac.new(b'WebAppData', bot_token.encode(), hashlib.sha256).digest()
+        computed_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+        if not hmac.compare_digest(computed_hash, received_hash):
+            return None
+        auth_date = int(pairs.get('auth_date', 0))
+        if time.time() - auth_date > max_age_seconds:
+            return None
+        user = json.loads(pairs.get('user', '{}')) if pairs.get('user') else {}
+        return {'user': user, 'auth_date': auth_date}
+    except Exception:
+        return None
+
+
+def api_route(rule, methods=None):
+    """@app.route + Telegram initData auth (must match TELEGRAM_CHAT_ID) + JSON error handling."""
+    def deco(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            init_data = request.headers.get('X-Telegram-Init-Data', '')
+            parsed = verify_telegram_init_data(init_data, TELEGRAM_BOT_TOKEN)
+            if not parsed:
+                return jsonify({'error': 'unauthorized'}), 401
+            user_id = str((parsed.get('user') or {}).get('id', ''))
+            if not TELEGRAM_CHAT_ID or user_id != TELEGRAM_CHAT_ID:
+                return jsonify({'error': 'forbidden'}), 403
+            try:
+                return fn(*args, **kwargs)
+            except Exception as e:
+                return jsonify({'error': str(e)}), 500
+        app.add_url_rule(rule, endpoint=fn.__name__, view_func=wrapper, methods=methods or ['GET'])
+        return wrapper
+    return deco
+
+
+@api_route('/app/api/config')
+def app_config():
+    return jsonify({'departments': DEPARTMENTS + [CORK_BOARD_TILE]})
+
+
+@api_route('/app/api/tasks')
+def app_tasks():
+    category = request.args.get('category')
+    if category:
+        rows = sb_select('tasks', f'status=eq.open&category=eq.{category}&order=created_at.asc&limit=100&select=id,title,category')
+    else:
+        rows = sb_select('tasks', 'status=eq.open&order=created_at.asc&limit=300&select=id,title,category')
+    groups = {}
+    for r in rows:
+        groups.setdefault(r.get('category') or 'Uncategorized', []).append({'id': r['id'], 'title': r['title']})
+    order = [d['task_category'] for d in DEPARTMENTS if d['task_category']]
+    ordered = [{'category': c, 'tasks': groups[c]} for c in order if c in groups]
+    ordered += [{'category': c, 'tasks': ts} for c, ts in groups.items() if c not in order]
+    return jsonify({'groups': ordered})
+
+
+@api_route('/app/api/tasks/<id_>/done', methods=['POST'])
+def app_task_done(id_):
+    sb_update('tasks', id_, {'status': 'done'})
+    return jsonify({'ok': True})
+
+
+@api_route('/app/api/workout')
+def app_workout():
+    week = sb_select('workout_week', 'select=day,day_order,title,focus,rest,blocks&order=day_order')
+    now = _now_et()
+    today_code = DAY_CODES[now.weekday()]
+    since = (now - _td(days=13)).strftime('%Y-%m-%d')
+    done_rows = sb_select('workout_done', f'date=gte.{since}&select=date,day&order=date')
+    return jsonify({'week': week, 'today': today_code, 'today_date': now.strftime('%Y-%m-%d'), 'done': [r['date'] for r in done_rows]})
+
+
+@api_route('/app/api/workout/done', methods=['POST'])
+def app_workout_done():
+    data = request.json or {}
+    now = _now_et()
+    date_ = data.get('date') or now.strftime('%Y-%m-%d')
+    day_code = DAY_CODES[_dt.strptime(date_, '%Y-%m-%d').weekday()]
+    _rq.post(
+        f"{SUPABASE_URL}/rest/v1/workout_done?on_conflict=date",
+        headers={**_sb_headers(), 'Prefer': 'resolution=merge-duplicates,return=representation'},
+        json={'date': date_, 'day': day_code}, timeout=15,
+    )
+    return jsonify({'ok': True})
+
+
+@api_route('/app/api/workout/done/<date_>', methods=['DELETE'])
+def app_workout_undone(date_):
+    _rq.delete(f"{SUPABASE_URL}/rest/v1/workout_done?date=eq.{date_}", headers=_sb_headers(), timeout=15)
+    return jsonify({'ok': True})
+
+
+def get_reading_pick(now):
+    """One short daily reading recommendation in Henry's voice, generated via
+    Claude and cached in `state` (same pattern as brief_last_sent) so the app
+    doesn't regenerate it on every open — once per calendar day."""
+    today = now.strftime('%Y-%m-%d')
+    cached = None
+    try:
+        rows = sb_select('state', 'key=eq.reading_pick&select=value')
+        cached = rows[0]['value'] if rows else None
+    except Exception:
+        pass
+    if cached and cached.get('date') == today:
+        return cached
+    prompt = (
+        "Give me ONE short reading recommendation for tonight - a story, essay, poem, or wisdom "
+        "passage short enough to actually finish in one sitting. Draw from my reading curriculum "
+        "(literary canon in progress, see knowledge base) or the wisdom-text rotation (Tao Te Ching, "
+        "Dhammapada, Gospels, Psalms, Meditations of Marcus Aurelius, Bhagavad Gita, Rumi's Masnavi) "
+        "or a classic short work if neither fits tonight. Name the work and where to find it. "
+        "2-3 sentences max, your voice, no preamble."
+    )
+    try:
+        text = henry_say(prompt, max_tokens=200)
+    except Exception:
+        return {'date': today, 'text': "Henry stepped out — try again in a bit."}
+    value = {'date': today, 'text': text}
+    try:
+        _rq.post(
+            f"{SUPABASE_URL}/rest/v1/state?on_conflict=key",
+            headers={**_sb_headers(), 'Prefer': 'resolution=merge-duplicates,return=representation'},
+            json={'key': 'reading_pick', 'value': value}, timeout=15,
+        )
+    except Exception:
+        pass
+    return value
+
+
+@api_route('/app/api/reading')
+def app_reading():
+    curriculum = ''
+    try:
+        rows = sb_select('kb', 'dept=eq.reading_curriculum&select=content&limit=1')
+        curriculum = rows[0]['content'] if rows else ''
+    except Exception:
+        pass
+    now = _now_et()
+    wisdom = {WD_NAMES[i]: WISDOM_BY_WEEKDAY[i] for i in range(7)}
+    return jsonify({
+        'curriculum': curriculum,
+        'wisdom': wisdom,
+        'today_weekday': WD_NAMES[now.weekday()],
+        'henrys_pick': get_reading_pick(now),
+    })
+
+
+@api_route('/app/api/schedule')
+def app_schedule():
+    timetable = sb_select('timetable', 'select=id,start_time,end_time,title,notes,dept,sort_order&order=start_time,sort_order') or []
+    now = _now_et()
+    today_iso = now.strftime('%Y-%m-%d')
+    horizon_iso = (now + _td(days=7)).strftime('%Y-%m-%d')
+    events = sb_select('events', f'date=gte.{today_iso}&date=lte.{horizon_iso}&kind=neq.ledger&order=date&select=id,title,date,kind,notes') or []
+    return jsonify({'timetable': timetable, 'events': events})
+
+
+@api_route('/app/api/schedule/timetable', methods=['POST'])
+def app_schedule_add_tt():
+    data = request.json or {}
+    if not data.get('start_time') or not data.get('title'):
+        return jsonify({'error': 'start_time and title required'}), 400
+    row = {
+        'start_time': data.get('start_time'), 'end_time': data.get('end_time'),
+        'title': data.get('title'), 'notes': data.get('notes'),
+        'dept': data.get('dept'), 'sort_order': data.get('sort_order', 0),
+    }
+    return jsonify(sb_insert('timetable', row))
+
+
+@api_route('/app/api/schedule/timetable/<id_>', methods=['PATCH'])
+def app_schedule_edit_tt(id_):
+    patch = {k: v for k, v in (request.json or {}).items() if k in ('start_time', 'end_time', 'title', 'notes', 'dept', 'sort_order')}
+    return jsonify(sb_update('timetable', id_, patch))
+
+
+@api_route('/app/api/schedule/timetable/<id_>', methods=['DELETE'])
+def app_schedule_del_tt(id_):
+    sb_delete('timetable', id_)
+    return jsonify({'ok': True})
+
+
+@api_route('/app/api/schedule/event', methods=['POST'])
+def app_schedule_add_ev():
+    data = request.json or {}
+    if not data.get('title') or not data.get('date'):
+        return jsonify({'error': 'title and date required'}), 400
+    row = {'title': data['title'], 'date': data['date'], 'kind': data.get('kind') or 'personal', 'notes': data.get('notes')}
+    return jsonify(sb_insert('events', row))
+
+
+@api_route('/app/api/schedule/event/<id_>', methods=['PATCH'])
+def app_schedule_edit_ev(id_):
+    patch = {k: v for k, v in (request.json or {}).items() if k in ('title', 'date', 'kind', 'notes')}
+    return jsonify(sb_update('events', id_, patch))
+
+
+@api_route('/app/api/schedule/event/<id_>', methods=['DELETE'])
+def app_schedule_del_ev(id_):
+    sb_delete('events', id_)
+    return jsonify({'ok': True})
+
+
+@api_route('/app/api/finance')
+def app_finance():
+    now = _now_et()
+    today_iso = now.strftime('%Y-%m-%d')
+    upcoming = sb_select('events', f'date=gte.{today_iso}&kind=eq.ledger&order=date&limit=10&select=title,date,amount') or []
+    return jsonify({'upcoming': upcoming})
+
+
+@api_route('/app/api/kb/<dept_id>')
+def app_kb(dept_id):
+    cfg = DEPT_BY_ID.get(dept_id)
+    if not cfg:
+        return jsonify({'error': 'unknown department'}), 404
+    sections = []
+    for kd in cfg['kb_depts']:
+        rows = sb_select('kb', f'dept=eq.{kd}&select=dept,content&limit=1')
+        if rows:
+            sections.append(rows[0])
+    return jsonify({'sections': sections})
 
 
 if __name__ == '__main__':
